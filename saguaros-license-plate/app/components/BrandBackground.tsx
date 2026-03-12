@@ -3,11 +3,7 @@
 import { motion } from "framer-motion";
 
 /**
- * Subtle Saguaros brand background — repeating logo pattern + gradient accent.
- *
- * Usage:
- *   <BrandBackground />              — full-page fixed background
- *   <BrandBackground section />      — section-scoped, relative
+ * Subtle Saguaros brand background — barely-there logo pattern + gradient accent.
  */
 export default function BrandBackground({ section = false }: { section?: boolean }) {
   return (
@@ -18,22 +14,22 @@ export default function BrandBackground({ section = false }: { section?: boolean
       style={{ zIndex: 0 }}
       aria-hidden="true"
     >
-      {/* ─── Repeating Saguaros logo pattern ─── */}
+      {/* ─── Repeating Saguaros logo pattern — very faint ─── */}
       <div
         className="absolute inset-0"
         style={{
           backgroundImage: `url("/images/saguaros-logo.png")`,
-          backgroundSize: "80px 80px",
+          backgroundSize: "120px 120px",
           backgroundRepeat: "repeat",
-          opacity: 0.02,
-          maskImage: "linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%)",
-          WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%)",
+          opacity: 0.008,
+          maskImage: "linear-gradient(to bottom, transparent 0%, black 30%, black 70%, transparent 100%)",
+          WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 30%, black 70%, transparent 100%)",
         }}
       />
 
-      {/* ─── Large watermark logo — centered, very subtle ─── */}
+      {/* ─── Large watermark logo — centered, ghost-level subtle ─── */}
       <motion.div
-        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] opacity-[0.025]"
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] opacity-[0.012]"
         animate={{ rotate: [0, 1, 0, -1, 0] }}
         transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
         style={{
@@ -44,13 +40,13 @@ export default function BrandBackground({ section = false }: { section?: boolean
         }}
       />
 
-      {/* ─── Radial gradient accent — subtle brand warmth ─── */}
+      {/* ─── Radial gradient accent ─── */}
       <div
-        className="absolute inset-0 opacity-[0.03]"
+        className="absolute inset-0 opacity-[0.02]"
         style={{
           background:
-            "radial-gradient(ellipse at 20% 80%, rgba(255,255,255,0.08) 0%, transparent 50%), " +
-            "radial-gradient(ellipse at 80% 20%, rgba(255,255,255,0.04) 0%, transparent 50%)",
+            "radial-gradient(ellipse at 20% 80%, rgba(255,255,255,0.06) 0%, transparent 50%), " +
+            "radial-gradient(ellipse at 80% 20%, rgba(255,255,255,0.03) 0%, transparent 50%)",
         }}
       />
     </div>
