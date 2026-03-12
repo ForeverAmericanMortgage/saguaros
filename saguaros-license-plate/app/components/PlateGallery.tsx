@@ -7,13 +7,13 @@ import FadeIn from "./FadeIn";
 
 const GALLERY_IMAGES = [
   {
-    src: "/images/ref_3d_perspective.png",
-    alt: "Blackout Plate — 3D perspective view",
-    caption: "3D Perspective",
+    src: "/images/saguaros-plate.jpeg",
+    alt: "Blackout Plate — front view",
+    caption: "The Blackout Plate",
   },
   {
-    src: "/images/ref_hero_studio.png",
-    alt: "Blackout Plate — studio lighting",
+    src: "/images/4AZKIDS_white.png",
+    alt: "Blackout Plate — studio lighting with white border",
     caption: "Studio Shot",
   },
   {

@@ -9,10 +9,10 @@ const PlateScene = dynamic(() => import("./PlateScene"), {
   ssr: false,
   loading: () => (
     <Image
-      src="/images/ref_3d_perspective.png"
-      alt="Arizona Blackout Plate"
+      src="/images/4AZKIDS_white.png"
+      alt="Arizona Blackout Plate — 4AZKIDS"
       width={700}
-      height={400}
+      height={358}
       priority
       className="w-full h-auto opacity-50"
     />

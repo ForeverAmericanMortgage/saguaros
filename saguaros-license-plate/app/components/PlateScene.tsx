@@ -148,7 +148,7 @@ function Plate({ scrollProgress }: { scrollProgress: number }) {
   const scrollRef = useRef(scrollProgress);
   scrollRef.current = scrollProgress;
 
-  const texture = useTexture("/images/ref_3d_perspective.png");
+  const texture = useTexture("/images/4AZKIDS_white.png");
 
   // Ensure correct color rendering on Three.js v0.152+
   useEffect(() => {
@@ -161,7 +161,7 @@ function Plate({ scrollProgress }: { scrollProgress: number }) {
     if (img) {
       return img.width / img.height;
     }
-    return 700 / 400; // fallback
+    return 1198 / 612; // fallback — actual saguaros-plate.jpeg dimensions (~2:1)
   }, [texture]);
 
   // Standard AZ plate is roughly 12"x6" = 2:1 aspect
@@ -291,7 +291,7 @@ function WebGLFallback() {
   return (
     <div className="w-full h-full flex items-center justify-center">
       <img
-        src="/images/ref_3d_perspective.png"
+        src="/images/4AZKIDS_white.png"
         alt="Arizona Blackout Plate"
         className="w-full h-auto"
       />
