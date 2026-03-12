@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 200" fill="currentColor">
+  <!-- Saguaro cactus silhouette — clean, minimal brand mark -->
+  <!-- Main trunk -->
+  <rect x="48" y="40" width="24" height="140" rx="12"/>
+  <!-- Left arm -->
+  <path d="M48 100 Q48 80 30 80 Q18 80 18 92 L18 120 Q18 132 30 132 Q48 132 48 112" />
+  <!-- Right arm -->
+  <path d="M72 70 Q72 50 90 50 Q102 50 102 62 L102 95 Q102 107 90 107 Q72 107 72 87" />
+  <!-- Top crown -->
+  <ellipse cx="60" cy="38" rx="14" ry="6"/>
+</svg>
