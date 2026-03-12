@@ -157,8 +157,9 @@ function Plate({ scrollProgress }: { scrollProgress: number }) {
 
   // Calculate aspect ratio from texture
   const aspect = useMemo(() => {
-    if (texture.image) {
-      return texture.image.width / texture.image.height;
+    const img = texture.image as HTMLImageElement | undefined;
+    if (img) {
+      return img.width / img.height;
     }
     return 700 / 400; // fallback
   }, [texture]);
