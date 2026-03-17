@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useLanguage } from "@/lib/LanguageContext";
 
 const LAUNCH_DATE = new Date("2026-03-26T00:00:00-07:00"); // Phoenix time
 
@@ -44,13 +45,14 @@ function Digit({ value, label }: { value: number; label: string }) {
 export default function Countdown() {
   const [time, setTime] = useState<TimeLeft | null>(null);
   const [launched, setLaunched] = useState(false);
+  const { t } = useLanguage();
 
   useEffect(() => {
-    const t = calcTimeLeft();
-    if (t.days === 0 && t.hours === 0 && t.minutes === 0 && t.seconds === 0) {
+    const tl = calcTimeLeft();
+    if (tl.days === 0 && tl.hours === 0 && tl.minutes === 0 && tl.seconds === 0) {
       setLaunched(true);
     }
-    setTime(t);
+    setTime(tl);
 
     const interval = setInterval(() => {
       const updated = calcTimeLeft();
@@ -68,7 +70,7 @@ export default function Countdown() {
     return (
       <div className="text-center">
         <p className="font-display text-2xl sm:text-4xl font-bold text-pure-white">
-          Available Now
+          {t("countdownAvailable")}
         </p>
         <a
           href="https://azmvdnow.gov"
@@ -76,17 +78,19 @@ export default function Countdown() {
           rel="noopener noreferrer"
           className="mt-4 inline-block bg-pure-white text-black px-8 py-3 rounded text-sm font-semibold tracking-wide uppercase hover:bg-light transition-colors"
         >
-          Get Your Plate
+          {t("countdownGetPlate")}
         </a>
       </div>
     );
   }
 
+  const labels = [t("countdownDays"), t("countdownHours"), t("countdownMin"), t("countdownSec")];
+
   if (!time) {
     // SSR / initial render — prevent hydration mismatch
     return (
       <div className="flex items-center gap-2 sm:gap-4">
-        {["Days", "Hours", "Min", "Sec"].map((label) => (
+        {labels.map((label) => (
           <Digit key={label} value={0} label={label} />
         ))}
       </div>
@@ -95,13 +99,13 @@ export default function Countdown() {
 
   return (
     <div className="flex items-center gap-2 sm:gap-4">
-      <Digit value={time.days} label="Days" />
+      <Digit value={time.days} label={labels[0]} />
       <span className="text-border-light text-2xl sm:text-4xl font-light mt-[-20px]">:</span>
-      <Digit value={time.hours} label="Hours" />
+      <Digit value={time.hours} label={labels[1]} />
       <span className="text-border-light text-2xl sm:text-4xl font-light mt-[-20px]">:</span>
-      <Digit value={time.minutes} label="Min" />
+      <Digit value={time.minutes} label={labels[2]} />
       <span className="text-border-light text-2xl sm:text-4xl font-light mt-[-20px]">:</span>
-      <Digit value={time.seconds} label="Sec" />
+      <Digit value={time.seconds} label={labels[3]} />
     </div>
   );
 }

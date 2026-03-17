@@ -4,6 +4,19 @@ import { useRef, useMemo, useEffect, useState, useCallback } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useTexture, Float } from "@react-three/drei";
 import * as THREE from "three";
+import Image from "next/image";
+
+/* ─── Mobile detection hook ─── */
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768 || 'ontouchstart' in window);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+  return isMobile;
+}
 
 /* ─── Scroll hook (reads native page scroll, not drei ScrollControls) ─── */
 function useScrollProgress() {
@@ -257,7 +270,7 @@ function GroundPlane() {
 }
 
 /* ─── Main scene wrapper ─── */
-function Scene({ scrollProgress }: { scrollProgress: number }) {
+function Scene({ scrollProgress, isMobile }: { scrollProgress: number; isMobile: boolean }) {
   return (
     <>
       <FogController scrollProgress={scrollProgress} />
@@ -268,8 +281,8 @@ function Scene({ scrollProgress }: { scrollProgress: number }) {
         position={[5, 5, 5]}
         intensity={0.4}
         color="#ffffff"
-        castShadow
-        shadow-mapSize={[1024, 1024]}
+        castShadow={!isMobile}
+        shadow-mapSize={[512, 512]}
       />
       {/* Rim light — cool accent from behind */}
       <pointLight position={[-3, 2, -4]} intensity={0.6} color="#334466" distance={12} />
@@ -279,7 +292,7 @@ function Scene({ scrollProgress }: { scrollProgress: number }) {
       <pointLight position={[0, -3, 1]} intensity={0.15} color="#111122" distance={8} />
 
       <Plate scrollProgress={scrollProgress} />
-      <FogParticles scrollProgress={scrollProgress} />
+      <FogParticles count={isMobile ? 40 : 120} scrollProgress={scrollProgress} />
       <LightBeams scrollProgress={scrollProgress} />
       <GroundPlane />
     </>
@@ -290,9 +303,12 @@ function Scene({ scrollProgress }: { scrollProgress: number }) {
 function WebGLFallback() {
   return (
     <div className="w-full h-full flex items-center justify-center">
-      <img
+      <Image
         src="/images/4AZKIDS_white.png"
         alt="Arizona Blackout Plate"
+        width={700}
+        height={358}
+        sizes="(max-width: 768px) 100vw, 700px"
         className="w-full h-auto"
       />
     </div>
@@ -302,6 +318,7 @@ function WebGLFallback() {
 /* ─── Exported component ─── */
 export default function PlateScene() {
   const scrollProgress = useScrollProgress();
+  const isMobile = useIsMobile();
   const [webglFailed, setWebglFailed] = useState(false);
 
   const onCreated = useCallback((state: { gl: THREE.WebGLRenderer }) => {
@@ -318,16 +335,16 @@ export default function PlateScene() {
       <Canvas
         camera={{ position: [0, 0, 5], fov: 45 }}
         shadows
-        dpr={[1, 2]}
+        dpr={isMobile ? [1, 1.5] : [1, 2]}
         gl={{
-          antialias: true,
+          antialias: !isMobile,
           alpha: true,
-          powerPreference: "high-performance",
+          powerPreference: isMobile ? "default" : "high-performance",
         }}
         onCreated={onCreated}
         style={{ background: "transparent" }}
       >
-        <Scene scrollProgress={scrollProgress} />
+        <Scene scrollProgress={scrollProgress} isMobile={isMobile} />
       </Canvas>
     </div>
   );

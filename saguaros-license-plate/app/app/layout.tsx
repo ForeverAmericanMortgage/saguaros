@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
 import BrandBackground from "@/components/BrandBackground";
+import { LanguageProvider } from "@/lib/LanguageContext";
 import "./globals.css";
 
 const inter = Inter({
@@ -14,6 +15,12 @@ const spaceGrotesk = Space_Grotesk({
   variable: "--font-display",
   display: "swap",
 });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+};
 
 export const metadata: Metadata = {
   title: "The Blackout Plate | 4AZ Kids — Arizona's First All-Black Specialty Plate",
@@ -42,9 +49,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable}`}>
       <body className="antialiased">
-        <BrandBackground />
-        {children}
-        <div className="noise-overlay" aria-hidden="true" />
+        <LanguageProvider>
+          <BrandBackground />
+          {children}
+          <div className="noise-overlay" aria-hidden="true" />
+        </LanguageProvider>
       </body>
     </html>
   );

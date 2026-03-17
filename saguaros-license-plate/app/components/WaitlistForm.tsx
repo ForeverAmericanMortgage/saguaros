@@ -2,10 +2,12 @@
 
 import { useActionState } from "react";
 import { submitLead } from "@/app/actions/submitLead";
+import { useLanguage } from "@/lib/LanguageContext";
 
 const initialState = { success: false, message: "" };
 
 export default function WaitlistForm() {
+  const { t } = useLanguage();
   const [state, formAction, isPending] = useActionState(
     async (_prev: typeof initialState, formData: FormData) => {
       return submitLead(formData);
@@ -20,30 +22,30 @@ export default function WaitlistForm() {
           type="text"
           name="name"
           required
-          placeholder="Your name"
+          placeholder={t("waitlistName")}
           className="w-full bg-card border border-border-light rounded-lg px-4 py-3 text-sm text-pure-white placeholder:text-muted focus:outline-none focus:border-gray transition-colors"
         />
         <input
           type="email"
           name="email"
           required
-          placeholder="Email address"
+          placeholder={t("waitlistEmail")}
           className="w-full bg-card border border-border-light rounded-lg px-4 py-3 text-sm text-pure-white placeholder:text-muted focus:outline-none focus:border-gray transition-colors"
         />
         <div className="grid grid-cols-2 gap-3">
           <input
             type="tel"
             name="phone"
-            placeholder="Phone (optional)"
+            placeholder={t("waitlistPhone")}
             className="bg-card border border-border-light rounded-lg px-4 py-3 text-sm text-pure-white placeholder:text-muted focus:outline-none focus:border-gray transition-colors"
           />
           <select
             name="plate_preference"
             className="bg-card border border-border-light rounded-lg px-4 py-3 text-sm text-pure-white focus:outline-none focus:border-gray transition-colors appearance-none"
           >
-            <option value="">Plate type...</option>
-            <option value="standard">Standard ($25/yr)</option>
-            <option value="vanity">Custom Vanity ($50/yr)</option>
+            <option value="">{t("waitlistPlateType")}</option>
+            <option value="standard">{t("waitlistStandard")}</option>
+            <option value="vanity">{t("waitlistVanity")}</option>
           </select>
         </div>
         <button
@@ -51,7 +53,7 @@ export default function WaitlistForm() {
           disabled={isPending}
           className="w-full bg-pure-white text-black py-3 rounded-lg text-sm font-semibold tracking-wide uppercase hover:bg-light transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isPending ? "Joining..." : "Join the Waitlist"}
+          {isPending ? t("waitlistPending") : t("waitlistButton")}
         </button>
       </div>
 

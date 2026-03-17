@@ -13,6 +13,7 @@ const PlateScene = dynamic(() => import("./PlateScene"), {
       alt="Arizona Blackout Plate — 4AZKIDS"
       width={700}
       height={358}
+      sizes="(max-width: 768px) 100vw, 700px"
       priority
       className="w-full h-auto opacity-50"
     />

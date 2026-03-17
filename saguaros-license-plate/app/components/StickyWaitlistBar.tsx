@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLanguage } from "@/lib/LanguageContext";
 
 /**
  * Sticky bottom bar on mobile — appears after scrolling past the hero.
@@ -9,6 +10,7 @@ import { motion, AnimatePresence } from "framer-motion";
  */
 export default function StickyWaitlistBar() {
   const [visible, setVisible] = useState(false);
+  const { t } = useLanguage();
 
   useEffect(() => {
     const onScroll = () => {
@@ -32,14 +34,14 @@ export default function StickyWaitlistBar() {
           <div className="bg-black/95 backdrop-blur-xl border-t border-border-light px-4 py-3 flex items-center gap-3">
             <div className="flex-1 min-w-0">
               <p className="text-[10px] tracking-[0.2em] uppercase text-muted truncate">
-                Launches March 26, 2026
+                {t("stickyLaunch")}
               </p>
             </div>
             <a
               href="#waitlist"
               className="shrink-0 bg-pure-white text-black px-5 py-2.5 rounded text-xs font-semibold tracking-wide uppercase hover:bg-light transition-colors"
             >
-              Join Waitlist
+              {t("stickyJoin")}
             </a>
           </div>
         </motion.div>

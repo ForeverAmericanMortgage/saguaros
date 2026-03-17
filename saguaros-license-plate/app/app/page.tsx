@@ -1,3 +1,6 @@
+"use client";
+
+import Image from "next/image";
 import Nav from "@/components/Nav";
 import PlateHero from "@/components/PlateHero";
 import Countdown from "@/components/Countdown";
@@ -7,8 +10,11 @@ import CharityPartners from "@/components/CharityPartners";
 import PlateGallery from "@/components/PlateGallery";
 import AnimatedCounter from "@/components/AnimatedCounter";
 import StickyWaitlistBar from "@/components/StickyWaitlistBar";
+import { useLanguage } from "@/lib/LanguageContext";
 
 export default function Home() {
+  const { t } = useLanguage();
+
   return (
     <>
       <Nav />
@@ -32,22 +38,21 @@ export default function Home() {
           {/* Badge */}
           <div className="mb-8 px-4 py-1.5 border border-border-light rounded-full">
             <span className="text-[10px] sm:text-xs font-medium tracking-[0.25em] uppercase text-muted">
-              Arizona&apos;s First All-Black Specialty Plate
+              {t("heroBadge")}
             </span>
           </div>
 
           {/* Title */}
           <h1 className="font-display text-5xl sm:text-7xl lg:text-8xl font-bold tracking-tight text-pure-white leading-[0.95]">
-            THE
+            {t("heroTitle1")}
             <br />
-            BLACKOUT
+            {t("heroTitle2")}
             <br />
-            <span className="font-light text-gray">PLATE</span>
+            <span className="font-light text-gray">{t("heroTitle3")}</span>
           </h1>
 
           <p className="mt-6 text-base sm:text-lg text-gray max-w-xl leading-relaxed">
-            A plate you actually want on your car. And every single one supports
-            Arizona&apos;s children&apos;s charities.
+            {t("heroSubtitle")}
           </p>
 
           {/* Plate */}
@@ -58,7 +63,7 @@ export default function Home() {
           {/* Countdown */}
           <div className="mb-6">
             <p className="text-[10px] sm:text-xs tracking-[0.3em] uppercase text-muted mb-4 font-medium">
-              Launches March 26, 2026
+              {t("heroLaunchLabel")}
             </p>
             <Countdown />
           </div>
@@ -66,9 +71,9 @@ export default function Home() {
           {/* Stats — animated counters */}
           <div className="mt-10 flex flex-wrap justify-center gap-10 sm:gap-16">
             {[
-              { value: "30+", label: "Children's Charities" },
-              { value: "$17", label: "Per Plate, Per Year" },
-              { value: "13,000+", label: "Shares in 24 Hours" },
+              { value: "30+", label: t("statCharities") },
+              { value: "$17", label: t("statPerPlate") },
+              { value: "13,000+", label: t("statShares") },
             ].map(({ value, label }) => (
               <div key={label} className="text-center">
                 <AnimatedCounter
@@ -89,14 +94,13 @@ export default function Home() {
         <div className="max-w-6xl mx-auto text-center">
           <FadeIn>
             <p className="text-[10px] sm:text-xs tracking-[0.3em] uppercase text-muted mb-4 font-medium">
-              Be First In Line
+              {t("waitlistLabel")}
             </p>
             <h2 className="font-display text-3xl sm:text-5xl font-bold text-pure-white tracking-tight">
-              Get notified when<br className="hidden sm:block" /> it drops.
+              {t("waitlistHeading")}
             </h2>
             <p className="mt-4 text-gray max-w-lg mx-auto text-sm sm:text-base leading-relaxed">
-              The Blackout Plate launches March 26, 2026. Join the waitlist and
-              be one of the first to get yours from AZMVDNow.gov.
+              {t("waitlistDescription")}
             </p>
           </FadeIn>
           <FadeIn delay={0.15}>
@@ -112,20 +116,17 @@ export default function Home() {
         <div className="max-w-6xl mx-auto">
           <FadeIn>
             <p className="text-[10px] sm:text-xs tracking-[0.3em] uppercase text-muted mb-4 font-medium">
-              The Plate
+              {t("aboutLabel")}
             </p>
             <h2 className="font-display text-3xl sm:text-5xl font-bold text-pure-white tracking-tight max-w-2xl">
-              First of its kind.
+              {t("aboutHeading1")}
               <br />
-              No logos. No clutter.
+              {t("aboutHeading2")}
               <br />
-              <span className="text-gray">Just black.</span>
+              <span className="text-gray">{t("aboutHeading3")}</span>
             </h2>
             <p className="mt-6 text-gray max-w-2xl text-sm sm:text-base leading-relaxed">
-              The Blackout Plate is the first completely unbranded, all-black
-              specialty plate in Arizona history. No cause logos, no organization
-              names, no competing graphics. Just a clean black plate with white
-              lettering and &ldquo;ARIZONA&rdquo; at the top.
+              {t("aboutDescription")}
             </p>
           </FadeIn>
 
@@ -133,14 +134,14 @@ export default function Home() {
           <div className="mt-12 grid sm:grid-cols-2 gap-4">
             {[
               {
-                type: "Standard Plate",
-                price: "$25",
-                desc: "ADOT assigns your unique plate number. $17 goes directly to Arizona children's charities.",
+                type: t("aboutStandardTitle"),
+                price: t("aboutStandardPrice"),
+                desc: t("aboutStandardDesc"),
               },
               {
-                type: "Custom Vanity",
-                price: "$50",
-                desc: "Choose up to 7 characters. Same $17 per year to charity. Make it yours.",
+                type: t("aboutVanityTitle"),
+                price: t("aboutVanityPrice"),
+                desc: t("aboutVanityDesc"),
               },
             ].map(({ type, price, desc }, i) => (
               <FadeIn key={type} delay={i * 0.1}>
@@ -154,7 +155,7 @@ export default function Home() {
                     </p>
                     <div className="font-display text-4xl sm:text-5xl font-bold text-pure-white">
                       {price}
-                      <span className="text-lg font-normal text-muted">/yr</span>
+                      <span className="text-lg font-normal text-muted">{t("aboutPerYear")}</span>
                     </div>
                     <p className="mt-2 text-sm text-gray">{desc}</p>
                   </div>
@@ -173,10 +174,10 @@ export default function Home() {
         <div className="max-w-6xl mx-auto">
           <FadeIn>
             <p className="text-[10px] sm:text-xs tracking-[0.3em] uppercase text-muted mb-4 font-medium">
-              How It Works
+              {t("howLabel")}
             </p>
             <h2 className="font-display text-3xl sm:text-5xl font-bold text-pure-white tracking-tight">
-              Three steps. That&apos;s it.
+              {t("howHeading")}
             </h2>
           </FadeIn>
 
@@ -184,18 +185,18 @@ export default function Home() {
             {[
               {
                 num: "01",
-                title: "Visit AZMVDNow.gov",
-                desc: "Head to Arizona's MVD portal — the only place to order your plate.",
+                title: t("howStep1Title"),
+                desc: t("howStep1Desc"),
               },
               {
                 num: "02",
-                title: 'Search "4AZ Kids"',
-                desc: "Find the Blackout Plate under specialty plates. Choose standard or vanity.",
+                title: t("howStep2Title"),
+                desc: t("howStep2Desc"),
               },
               {
                 num: "03",
-                title: "Drive it. Fund it.",
-                desc: "$17 from every plate goes to 30+ children's charities. Renews automatically every year.",
+                title: t("howStep3Title"),
+                desc: t("howStep3Desc"),
               },
             ].map(({ num, title, desc }, i) => (
               <FadeIn key={num} delay={i * 0.1}>
@@ -227,28 +228,25 @@ export default function Home() {
         <div className="max-w-6xl mx-auto">
           <FadeIn>
             <p className="text-[10px] sm:text-xs tracking-[0.3em] uppercase text-muted mb-4 font-medium">
-              The Impact
+              {t("impactLabel")}
             </p>
             <h2 className="font-display text-3xl sm:text-5xl font-bold text-pure-white tracking-tight max-w-2xl">
-              Every plate on the road
+              {t("impactHeading1")}
               <br />
-              <span className="text-gray">is a kid getting help.</span>
+              <span className="text-gray">{t("impactHeading2")}</span>
             </h2>
             <p className="mt-6 text-gray max-w-2xl text-sm sm:text-base leading-relaxed">
-              The Saguaros have been fundraising for Arizona&apos;s children
-              since 1987. Through annual grant programs, the organization
-              distributes hundreds of thousands of dollars to 30+ nonprofits
-              serving kids across the state.
+              {t("impactDescription")}
             </p>
           </FadeIn>
 
           {/* Impact stats — animated counters */}
           <div className="mt-12 grid grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { value: "1987", label: "Year Founded" },
-              { value: "$750,000+", label: "Recent Grants" },
-              { value: "30+", label: "Charities Funded" },
-              { value: "$17", label: "Per Plate / Year" },
+              { value: "1987", label: t("impactYearFounded") },
+              { value: "$750,000+", label: t("impactRecentGrants") },
+              { value: "30+", label: t("impactCharitiesFunded") },
+              { value: "$17", label: t("impactPerPlateYear") },
             ].map(({ value, label }, i) => (
               <FadeIn key={label} delay={i * 0.08}>
                 <div
@@ -275,18 +273,17 @@ export default function Home() {
       <section className="py-20 sm:py-28 px-6 border-t border-border text-center">
         <FadeIn>
           <h2 className="font-display text-3xl sm:text-5xl font-bold text-pure-white tracking-tight">
-            Get yours March 26.
+            {t("ctaHeading")}
           </h2>
           <p className="mt-4 text-gray max-w-lg mx-auto text-sm sm:text-base">
-            The Blackout Plate will be available exclusively through
-            AZMVDNow.gov. Join the waitlist above to be first in line.
+            {t("ctaDescription")}
           </p>
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
             <a
               href="#waitlist"
               className="bg-pure-white text-black px-8 py-3 rounded text-sm font-semibold tracking-wide uppercase hover:bg-light transition-colors"
             >
-              Join the Waitlist
+              {t("ctaJoinWaitlist")}
             </a>
             <a
               href="https://azmvdnow.gov"
@@ -304,13 +301,15 @@ export default function Home() {
       <footer className="py-8 px-6 border-t border-border">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <img
+            <Image
               src="/images/saguaros-logo.png"
               alt="Saguaros"
-              className="w-6 h-6 opacity-50"
+              width={24}
+              height={24}
+              className="opacity-50"
             />
             <p className="text-xs text-muted">
-              The Blackout Plate — 4AZ Kids | A{" "}
+              {t("footerTagline")}{" "}
               <a
                 href="https://www.saguaros.com"
                 target="_blank"
@@ -319,12 +318,11 @@ export default function Home() {
               >
                 Saguaros
               </a>{" "}
-              initiative
+              {t("footerInitiative")}
             </p>
           </div>
           <p className="text-xs text-muted">
-            Proceeds benefit 30+ Arizona children&apos;s nonprofits through the
-            Saguaros 501(c)(3) Foundation
+            {t("footerProceeds")}
           </p>
         </div>
       </footer>

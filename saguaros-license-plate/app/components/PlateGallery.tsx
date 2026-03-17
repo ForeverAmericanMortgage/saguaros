@@ -4,27 +4,28 @@ import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 import FadeIn from "./FadeIn";
+import { useLanguage } from "@/lib/LanguageContext";
 
 const GALLERY_IMAGES = [
   {
     src: "/images/saguaros-plate.jpeg",
     alt: "Blackout Plate — front view",
-    caption: "The Blackout Plate",
+    captionKey: "galleryCaption1" as const,
   },
   {
     src: "/images/4AZKIDS_white.png",
     alt: "Blackout Plate — studio lighting with white border",
-    caption: "Studio Shot",
+    captionKey: "galleryCaption2" as const,
   },
   {
     src: "/images/ref_closeup_macro.png",
     alt: "Blackout Plate — close-up detail",
-    caption: "Detail View",
+    captionKey: "galleryCaption3" as const,
   },
   {
     src: "/images/ref_truck_desert.png",
     alt: "Blackout Plate — on a truck in the Arizona desert",
-    caption: "On The Road",
+    captionKey: "galleryCaption4" as const,
   },
 ];
 
@@ -34,6 +35,7 @@ export default function PlateGallery() {
     target: containerRef,
     offset: ["start end", "end start"],
   });
+  const { t } = useLanguage();
 
   // Parallax: gallery slides slightly left as you scroll
   const x = useTransform(scrollYProgress, [0, 1], ["0%", "-8%"]);
@@ -43,10 +45,10 @@ export default function PlateGallery() {
       <div className="max-w-6xl mx-auto px-6 mb-12">
         <FadeIn>
           <p className="text-[10px] sm:text-xs tracking-[0.3em] uppercase text-muted mb-4 font-medium">
-            See It
+            {t("galleryLabel")}
           </p>
           <h2 className="font-display text-3xl sm:text-5xl font-bold text-pure-white tracking-tight">
-            Every angle. Still clean.
+            {t("galleryHeading")}
           </h2>
         </FadeIn>
       </div>
@@ -55,7 +57,7 @@ export default function PlateGallery() {
       <motion.div className="flex gap-4 px-6" style={{ x }}>
         {GALLERY_IMAGES.map((img, i) => (
           <FadeIn key={img.src} delay={i * 0.1}>
-            <div className="group relative shrink-0 w-[320px] sm:w-[420px] lg:w-[500px]">
+            <div className="group relative shrink-0 w-[280px] sm:w-[420px] lg:w-[500px]">
               <div
                 className="relative overflow-hidden rounded-xl border border-border group-hover:border-border-light transition-colors"
                 style={{
@@ -76,6 +78,7 @@ export default function PlateGallery() {
                     alt={img.alt}
                     width={500}
                     height={300}
+                    sizes="(max-width: 640px) 320px, (max-width: 1024px) 420px, 500px"
                     className="w-full h-auto"
                   />
                 </motion.div>
@@ -87,7 +90,7 @@ export default function PlateGallery() {
               </div>
 
               <p className="mt-3 text-xs tracking-[0.2em] uppercase text-muted text-center group-hover:text-gray transition-colors">
-                {img.caption}
+                {t(img.captionKey)}
               </p>
             </div>
           </FadeIn>

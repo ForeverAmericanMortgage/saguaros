@@ -1,11 +1,12 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 
 /**
  * Subtle Saguaros brand background — barely-there logo pattern + gradient accent.
  */
 export default function BrandBackground({ section = false }: { section?: boolean }) {
+  const shouldReduceMotion = useReducedMotion();
   return (
     <div
       className={`${
@@ -30,7 +31,7 @@ export default function BrandBackground({ section = false }: { section?: boolean
       {/* ─── Large watermark logo — centered, ghost-level subtle ─── */}
       <motion.div
         className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] opacity-[0.012]"
-        animate={{ rotate: [0, 1, 0, -1, 0] }}
+        animate={shouldReduceMotion ? {} : { rotate: [0, 1, 0, -1, 0] }}
         transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
         style={{
           backgroundImage: `url("/images/saguaros-logo.png")`,
