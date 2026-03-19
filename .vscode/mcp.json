@@ -1,0 +1,23 @@
+{
+  "inputs": [
+    {
+      "type": "promptString",
+      "id": "supabaseAccessToken",
+      "description": "Supabase personal access token for the Saguaros project",
+      "password": true
+    }
+  ],
+  "servers": {
+    "supabaseSaguaros": {
+      "type": "http",
+      "url": "https://mcp.supabase.com/mcp?project_ref=qbqnbwknywkfqnblagsa",
+      "headers": {
+        "Authorization": "Bearer ${input:supabaseAccessToken}"
+      }
+    },
+    "vercel": {
+      "type": "http",
+      "url": "https://mcp.vercel.com"
+    }
+  }
+}

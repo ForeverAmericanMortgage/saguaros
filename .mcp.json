@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "supabase-saguaros": {
+      "type": "http",
+      "url": "https://mcp.supabase.com/mcp?project_ref=qbqnbwknywkfqnblagsa",
+      "headers": {
+        "Authorization": "Bearer ${SUPABASE_ACCESS_TOKEN}"
+      }
+    },
+    "vercel": {
+      "type": "http",
+      "url": "https://mcp.vercel.com"
+    }
+  }
+}
