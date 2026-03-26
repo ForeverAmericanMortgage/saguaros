@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import BrandBackground from "@/components/BrandBackground";
 import { LanguageProvider } from "@/lib/LanguageContext";
 import "./globals.css";
@@ -54,6 +55,7 @@ export default function RootLayout({
           {children}
           <div className="noise-overlay" aria-hidden="true" />
         </LanguageProvider>
+        <Analytics />
       </body>
     </html>
   );
