@@ -32,16 +32,19 @@ export async function submitLead(formData: FormData): Promise<LeadResult> {
     plate_preference: platePreference,
   });
 
+  let alreadyOnList = false;
+
   if (error) {
     // Duplicate email — treat as success (they're already on the list)
     if (error.code === "23505") {
-      return { success: true, message: "You're already on the list. We'll be in touch!" };
+      alreadyOnList = true;
+    } else {
+      console.error("Lead insert error:", error);
+      return { success: false, message: "Something went wrong. Please try again." };
     }
-    console.error("Lead insert error:", error);
-    return { success: false, message: "Something went wrong. Please try again." };
   }
 
-  // Mailchimp — fire-and-forget (don't block response on failure)
+  // Mailchimp — best effort so repeat signups can backfill previously unsynced contacts.
   try {
     await subscribeToMailchimp({
       name,
@@ -51,6 +54,10 @@ export async function submitLead(formData: FormData): Promise<LeadResult> {
     });
   } catch (err) {
     console.error("Mailchimp subscription failed (non-fatal):", err);
+  }
+
+  if (alreadyOnList) {
+    return { success: true, message: "You're already on the list. We'll be in touch!" };
   }
 
   return {
