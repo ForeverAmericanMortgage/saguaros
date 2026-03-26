@@ -286,7 +286,7 @@ export default function Home() {
               {t("ctaJoinWaitlist")}
             </a>
             <a
-              href="https://azmvdnow.gov"
+              href="https://azmvdnow.gov/plates"
               target="_blank"
               rel="noopener noreferrer"
               className="border border-border-light text-light px-8 py-3 rounded text-sm font-semibold tracking-wide uppercase hover:border-gray hover:text-pure-white transition-colors"

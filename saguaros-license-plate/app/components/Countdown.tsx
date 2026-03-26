@@ -73,7 +73,7 @@ export default function Countdown() {
           {t("countdownAvailable")}
         </p>
         <a
-          href="https://azmvdnow.gov"
+          href="https://azmvdnow.gov/plates"
           target="_blank"
           rel="noopener noreferrer"
           className="mt-4 inline-block bg-pure-white text-black px-8 py-3 rounded text-sm font-semibold tracking-wide uppercase hover:bg-light transition-colors"
