@@ -26,11 +26,11 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: "The Blackout Plate | 4AZ Kids — Arizona's First All-Black Specialty Plate",
   description:
-    "Arizona's first all-black, unbranded specialty license plate. Every plate supports 30+ children's charities. Available March 26, 2026.",
+    "Arizona's all-black 4AZ Kids specialty license plate is available now through AZMVDNow.gov, with 10,500+ plates on the road and every plate supporting children's charities.",
   openGraph: {
     title: "The Blackout Plate | 4AZ Kids",
     description:
-      "Arizona's first all-black specialty plate. Every plate supports 30+ children's charities.",
+      "Arizona's all-black 4AZ Kids specialty plate is available now, with 10,500+ plates on the road and every plate supporting children's charities.",
     type: "website",
     url: "https://blackplateaz.com",
   },
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "The Blackout Plate | 4AZ Kids",
     description:
-      "Arizona's first all-black specialty plate. Every plate supports 30+ children's charities.",
+      "Arizona's all-black 4AZ Kids specialty plate is available now, with 10,500+ plates on the road and every plate supporting children's charities.",
   },
 };
 

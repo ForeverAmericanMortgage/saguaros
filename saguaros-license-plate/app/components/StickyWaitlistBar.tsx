@@ -6,7 +6,7 @@ import { useLanguage } from "@/lib/LanguageContext";
 
 /**
  * Sticky bottom bar on mobile — appears after scrolling past the hero.
- * Compact CTA to drive waitlist signups without scrolling back up.
+ * Compact CTA to drive plate orders without scrolling back up.
  */
 export default function StickyWaitlistBar() {
   const [visible, setVisible] = useState(false);
@@ -38,7 +38,7 @@ export default function StickyWaitlistBar() {
               </p>
             </div>
             <a
-              href="#waitlist"
+              href="#order"
               className="shrink-0 bg-pure-white text-black px-5 py-2.5 rounded text-xs font-semibold tracking-wide uppercase hover:bg-light transition-colors"
             >
               {t("stickyJoin")}
