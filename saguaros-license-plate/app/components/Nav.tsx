@@ -36,7 +36,7 @@ export default function Nav() {
           </a>
           <LanguageToggle />
           <a
-            href="#waitlist"
+            href="#order"
             className="text-xs tracking-widest uppercase bg-pure-white text-black px-5 py-2 rounded hover:bg-light transition-colors font-semibold"
           >
             {t("navGetNotified")}
@@ -93,7 +93,7 @@ export default function Nav() {
           </a>
           <LanguageToggle />
           <a
-            href="#waitlist"
+            href="#order"
             onClick={() => setMenuOpen(false)}
             className="text-xs tracking-widest uppercase bg-pure-white text-black px-5 py-2 rounded hover:bg-light transition-colors font-semibold"
           >

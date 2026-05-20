@@ -4,7 +4,6 @@ import Image from "next/image";
 import Nav from "@/components/Nav";
 import PlateHero from "@/components/PlateHero";
 import Countdown from "@/components/Countdown";
-import WaitlistForm from "@/components/WaitlistForm";
 import FadeIn from "@/components/FadeIn";
 import CharityPartners from "@/components/CharityPartners";
 import PlateGallery from "@/components/PlateGallery";
@@ -73,7 +72,7 @@ export default function Home() {
             {[
               { value: "30+", label: t("statCharities") },
               { value: "$17", label: t("statPerPlate") },
-              { value: "13,000+", label: t("statShares") },
+              { value: "10,500+", label: t("statPlatesOnRoad") },
             ].map(({ value, label }) => (
               <div key={label} className="text-center">
                 <AnimatedCounter
@@ -89,23 +88,36 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ─── WAITLIST ─── */}
-      <section id="waitlist" className="py-20 sm:py-28 px-6 border-t border-border">
+      {/* ─── ORDER ─── */}
+      <section id="order" className="py-20 sm:py-28 px-6 border-t border-border">
         <div className="max-w-6xl mx-auto text-center">
           <FadeIn>
             <p className="text-[10px] sm:text-xs tracking-[0.3em] uppercase text-muted mb-4 font-medium">
-              {t("waitlistLabel")}
+              {t("orderLabel")}
             </p>
             <h2 className="font-display text-3xl sm:text-5xl font-bold text-pure-white tracking-tight">
-              {t("waitlistHeading")}
+              {t("orderHeading")}
             </h2>
-            <p className="mt-4 text-gray max-w-lg mx-auto text-sm sm:text-base leading-relaxed">
-              {t("waitlistDescription")}
+            <p className="mt-4 text-gray max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
+              {t("orderDescription")}
             </p>
           </FadeIn>
           <FadeIn delay={0.15}>
-            <div className="mt-8">
-              <WaitlistForm />
+            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+              <a
+                href="https://azmvdnow.gov/plates"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-pure-white text-black px-8 py-3 rounded text-sm font-semibold tracking-wide uppercase hover:bg-light transition-colors"
+              >
+                {t("orderPrimaryCta")}
+              </a>
+              <a
+                href="#how-to-order"
+                className="border border-border-light text-light px-8 py-3 rounded text-sm font-semibold tracking-wide uppercase hover:border-gray hover:text-pure-white transition-colors"
+              >
+                {t("orderSecondaryCta")}
+              </a>
             </div>
           </FadeIn>
         </div>
@@ -170,7 +182,7 @@ export default function Home() {
       <PlateGallery />
 
       {/* ─── HOW IT WORKS ─── */}
-      <section className="py-20 sm:py-28 px-6 border-t border-border">
+      <section id="how-to-order" className="py-20 sm:py-28 px-6 border-t border-border">
         <div className="max-w-6xl mx-auto">
           <FadeIn>
             <p className="text-[10px] sm:text-xs tracking-[0.3em] uppercase text-muted mb-4 font-medium">
@@ -280,10 +292,12 @@ export default function Home() {
           </p>
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
             <a
-              href="#waitlist"
+              href="https://azmvdnow.gov/plates"
+              target="_blank"
+              rel="noopener noreferrer"
               className="bg-pure-white text-black px-8 py-3 rounded text-sm font-semibold tracking-wide uppercase hover:bg-light transition-colors"
             >
-              {t("ctaJoinWaitlist")}
+              {t("ctaOrderPlate")}
             </a>
             <a
               href="https://azmvdnow.gov/plates"
