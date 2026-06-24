@@ -36,6 +36,9 @@ yarn-error.log*
 # QuickBooks OAuth tokens (local dev storage)
 .qbo-tokens.json
 
+# Local service-account material
+.secrets/
+
 # vercel
 .vercel
 

@@ -1,0 +1,10 @@
+.env
+.env.*
+.secrets/
+.vercel/
+.qbo-tokens.json
+supabase/.branches/
+supabase/.temp/
+node_modules/
+.next/
+out/

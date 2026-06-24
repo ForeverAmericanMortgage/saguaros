@@ -23,7 +23,16 @@ Fill this before implementation to avoid blockers.
 - Sponsorship payments
 - Tickets
 - Required fields to map into `donations`
+- Referral field location (`metadata`, `custom_fields`, or Squarespace order lookup)
 - Refund behavior policy
+
+## Twilio
+- `TWILIO_ACCOUNT_SID`
+- `TWILIO_AUTH_TOKEN`
+- `TWILIO_MESSAGING_SERVICE_SID` or `TWILIO_FROM_PHONE`
+- A2P/sender approval status
+- Member SMS opt-out policy
+- Dry-run approval before real sends
 
 ## Squarespace
 - Site ID / API credentials or webhook auth secret
@@ -46,6 +55,11 @@ Fill this before implementation to avoid blockers.
 
 ## Google (Drive/Workspace)
 - Service account JSON key
+- Gmail API enabled in Saguaros-owned Google Cloud project
+- Gmail API service account OAuth client ID
+- Domain-wide delegation authorized for `https://www.googleapis.com/auth/gmail.send`
+- Delegated sender mailbox (`GOOGLE_WORKSPACE_DELEGATED_USER`)
+- Reply-To / distribution group (`alerts@saguaros.com`)
 - Shared Drive ID(s)
 - Root folder IDs by module/event
 - Domain-wide delegation needed: yes/no
