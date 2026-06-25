@@ -4,7 +4,8 @@ import { createSign } from "crypto";
 import { existsSync, readFileSync } from "fs";
 import { isAbsolute, resolve } from "path";
 
-const GMAIL_SEND_SCOPE = "https://www.googleapis.com/auth/gmail.send";
+export const GMAIL_SEND_SCOPE = "https://www.googleapis.com/auth/gmail.send";
+export const GMAIL_MODIFY_SCOPE = "https://www.googleapis.com/auth/gmail.modify";
 const GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
 
 interface WorkspaceEmailParams {
@@ -72,14 +73,15 @@ function getWorkspaceEmailEnv() {
   };
 }
 
-function requireWorkspaceEmailEnv() {
+function requireWorkspaceEmailEnv(options: { delegatedUser?: string | null } = {}) {
   const env = getWorkspaceEmailEnv();
+  const delegatedUser = options.delegatedUser || env.delegatedUser;
 
   if (!env.senderEmail) {
     throw new Error("Google Workspace email setup required: add GOOGLE_WORKSPACE_SENDER_EMAIL.");
   }
 
-  if (!env.delegatedUser) {
+  if (!delegatedUser) {
     throw new Error("Google Workspace email setup required: add GOOGLE_WORKSPACE_DELEGATED_USER.");
   }
 
@@ -89,10 +91,13 @@ function requireWorkspaceEmailEnv() {
     );
   }
 
-  return env;
+  return {
+    ...env,
+    delegatedUser,
+  };
 }
 
-function buildJwtAssertion(env: ReturnType<typeof requireWorkspaceEmailEnv>) {
+function buildJwtAssertion(env: ReturnType<typeof requireWorkspaceEmailEnv>, scopes: string[]) {
   const now = Math.floor(Date.now() / 1000);
   const header = {
     alg: "RS256",
@@ -100,7 +105,7 @@ function buildJwtAssertion(env: ReturnType<typeof requireWorkspaceEmailEnv>) {
   };
   const claimSet = {
     iss: env.clientEmail,
-    scope: GMAIL_SEND_SCOPE,
+    scope: scopes.join(" "),
     aud: GOOGLE_TOKEN_URL,
     exp: now + 3600,
     iat: now,
@@ -111,11 +116,14 @@ function buildJwtAssertion(env: ReturnType<typeof requireWorkspaceEmailEnv>) {
   return `${signingInput}.${base64Url(signature)}`;
 }
 
-async function getAccessToken() {
-  const env = requireWorkspaceEmailEnv();
+export async function getGoogleWorkspaceAccessToken(
+  scopes: string[] = [GMAIL_SEND_SCOPE],
+  options: { delegatedUser?: string | null } = {}
+) {
+  const env = requireWorkspaceEmailEnv(options);
   const body = new URLSearchParams({
     grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
-    assertion: buildJwtAssertion(env),
+    assertion: buildJwtAssertion(env, scopes),
   });
 
   const response = await fetch(GOOGLE_TOKEN_URL, {
@@ -204,6 +212,7 @@ export function getGoogleWorkspaceEmailStatus() {
     hasClientEmail: Boolean(env.clientEmail),
     hasPrivateKey: Boolean(env.privateKey),
     hasServiceAccountFile: Boolean(process.env.GOOGLE_WORKSPACE_SERVICE_ACCOUNT_FILE),
+    hasTaxCreditInboxUser: Boolean(process.env.GOOGLE_WORKSPACE_TAX_CREDIT_INBOX_USER),
     dryRun: env.dryRun,
   };
 }
@@ -219,7 +228,7 @@ export async function sendGoogleWorkspaceEmail(params: WorkspaceEmailParams): Pr
     };
   }
 
-  const token = await getAccessToken();
+  const token = await getGoogleWorkspaceAccessToken([GMAIL_SEND_SCOPE]);
   const raw = base64Url(buildMimeMessage(params, token.senderEmail, token.replyToEmail));
   const response = await fetch(
     `https://gmail.googleapis.com/gmail/v1/users/${encodeURIComponent(token.delegatedUser)}/messages/send`,

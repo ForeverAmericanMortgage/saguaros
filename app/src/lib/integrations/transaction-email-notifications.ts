@@ -23,7 +23,20 @@ interface TransactionEmailParams {
   itemSummary?: string | null;
   referringMemberRaw?: string | null;
   olympiadTeamRaw?: string | null;
+  subjectOverride?: string | null;
+  headlineOverride?: string | null;
+  preheaderOverride?: string | null;
+  introOverride?: string | null;
+  thankYouOverride?: string | null;
   force?: boolean;
+}
+
+interface TransactionEmailCopy {
+  subject: string;
+  headline: string;
+  preheader: string;
+  intro: string;
+  thankYou: string;
 }
 
 function formatCurrency(amount: number, currency: string) {
@@ -41,8 +54,16 @@ function getReplyToEmail() {
   return process.env.GOOGLE_WORKSPACE_REPLY_TO_EMAIL || process.env.GOOGLE_WORKSPACE_SENDER_EMAIL || null;
 }
 
-function buildSubject() {
-  return "New Fundraising Transaction";
+function emailCopy(params: TransactionEmailParams): TransactionEmailCopy {
+  return {
+    subject: params.subjectOverride || "New Fundraising Transaction",
+    headline: params.headlineOverride || "New Fundraising Transaction",
+    preheader: params.preheaderOverride || "A new Saguaros fundraising transaction came in under your name.",
+    intro: params.introOverride || "Good news - a new fundraising transaction came in under your name.",
+    thankYou:
+      params.thankYouOverride ||
+      "Please send them a quick thank-you for supporting Saguaros and Arizona children's charities.",
+  };
 }
 
 function customerName(params: TransactionEmailParams) {
@@ -68,10 +89,11 @@ function detailRow(label: string, value: string | null | undefined) {
 }
 
 function buildTextBody(params: TransactionEmailParams, member: MemberContactRow) {
+  const copy = emailCopy(params);
   const lines = [
     `Hi ${formatMemberName(member)},`,
     "",
-    "Good news - a new fundraising transaction came in under your name.",
+    copy.intro,
     "",
     `Buyer: ${customerName(params)}`,
     params.customerEmail ? `Buyer email: ${params.customerEmail}` : null,
@@ -81,7 +103,7 @@ function buildTextBody(params: TransactionEmailParams, member: MemberContactRow)
     params.olympiadTeamRaw ? `Olympiad/team: ${params.olympiadTeamRaw}` : null,
     params.referringMemberRaw ? `Referring member field: ${params.referringMemberRaw}` : null,
     "",
-    "Please send them a quick thank-you for supporting Saguaros and Arizona children's charities.",
+    copy.thankYou,
     "",
     "No action is required. This is an automated internal Saguaros accounting and attribution alert.",
   ];
@@ -90,6 +112,7 @@ function buildTextBody(params: TransactionEmailParams, member: MemberContactRow)
 }
 
 function buildHtmlBody(params: TransactionEmailParams, member: MemberContactRow) {
+  const copy = emailCopy(params);
   const amount = formatCurrency(params.amount, params.currency);
   const details = [
     detailRow("Buyer", customerName(params)),
@@ -104,7 +127,7 @@ function buildHtmlBody(params: TransactionEmailParams, member: MemberContactRow)
   return `<!doctype html>
 <html>
   <body style="margin:0;padding:0;background:#f6f7f2;">
-    <div style="display:none;max-height:0;overflow:hidden;">A new Saguaros fundraising transaction came in under your name.</div>
+    <div style="display:none;max-height:0;overflow:hidden;">${htmlEscape(copy.preheader)}</div>
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f6f7f2;padding:24px 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;">
       <tr>
         <td align="center" style="padding:0 16px;">
@@ -112,17 +135,17 @@ function buildHtmlBody(params: TransactionEmailParams, member: MemberContactRow)
             <tr>
               <td style="padding:22px 24px 18px;background:#14532d;color:#ffffff;">
                 <div style="font-size:13px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;color:#d9f99d;">Saguaros Alerts</div>
-                <h1 style="margin:8px 0 0;font-size:22px;line-height:1.25;font-weight:750;">New Fundraising Transaction</h1>
+                <h1 style="margin:8px 0 0;font-size:22px;line-height:1.25;font-weight:750;">${htmlEscape(copy.headline)}</h1>
               </td>
             </tr>
             <tr>
               <td style="padding:24px;">
                 <p style="margin:0 0 14px;color:#0f172a;font-size:16px;line-height:1.5;">Hi ${htmlEscape(formatMemberName(member))},</p>
-                <p style="margin:0 0 20px;color:#334155;font-size:15px;line-height:1.55;">Good news - a new fundraising transaction came in under your name.</p>
+                <p style="margin:0 0 20px;color:#334155;font-size:15px;line-height:1.55;">${htmlEscape(copy.intro)}</p>
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-top:1px solid #e5e7eb;border-bottom:1px solid #e5e7eb;margin:0 0 20px;">
                   ${details}
                 </table>
-                <p style="margin:0 0 14px;color:#334155;font-size:15px;line-height:1.55;">Please send them a quick thank-you for supporting Saguaros and Arizona children's charities.</p>
+                <p style="margin:0 0 14px;color:#334155;font-size:15px;line-height:1.55;">${htmlEscape(copy.thankYou)}</p>
                 <p style="margin:0;color:#64748b;font-size:12px;line-height:1.5;">No action is required. This is an automated internal Saguaros accounting and attribution alert.</p>
               </td>
             </tr>
@@ -164,7 +187,7 @@ export async function sendTransactionEmailNotification(params: TransactionEmailP
   if (existing.data?.status && !params.force) return String(existing.data.status);
 
   const senderEmail = getSenderEmail();
-  const subject = params.member ? buildSubject() : skippedSubject(params);
+  const subject = params.member ? emailCopy(params).subject : skippedSubject(params);
   const body = params.member ? buildTextBody(params, params.member) : skippedBody(params);
   const htmlBody = params.member ? buildHtmlBody(params, params.member) : null;
   const existingNotificationId = existing.data?.id ? String(existing.data.id) : null;

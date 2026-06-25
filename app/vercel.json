@@ -4,6 +4,14 @@
     {
       "path": "/api/cron/squarespace-orders",
       "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/cron/squarespace-tax-credit-orders",
+      "schedule": "15 * * * *"
+    },
+    {
+      "path": "/api/cron/squarespace-tax-credit-email-alerts",
+      "schedule": "20 * * * *"
     }
   ]
 }

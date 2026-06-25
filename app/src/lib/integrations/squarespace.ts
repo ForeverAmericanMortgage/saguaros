@@ -1,6 +1,15 @@
 import "server-only";
 
+import {
+  DEFAULT_SQUARESPACE_SOURCE_KEY,
+  getSquarespaceSourceConfig,
+  type SquarespaceSourceKey,
+} from "@/lib/integrations/squarespace-sources";
+
 interface SquarespaceStatus {
+  sourceKey: SquarespaceSourceKey;
+  label: string;
+  siteUrl?: string;
   configured: boolean;
   hasApiKey: boolean;
   hasSiteId: boolean;
@@ -18,7 +27,7 @@ interface SquarespaceWebsiteProfile {
 
 export interface SquarespaceOrderMoney {
   currency?: string;
-  value?: number;
+  value?: number | string;
 }
 
 export interface SquarespaceFormItem {
@@ -56,6 +65,34 @@ export interface SquarespaceOrder {
   lineItems?: SquarespaceLineItem[] | null;
 }
 
+export interface SquarespaceTransactionLineItem {
+  productName?: string | null;
+  name?: string | null;
+  description?: string | null;
+  sku?: string | null;
+  quantity?: number | null;
+}
+
+export interface SquarespaceTransactionPayment {
+  amount?: SquarespaceOrderMoney | null;
+  paidOn?: string | null;
+  refunds?: unknown[] | null;
+}
+
+export interface SquarespaceTransactionDocument {
+  id: string;
+  salesOrderId?: string | null;
+  createdOn?: string | null;
+  modifiedOn?: string | null;
+  customerEmail?: string | null;
+  voided?: boolean | null;
+  total?: SquarespaceOrderMoney | null;
+  totalNetPayment?: SquarespaceOrderMoney | null;
+  totalSales?: SquarespaceOrderMoney | null;
+  salesLineItems?: SquarespaceTransactionLineItem[] | null;
+  payments?: SquarespaceTransactionPayment[] | null;
+}
+
 interface SquarespaceOrderListResponse {
   pagination?: {
     hasNextPage?: boolean;
@@ -65,17 +102,31 @@ interface SquarespaceOrderListResponse {
   message?: string;
 }
 
-function getSquarespaceEnv() {
+interface SquarespaceTransactionListResponse {
+  pagination?: {
+    hasNextPage?: boolean;
+    nextPageCursor?: string;
+  };
+  documents?: SquarespaceTransactionDocument[];
+  message?: string;
+}
+
+function getSquarespaceEnv(sourceKey: SquarespaceSourceKey = DEFAULT_SQUARESPACE_SOURCE_KEY) {
+  const source = getSquarespaceSourceConfig(sourceKey);
   return {
-    apiKey: process.env.SQUARESPACE_API_KEY ?? "",
-    siteId: process.env.SQUARESPACE_SITE_ID ?? "",
+    source,
+    apiKey: process.env[source.apiKeyEnv] ?? "",
+    siteId: process.env[source.siteIdEnv] ?? "",
   };
 }
 
-export function getSquarespaceApiHeaders(userAgentPurpose: string) {
-  const config = getSquarespaceEnv();
+export function getSquarespaceApiHeaders(
+  userAgentPurpose: string,
+  sourceKey: SquarespaceSourceKey = DEFAULT_SQUARESPACE_SOURCE_KEY
+) {
+  const config = getSquarespaceEnv(sourceKey);
   if (!config.apiKey) {
-    throw new Error("Squarespace setup required: add SQUARESPACE_API_KEY.");
+    throw new Error(`Squarespace setup required for ${config.source.label}: add ${config.source.apiKeyEnv}.`);
   }
 
   return {
@@ -85,19 +136,26 @@ export function getSquarespaceApiHeaders(userAgentPurpose: string) {
   };
 }
 
-export function getSquarespaceConnectionStatus() {
-  const config = getSquarespaceEnv();
+export function getSquarespaceConnectionStatus(
+  sourceKey: SquarespaceSourceKey = DEFAULT_SQUARESPACE_SOURCE_KEY
+) {
+  const config = getSquarespaceEnv(sourceKey);
   return {
+    sourceKey,
+    label: config.source.label,
+    siteUrl: config.source.siteUrl,
     configured: Boolean(config.apiKey),
     hasApiKey: Boolean(config.apiKey),
     hasSiteId: Boolean(config.siteId),
   } satisfies SquarespaceStatus;
 }
 
-export async function testSquarespaceConnection() {
+export async function testSquarespaceConnection(
+  sourceKey: SquarespaceSourceKey = DEFAULT_SQUARESPACE_SOURCE_KEY
+) {
   const response = await fetch("https://api.squarespace.com/1.0/authorization/website", {
     method: "GET",
-    headers: getSquarespaceApiHeaders("Squarespace connection test"),
+    headers: getSquarespaceApiHeaders("Squarespace connection test", sourceKey),
   });
 
   const payload = (await response.json()) as SquarespaceWebsiteProfile;
@@ -108,7 +166,9 @@ export async function testSquarespaceConnection() {
 
   return {
     ok: true,
-    siteId: payload.id ?? getSquarespaceEnv().siteId,
+    sourceKey,
+    label: getSquarespaceSourceConfig(sourceKey).label,
+    siteId: payload.id ?? getSquarespaceEnv(sourceKey).siteId,
     siteIdentifier: payload.siteId ?? null,
     siteType: payload.websiteType ?? null,
     siteTitle: payload.title ?? null,
@@ -117,7 +177,12 @@ export async function testSquarespaceConnection() {
   };
 }
 
-export async function listSquarespaceOrders(params: { cursor?: string | null; paymentStates?: string | null } = {}) {
+export async function listSquarespaceOrders(params: {
+  sourceKey?: SquarespaceSourceKey;
+  cursor?: string | null;
+  paymentStates?: string | null;
+} = {}) {
+  const sourceKey = params.sourceKey ?? DEFAULT_SQUARESPACE_SOURCE_KEY;
   const url = new URL("https://api.squarespace.com/1.0/commerce/orders");
   if (params.cursor) {
     url.searchParams.set("cursor", params.cursor);
@@ -127,7 +192,7 @@ export async function listSquarespaceOrders(params: { cursor?: string | null; pa
 
   const response = await fetch(url, {
     method: "GET",
-    headers: getSquarespaceApiHeaders("Squarespace order ingest"),
+    headers: getSquarespaceApiHeaders("Squarespace order ingest", sourceKey),
   });
 
   const payload = (await response.json()) as SquarespaceOrderListResponse;
@@ -139,7 +204,37 @@ export async function listSquarespaceOrders(params: { cursor?: string | null; pa
   return payload;
 }
 
+export async function listSquarespaceTransactions(params: {
+  sourceKey?: SquarespaceSourceKey;
+  cursor?: string | null;
+  modifiedAfter?: string | null;
+  modifiedBefore?: string | null;
+} = {}) {
+  const sourceKey = params.sourceKey ?? DEFAULT_SQUARESPACE_SOURCE_KEY;
+  const url = new URL("https://api.squarespace.com/1.0/commerce/transactions");
+  if (params.cursor) {
+    url.searchParams.set("cursor", params.cursor);
+  } else {
+    if (params.modifiedAfter) url.searchParams.set("modifiedAfter", params.modifiedAfter);
+    if (params.modifiedBefore) url.searchParams.set("modifiedBefore", params.modifiedBefore);
+  }
+
+  const response = await fetch(url, {
+    method: "GET",
+    headers: getSquarespaceApiHeaders("Squarespace transaction ingest", sourceKey),
+  });
+
+  const payload = (await response.json()) as SquarespaceTransactionListResponse;
+
+  if (!response.ok) {
+    throw new Error(payload.message ?? `Squarespace transactions fetch failed (${response.status}).`);
+  }
+
+  return payload;
+}
+
 export async function fetchAllSquarespaceOrders(params: {
+  sourceKey?: SquarespaceSourceKey;
   paymentStates?: string | null;
   maxPages?: number;
 } = {}) {
@@ -149,6 +244,7 @@ export async function fetchAllSquarespaceOrders(params: {
 
   do {
     const payload = await listSquarespaceOrders({
+      sourceKey: params.sourceKey,
       cursor,
       paymentStates: params.paymentStates ?? null,
     });
@@ -163,4 +259,34 @@ export async function fetchAllSquarespaceOrders(params: {
   } while (cursor);
 
   return { orders, pagesFetched, hasMore: Boolean(cursor) };
+}
+
+export async function fetchAllSquarespaceTransactions(params: {
+  sourceKey?: SquarespaceSourceKey;
+  maxPages?: number;
+  modifiedAfter?: string | null;
+  modifiedBefore?: string | null;
+} = {}) {
+  const documents: SquarespaceTransactionDocument[] = [];
+  let cursor: string | null = null;
+  let pagesFetched = 0;
+
+  do {
+    const payload = await listSquarespaceTransactions({
+      sourceKey: params.sourceKey,
+      cursor,
+      modifiedAfter: params.modifiedAfter ?? null,
+      modifiedBefore: params.modifiedBefore ?? null,
+    });
+
+    documents.push(...(payload.documents ?? []));
+    pagesFetched += 1;
+    cursor = payload.pagination?.hasNextPage ? payload.pagination.nextPageCursor ?? null : null;
+
+    if (params.maxPages && pagesFetched >= params.maxPages) {
+      break;
+    }
+  } while (cursor);
+
+  return { documents, pagesFetched, hasMore: Boolean(cursor) };
 }

@@ -1,8 +1,9 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { requireRole } from "@/lib/permissions";
 import { testSquarespaceConnection } from "@/lib/integrations/squarespace";
+import { resolveSquarespaceSourceKey } from "@/lib/integrations/squarespace-sources";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     await requireRole("admin");
   } catch {
@@ -10,7 +11,8 @@ export async function GET() {
   }
 
   try {
-    const result = await testSquarespaceConnection();
+    const sourceKey = resolveSquarespaceSourceKey(request.nextUrl.searchParams.get("sourceKey"));
+    const result = await testSquarespaceConnection(sourceKey);
     return NextResponse.json(result);
   } catch (error) {
     return NextResponse.json(

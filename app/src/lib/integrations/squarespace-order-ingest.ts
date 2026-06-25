@@ -3,7 +3,20 @@ import "server-only";
 import { createSupabaseAdminClient } from "@/lib/supabase-admin";
 import { resolveReferringMemberForEmail } from "@/lib/integrations/member-referrals";
 import { sendTransactionEmailNotification } from "@/lib/integrations/transaction-email-notifications";
-import { fetchAllSquarespaceOrders, type SquarespaceFormItem, type SquarespaceOrder } from "./squarespace";
+import {
+  fetchAllSquarespaceOrders,
+  fetchAllSquarespaceTransactions,
+  type SquarespaceFormItem,
+  type SquarespaceOrder,
+  type SquarespaceOrderMoney,
+  type SquarespaceTransactionDocument,
+} from "./squarespace";
+import {
+  DEFAULT_SQUARESPACE_SOURCE_KEY,
+  getSquarespaceSourceConfig,
+  type SquarespaceSourceConfig,
+  type SquarespaceSourceKey,
+} from "@/lib/integrations/squarespace-sources";
 
 type JsonObject = Record<string, unknown>;
 
@@ -14,6 +27,9 @@ interface ParsedOrderFields {
 }
 
 interface NormalizedSquarespaceOrder {
+  sourceKey: SquarespaceSourceKey;
+  sourceLabel: string;
+  attributionProvider: string;
   squarespaceOrderId: string;
   orderNumber: string | null;
   createdOn: string | null;
@@ -33,6 +49,7 @@ interface NormalizedSquarespaceOrder {
 }
 
 interface IngestOptions {
+  sourceKey?: SquarespaceSourceKey;
   paymentStates?: string | null;
   maxPages?: number;
   dryRun?: boolean;
@@ -44,6 +61,14 @@ interface UpsertedOrderResult {
   order: NormalizedSquarespaceOrder;
   attributionId: string;
   wasExisting: boolean;
+}
+
+interface ExistingOrderEnrichment {
+  customerName: string | null;
+  productSummary: string | null;
+  formFields: ParsedOrderFields["formFields"];
+  referringMemberRaw: string | null;
+  olympiadTeamRaw: string | null;
 }
 
 function normalizeLabel(label: string) {
@@ -105,6 +130,17 @@ function fullName(address: SquarespaceOrder["billingAddress"] | SquarespaceOrder
   return name || null;
 }
 
+function moneyValue(money: SquarespaceOrderMoney | null | undefined) {
+  const value = money?.value;
+  if (value == null) return 0;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function moneyCurrency(money: SquarespaceOrderMoney | null | undefined) {
+  return money?.currency ?? "USD";
+}
+
 function collectFormFields(order: SquarespaceOrder): ParsedOrderFields {
   const fields: ParsedOrderFields["formFields"] = [];
 
@@ -139,7 +175,7 @@ function collectFormFields(order: SquarespaceOrder): ParsedOrderFields {
   };
 }
 
-function normalizeOrder(order: SquarespaceOrder): NormalizedSquarespaceOrder {
+function normalizeOrder(order: SquarespaceOrder, source: SquarespaceSourceConfig): NormalizedSquarespaceOrder {
   const parsedFields = collectFormFields(order);
   const productSummary =
     order.lineItems
@@ -152,6 +188,9 @@ function normalizeOrder(order: SquarespaceOrder): NormalizedSquarespaceOrder {
       .join(", ") || null;
 
   return {
+    sourceKey: source.sourceKey,
+    sourceLabel: source.label,
+    attributionProvider: source.attributionProvider,
     squarespaceOrderId: order.id,
     orderNumber: order.orderNumber ?? null,
     createdOn: order.createdOn ?? null,
@@ -161,13 +200,64 @@ function normalizeOrder(order: SquarespaceOrder): NormalizedSquarespaceOrder {
     channel: order.channel ?? order.channelName ?? null,
     customerName: fullName(order.billingAddress) ?? fullName(order.shippingAddress),
     customerEmail: order.customerEmail ?? null,
-    amount: Number(order.grandTotal?.value ?? 0),
-    currency: order.grandTotal?.currency ?? "USD",
+    amount: moneyValue(order.grandTotal),
+    currency: moneyCurrency(order.grandTotal),
     productSummary,
     formFields: parsedFields.formFields,
     referringMemberRaw: parsedFields.referringMemberRaw,
     olympiadTeamRaw: parsedFields.olympiadTeamRaw,
     rawPayload: order as unknown as JsonObject,
+  };
+}
+
+function transactionPaymentState(document: SquarespaceTransactionDocument) {
+  if (document.voided) return "VOIDED";
+  if (moneyValue(document.totalNetPayment) <= 0 && (document.payments?.length ?? 0) > 0) return "REFUNDED";
+  if ((document.payments?.length ?? 0) > 0 || moneyValue(document.total) > 0) return "PAID";
+  return "UNKNOWN";
+}
+
+function transactionProductSummary(document: SquarespaceTransactionDocument) {
+  const products =
+    document.salesLineItems
+      ?.map((item) => {
+        const product = item.productName ?? item.name ?? item.description ?? item.sku ?? null;
+        if (!product) return null;
+        const quantity = item.quantity && item.quantity > 1 ? ` x${item.quantity}` : "";
+        return `${product}${quantity}`;
+      })
+      .filter(Boolean)
+      .join(", ") || null;
+
+  return products ?? "Saguaros Tax Credit";
+}
+
+function normalizeTransactionDocument(
+  document: SquarespaceTransactionDocument,
+  source: SquarespaceSourceConfig
+): NormalizedSquarespaceOrder {
+  const amountSource = document.total ?? document.totalNetPayment ?? document.totalSales;
+
+  return {
+    sourceKey: source.sourceKey,
+    sourceLabel: source.label,
+    attributionProvider: source.attributionProvider,
+    squarespaceOrderId: document.id,
+    orderNumber: document.salesOrderId ?? null,
+    createdOn: document.createdOn ?? null,
+    modifiedOn: document.modifiedOn ?? null,
+    paymentState: transactionPaymentState(document),
+    fulfillmentStatus: null,
+    channel: "transactions",
+    customerName: null,
+    customerEmail: document.customerEmail ?? null,
+    amount: moneyValue(amountSource),
+    currency: moneyCurrency(amountSource),
+    productSummary: transactionProductSummary(document),
+    formFields: [],
+    referringMemberRaw: null,
+    olympiadTeamRaw: null,
+    rawPayload: document as unknown as JsonObject,
   };
 }
 
@@ -213,6 +303,7 @@ function summarizeOrders(orders: NormalizedSquarespaceOrder[]) {
 }
 
 async function recordIntegrationLog(params: {
+  source: SquarespaceSourceConfig;
   status: string;
   errorText?: string | null;
   payload: JsonObject;
@@ -220,10 +311,14 @@ async function recordIntegrationLog(params: {
   const supabase = createSupabaseAdminClient();
   const { error } = await supabase.from("integration_sync_log").insert({
     integration_type: "squarespace",
-    entity_type: "orders",
+    entity_type: params.source.logEntityType,
     status: params.status,
     error_text: params.errorText ?? null,
-    payload: params.payload,
+    payload: {
+      source_key: params.source.sourceKey,
+      source_label: params.source.label,
+      ...params.payload,
+    },
   });
 
   if (error) {
@@ -231,28 +326,56 @@ async function recordIntegrationLog(params: {
   }
 }
 
-function attributionUpsertPayload(order: NormalizedSquarespaceOrder) {
+function mergeFormFields(orderFields: ParsedOrderFields["formFields"], existingFields?: ParsedOrderFields["formFields"]) {
+  return orderFields.length > 0 ? orderFields : existingFields ?? [];
+}
+
+function hasExistingEnrichment(existing?: ExistingOrderEnrichment) {
+  return Boolean(
+    existing?.referringMemberRaw ||
+      existing?.olympiadTeamRaw ||
+      existing?.customerName ||
+      existing?.formFields.length
+  );
+}
+
+function mergedProductSummary(order: NormalizedSquarespaceOrder, existing?: ExistingOrderEnrichment) {
+  if (hasExistingEnrichment(existing) && existing?.productSummary) return existing.productSummary;
+  return order.productSummary ?? existing?.productSummary ?? null;
+}
+
+function attributionUpsertPayload(order: NormalizedSquarespaceOrder, existing?: ExistingOrderEnrichment) {
+  const formFields = mergeFormFields(order.formFields, existing?.formFields);
+  const olympiadTeamRaw = order.olympiadTeamRaw ?? existing?.olympiadTeamRaw ?? null;
+
   return {
-    provider: "squarespace",
+    provider: order.attributionProvider,
     provider_transaction_id: order.squarespaceOrderId,
-    customer_name: order.customerName,
+    customer_name: order.customerName ?? existing?.customerName ?? null,
     customer_email: order.customerEmail,
     amount: order.amount,
     currency: order.currency.toLowerCase(),
-    item_summary: order.productSummary,
+    item_summary: mergedProductSummary(order, existing),
     transaction_status: (order.paymentState ?? "unknown").toLowerCase(),
-    referring_member_raw: order.referringMemberRaw,
+    referring_member_raw: order.referringMemberRaw ?? existing?.referringMemberRaw ?? null,
     source_payload: {
       provider: "squarespace",
+      source_key: order.sourceKey,
+      source_label: order.sourceLabel,
       order_number: order.orderNumber,
-      olympiad_team_raw: order.olympiadTeamRaw,
-      form_fields: order.formFields,
+      olympiad_team_raw: olympiadTeamRaw,
+      form_fields: formFields,
     },
   };
 }
 
-function orderUpsertPayload(order: NormalizedSquarespaceOrder, attributionId: string) {
+function orderUpsertPayload(
+  order: NormalizedSquarespaceOrder,
+  attributionId: string,
+  existing?: ExistingOrderEnrichment
+) {
   return {
+    source_key: order.sourceKey,
     squarespace_order_id: order.squarespaceOrderId,
     order_number: order.orderNumber,
     created_on: order.createdOn,
@@ -260,14 +383,14 @@ function orderUpsertPayload(order: NormalizedSquarespaceOrder, attributionId: st
     payment_state: order.paymentState,
     fulfillment_status: order.fulfillmentStatus,
     channel: order.channel,
-    customer_name: order.customerName,
+    customer_name: order.customerName ?? existing?.customerName ?? null,
     customer_email: order.customerEmail,
     amount: order.amount,
     currency: order.currency,
-    product_summary: order.productSummary,
-    form_fields: order.formFields,
-    referring_member_raw: order.referringMemberRaw,
-    olympiad_team_raw: order.olympiadTeamRaw,
+    product_summary: mergedProductSummary(order, existing),
+    form_fields: mergeFormFields(order.formFields, existing?.formFields),
+    referring_member_raw: order.referringMemberRaw ?? existing?.referringMemberRaw ?? null,
+    olympiad_team_raw: order.olympiadTeamRaw ?? existing?.olympiadTeamRaw ?? null,
     raw_payload: order.rawPayload,
     transaction_attribution_id: attributionId,
     imported_at: new Date().toISOString(),
@@ -282,7 +405,7 @@ function chunk<T>(items: T[], size: number) {
   return chunks;
 }
 
-async function getExistingSquarespaceOrderIds(orderIds: string[]) {
+async function getExistingSquarespaceOrderIds(sourceKey: SquarespaceSourceKey, orderIds: string[]) {
   const supabase = createSupabaseAdminClient();
   const existingIds = new Set<string>();
 
@@ -290,6 +413,7 @@ async function getExistingSquarespaceOrderIds(orderIds: string[]) {
     const { data, error } = await supabase
       .from("squarespace_orders")
       .select("squarespace_order_id")
+      .eq("source_key", sourceKey)
       .in("squarespace_order_id", idBatch);
 
     if (error) throw new Error(error.message);
@@ -302,16 +426,61 @@ async function getExistingSquarespaceOrderIds(orderIds: string[]) {
   return existingIds;
 }
 
+async function getExistingOrderEnrichments(sourceKey: SquarespaceSourceKey, orderIds: string[]) {
+  const supabase = createSupabaseAdminClient();
+  const enrichments = new Map<string, ExistingOrderEnrichment>();
+
+  for (const idBatch of chunk(orderIds, 500)) {
+    const { data, error } = await supabase
+      .from("squarespace_orders")
+      .select("squarespace_order_id, customer_name, product_summary, form_fields, referring_member_raw, olympiad_team_raw")
+      .eq("source_key", sourceKey)
+      .in("squarespace_order_id", idBatch);
+
+    if (error) throw new Error(error.message);
+
+    for (const row of (data ?? []) as Array<{
+      squarespace_order_id: string;
+      customer_name: string | null;
+      product_summary: string | null;
+      form_fields: ParsedOrderFields["formFields"] | null;
+      referring_member_raw: string | null;
+      olympiad_team_raw: string | null;
+    }>) {
+      enrichments.set(row.squarespace_order_id, {
+        customerName: row.customer_name,
+        productSummary: row.product_summary,
+        formFields: row.form_fields ?? [],
+        referringMemberRaw: row.referring_member_raw,
+        olympiadTeamRaw: row.olympiad_team_raw,
+      });
+    }
+  }
+
+  return enrichments;
+}
+
 async function batchUpsertOrders(orders: NormalizedSquarespaceOrder[]): Promise<UpsertedOrderResult[]> {
   const supabase = createSupabaseAdminClient();
   const attributionIdByOrderId = new Map<string, string>();
   const batchSize = 500;
-  const existingOrderIds = await getExistingSquarespaceOrderIds(orders.map((order) => order.squarespaceOrderId));
+  const sourceKey = orders[0]?.sourceKey ?? DEFAULT_SQUARESPACE_SOURCE_KEY;
+  const existingOrderIds = await getExistingSquarespaceOrderIds(
+    sourceKey,
+    orders.map((order) => order.squarespaceOrderId)
+  );
+  const existingEnrichments = await getExistingOrderEnrichments(
+    sourceKey,
+    orders.map((order) => order.squarespaceOrderId)
+  );
 
   for (const orderBatch of chunk(orders, batchSize)) {
     const { data, error } = await supabase
       .from("transaction_attributions")
-      .upsert(orderBatch.map(attributionUpsertPayload), { onConflict: "provider,provider_transaction_id" })
+      .upsert(
+        orderBatch.map((order) => attributionUpsertPayload(order, existingEnrichments.get(order.squarespaceOrderId))),
+        { onConflict: "provider,provider_transaction_id" }
+      )
       .select("id, provider_transaction_id");
 
     if (error) throw new Error(error.message);
@@ -327,11 +496,11 @@ async function batchUpsertOrders(orders: NormalizedSquarespaceOrder[]): Promise<
       if (!attributionId) {
         throw new Error(`Missing attribution id for Squarespace order ${order.squarespaceOrderId}`);
       }
-      return orderUpsertPayload(order, attributionId);
+      return orderUpsertPayload(order, attributionId, existingEnrichments.get(order.squarespaceOrderId));
     });
 
     const { error } = await supabase.from("squarespace_orders").upsert(payload, {
-      onConflict: "squarespace_order_id",
+      onConflict: "source_key,squarespace_order_id",
     });
 
     if (error) throw new Error(error.message);
@@ -380,7 +549,7 @@ async function sendEmailAlertsForNewOrders(results: UpsertedOrderResult[]) {
       transactionAttributionId: attributionId,
       member: member.contact,
       resolutionStatus: member.status,
-      provider: "squarespace",
+      provider: order.attributionProvider,
       providerTransactionId: order.squarespaceOrderId,
       orderNumber: order.orderNumber,
       customerName: order.customerName,
@@ -402,16 +571,37 @@ async function sendEmailAlertsForNewOrders(results: UpsertedOrderResult[]) {
 }
 
 export async function ingestSquarespaceOrders(options: IngestOptions = {}) {
-  const { orders, pagesFetched, hasMore } = await fetchAllSquarespaceOrders({
-    paymentStates: options.paymentStates ?? null,
-    maxPages: options.maxPages,
-  });
-  const normalizedOrders = orders.map(normalizeOrder);
+  const source = getSquarespaceSourceConfig(options.sourceKey ?? DEFAULT_SQUARESPACE_SOURCE_KEY);
+  let pagesFetched = 0;
+  let hasMore = false;
+  let normalizedOrders: NormalizedSquarespaceOrder[] = [];
+
+  if (source.syncResource === "transactions") {
+    const fetched = await fetchAllSquarespaceTransactions({
+      sourceKey: source.sourceKey,
+      maxPages: options.maxPages,
+    });
+    pagesFetched = fetched.pagesFetched;
+    hasMore = fetched.hasMore;
+    normalizedOrders = fetched.documents.map((document) => normalizeTransactionDocument(document, source));
+  } else {
+    const fetched = await fetchAllSquarespaceOrders({
+      sourceKey: source.sourceKey,
+      paymentStates: options.paymentStates ?? null,
+      maxPages: options.maxPages,
+    });
+    pagesFetched = fetched.pagesFetched;
+    hasMore = fetched.hasMore;
+    normalizedOrders = fetched.orders.map((order) => normalizeOrder(order, source));
+  }
+
   const summary = summarizeOrders(normalizedOrders);
 
   if (options.dryRun) {
     return {
       ok: true,
+      sourceKey: source.sourceKey,
+      sourceLabel: source.label,
       dryRun: true,
       pagesFetched,
       hasMore,
@@ -435,6 +625,7 @@ export async function ingestSquarespaceOrders(options: IngestOptions = {}) {
     : { attempted: 0, statuses: {} };
 
   await recordIntegrationLog({
+    source,
     status: "success",
     payload: {
       pagesFetched,
@@ -447,6 +638,8 @@ export async function ingestSquarespaceOrders(options: IngestOptions = {}) {
 
   return {
     ok: true,
+    sourceKey: source.sourceKey,
+    sourceLabel: source.label,
     dryRun: false,
     pagesFetched,
     hasMore,

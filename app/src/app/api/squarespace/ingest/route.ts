@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ingestSquarespaceOrders } from "@/lib/integrations/squarespace-order-ingest";
 import { requireRole } from "@/lib/permissions";
+import { resolveSquarespaceSourceKey } from "@/lib/integrations/squarespace-sources";
 
 function parseMaxPages(value: string | null) {
   if (!value) return undefined;
@@ -24,7 +25,9 @@ async function handleIngest(request: NextRequest, defaultDryRun: boolean) {
   const sendEmailAlerts = searchParams.get("sendEmailAlerts") === "true";
 
   try {
+    const sourceKey = resolveSquarespaceSourceKey(searchParams.get("sourceKey"));
     const result = await ingestSquarespaceOrders({
+      sourceKey,
       dryRun,
       maxPages,
       paymentStates,
