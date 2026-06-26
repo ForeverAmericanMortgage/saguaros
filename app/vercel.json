@@ -7,11 +7,11 @@
     },
     {
       "path": "/api/cron/squarespace-tax-credit-orders",
-      "schedule": "15 * * * *"
+      "schedule": "*/10 * * * *"
     },
     {
       "path": "/api/cron/squarespace-tax-credit-email-alerts",
-      "schedule": "20 * * * *"
+      "schedule": "2,12,22,32,42,52 * * * *"
     }
   ]
 }
