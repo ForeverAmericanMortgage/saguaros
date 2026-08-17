@@ -127,6 +127,11 @@ export async function POST(request: NextRequest) {
       customerName: attribution.customer_name,
       customerEmail: attribution.customer_email,
       amount: Number(attribution.amount),
+      displayAmount:
+        typeof attribution.source_payload?.display_amount === "number"
+          ? attribution.source_payload.display_amount
+          : null,
+      isInvoiced: attribution.source_payload?.is_invoiced === true,
       currency: attribution.currency,
       itemSummary: attribution.item_summary,
       referringMemberRaw: attribution.referring_member_raw,

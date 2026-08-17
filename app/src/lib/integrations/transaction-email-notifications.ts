@@ -19,6 +19,8 @@ interface TransactionEmailParams {
   customerName?: string | null;
   customerEmail?: string | null;
   amount: number;
+  displayAmount?: number | null;
+  isInvoiced?: boolean;
   currency: string;
   itemSummary?: string | null;
   referringMemberRaw?: string | null;
@@ -90,6 +92,8 @@ function detailRow(label: string, value: string | null | undefined) {
 
 function buildTextBody(params: TransactionEmailParams, member: MemberContactRow) {
   const copy = emailCopy(params);
+  const amountLabel = params.isInvoiced ? "Invoice amount" : "Amount";
+  const displayAmount = params.displayAmount ?? params.amount;
   const lines = [
     `Hi ${formatMemberName(member)},`,
     "",
@@ -98,14 +102,21 @@ function buildTextBody(params: TransactionEmailParams, member: MemberContactRow)
     `Buyer: ${customerName(params)}`,
     params.customerEmail ? `Buyer email: ${params.customerEmail}` : null,
     `Product: ${params.itemSummary || "Not specified"}`,
-    `Amount: ${formatCurrency(params.amount, params.currency)}`,
+    `${amountLabel}: ${formatCurrency(displayAmount, params.currency)}`,
+    params.isInvoiced ? "Payment status: Invoiced - payment expected" : null,
     params.orderNumber ? `Squarespace order: ${params.orderNumber}` : null,
     params.olympiadTeamRaw ? `Olympiad/team: ${params.olympiadTeamRaw}` : null,
     params.referringMemberRaw ? `Referring member field: ${params.referringMemberRaw}` : null,
+    params.isInvoiced ? "" : null,
+    params.isInvoiced
+      ? "THIS ITEM WAS INVOICED. Make sure we are aware of the timeline for expected payment."
+      : null,
     "",
     copy.thankYou,
     "",
-    "No action is required. This is an automated internal Saguaros accounting and attribution alert.",
+    params.isInvoiced
+      ? "Please coordinate payment follow-up and update accounting when payment is received. This is an automated internal Saguaros accounting and attribution alert."
+      : "No action is required. This is an automated internal Saguaros accounting and attribution alert.",
   ];
 
   return lines.filter((line) => line != null).join("\n");
@@ -113,12 +124,13 @@ function buildTextBody(params: TransactionEmailParams, member: MemberContactRow)
 
 function buildHtmlBody(params: TransactionEmailParams, member: MemberContactRow) {
   const copy = emailCopy(params);
-  const amount = formatCurrency(params.amount, params.currency);
+  const amount = formatCurrency(params.displayAmount ?? params.amount, params.currency);
   const details = [
     detailRow("Buyer", customerName(params)),
     detailRow("Buyer email", params.customerEmail),
     detailRow("Product", params.itemSummary || "Not specified"),
-    detailRow("Amount", amount),
+    detailRow(params.isInvoiced ? "Invoice amount" : "Amount", amount),
+    detailRow("Payment status", params.isInvoiced ? "Invoiced - payment expected" : null),
     detailRow("Order", params.orderNumber ? `Squarespace #${params.orderNumber}` : null),
     detailRow("Team", params.olympiadTeamRaw),
     detailRow("Referral field", params.referringMemberRaw),
@@ -145,8 +157,17 @@ function buildHtmlBody(params: TransactionEmailParams, member: MemberContactRow)
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-top:1px solid #e5e7eb;border-bottom:1px solid #e5e7eb;margin:0 0 20px;">
                   ${details}
                 </table>
+                ${
+                  params.isInvoiced
+                    ? '<div style="margin:0 0 20px;padding:14px 16px;background:#fff7d6;border:1px solid #eab308;color:#713f12;font-size:14px;line-height:1.5;font-weight:650;">This item was invoiced. Make sure we are aware of the timeline for expected payment.</div>'
+                    : ""
+                }
                 <p style="margin:0 0 14px;color:#334155;font-size:15px;line-height:1.55;">${htmlEscape(copy.thankYou)}</p>
-                <p style="margin:0;color:#64748b;font-size:12px;line-height:1.5;">No action is required. This is an automated internal Saguaros accounting and attribution alert.</p>
+                <p style="margin:0;color:#64748b;font-size:12px;line-height:1.5;">${
+                  params.isInvoiced
+                    ? "Please coordinate payment follow-up and update accounting when payment is received. This is an automated internal Saguaros accounting and attribution alert."
+                    : "No action is required. This is an automated internal Saguaros accounting and attribution alert."
+                }</p>
               </td>
             </tr>
           </table>

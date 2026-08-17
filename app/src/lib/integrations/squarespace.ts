@@ -40,6 +40,14 @@ export interface SquarespaceLineItem {
   productName?: string | null;
   quantity?: number | null;
   sku?: string | null;
+  unitPricePaid?: SquarespaceOrderMoney | null;
+}
+
+export interface SquarespaceDiscountLine {
+  name?: string | null;
+  description?: string | null;
+  promoCode?: string | null;
+  amount?: SquarespaceOrderMoney | null;
 }
 
 export interface SquarespaceOrder {
@@ -61,6 +69,9 @@ export interface SquarespaceOrder {
     lastName?: string | null;
   } | null;
   grandTotal?: SquarespaceOrderMoney | null;
+  subtotal?: SquarespaceOrderMoney | null;
+  discountTotal?: SquarespaceOrderMoney | null;
+  discountLines?: SquarespaceDiscountLine[] | null;
   formSubmission?: SquarespaceFormItem[] | null;
   lineItems?: SquarespaceLineItem[] | null;
 }

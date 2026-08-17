@@ -40,6 +40,8 @@ interface NormalizedSquarespaceOrder {
   customerName: string | null;
   customerEmail: string | null;
   amount: number;
+  displayAmount: number;
+  isInvoiced: boolean;
   currency: string;
   productSummary: string | null;
   formFields: ParsedOrderFields["formFields"];
@@ -141,6 +143,14 @@ function moneyCurrency(money: SquarespaceOrderMoney | null | undefined) {
   return money?.currency ?? "USD";
 }
 
+function isInvoicedOrder(order: SquarespaceOrder) {
+  return (order.discountLines ?? []).some((discount) =>
+    [discount.name, discount.description, discount.promoCode].some(
+      (value) => typeof value === "string" && value.trim().toLowerCase() === "invoice"
+    )
+  );
+}
+
 function collectFormFields(order: SquarespaceOrder): ParsedOrderFields {
   const fields: ParsedOrderFields["formFields"] = [];
 
@@ -177,6 +187,8 @@ function collectFormFields(order: SquarespaceOrder): ParsedOrderFields {
 
 function normalizeOrder(order: SquarespaceOrder, source: SquarespaceSourceConfig): NormalizedSquarespaceOrder {
   const parsedFields = collectFormFields(order);
+  const isInvoiced = isInvoicedOrder(order);
+  const displayAmount = isInvoiced ? moneyValue(order.subtotal) : moneyValue(order.grandTotal);
   const productSummary =
     order.lineItems
       ?.map((item) => {
@@ -201,6 +213,8 @@ function normalizeOrder(order: SquarespaceOrder, source: SquarespaceSourceConfig
     customerName: fullName(order.billingAddress) ?? fullName(order.shippingAddress),
     customerEmail: order.customerEmail ?? null,
     amount: moneyValue(order.grandTotal),
+    displayAmount,
+    isInvoiced,
     currency: moneyCurrency(order.grandTotal),
     productSummary,
     formFields: parsedFields.formFields,
@@ -252,6 +266,8 @@ function normalizeTransactionDocument(
     customerName: null,
     customerEmail: document.customerEmail ?? null,
     amount: moneyValue(amountSource),
+    displayAmount: moneyValue(amountSource),
+    isInvoiced: false,
     currency: moneyCurrency(amountSource),
     productSummary: transactionProductSummary(document),
     formFields: [],
@@ -365,6 +381,9 @@ function attributionUpsertPayload(order: NormalizedSquarespaceOrder, existing?: 
       order_number: order.orderNumber,
       olympiad_team_raw: olympiadTeamRaw,
       form_fields: formFields,
+      amount_paid: order.amount,
+      display_amount: order.displayAmount,
+      is_invoiced: order.isInvoiced,
     },
   };
 }
@@ -555,6 +574,8 @@ async function sendEmailAlertsForNewOrders(results: UpsertedOrderResult[]) {
       customerName: order.customerName,
       customerEmail: order.customerEmail,
       amount: order.amount,
+      displayAmount: order.displayAmount,
+      isInvoiced: order.isInvoiced,
       currency: order.currency,
       itemSummary: order.productSummary,
       referringMemberRaw: order.referringMemberRaw,
