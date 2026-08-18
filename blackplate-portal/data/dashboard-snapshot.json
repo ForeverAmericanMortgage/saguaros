@@ -1,0 +1,1672 @@
+{
+  "generatedAt": "2026-08-18T02:29:41.388Z",
+  "windows": {
+    "7": {
+      "generatedAt": "2026-08-18T02:28:06.869Z",
+      "window": {
+        "days": 7,
+        "label": "Aug 12 - Aug 18",
+        "comparisonLabel": "Aug 5 - Aug 11"
+      },
+      "current": {
+        "visitors": 2659,
+        "pageviews": 2846,
+        "estimatedConversions": 109,
+        "outboundClicks": 126,
+        "intentRate": 0.040992854456562616
+      },
+      "previous": {
+        "visitors": 1082,
+        "pageviews": 1151,
+        "estimatedConversions": 62,
+        "outboundClicks": 81,
+        "intentRate": 0.05730129390018484
+      },
+      "sourceMix": {
+        "meta": 2325,
+        "billboardSignal": 518,
+        "other": 3
+      },
+      "previousSourceMix": {
+        "meta": 782,
+        "billboardSignal": 365,
+        "other": 4
+      },
+      "dailyTrend": [
+        {
+          "date": "2026-08-12T00:00:00.000Z",
+          "label": "Aug 12",
+          "visitors": 355,
+          "pageviews": 382,
+          "estimatedConversions": 16,
+          "outboundClicks": 19
+        },
+        {
+          "date": "2026-08-13T00:00:00.000Z",
+          "label": "Aug 13",
+          "visitors": 464,
+          "pageviews": 493,
+          "estimatedConversions": 17,
+          "outboundClicks": 20
+        },
+        {
+          "date": "2026-08-14T00:00:00.000Z",
+          "label": "Aug 14",
+          "visitors": 457,
+          "pageviews": 494,
+          "estimatedConversions": 25,
+          "outboundClicks": 28
+        },
+        {
+          "date": "2026-08-15T00:00:00.000Z",
+          "label": "Aug 15",
+          "visitors": 502,
+          "pageviews": 541,
+          "estimatedConversions": 20,
+          "outboundClicks": 22
+        },
+        {
+          "date": "2026-08-16T00:00:00.000Z",
+          "label": "Aug 16",
+          "visitors": 516,
+          "pageviews": 557,
+          "estimatedConversions": 22,
+          "outboundClicks": 27
+        },
+        {
+          "date": "2026-08-17T00:00:00.000Z",
+          "label": "Aug 17",
+          "visitors": 364,
+          "pageviews": 378,
+          "estimatedConversions": 9,
+          "outboundClicks": 10
+        },
+        {
+          "date": "2026-08-18T00:00:00.000Z",
+          "label": "Aug 18",
+          "visitors": 1,
+          "pageviews": 1,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        }
+      ],
+      "topCtas": [
+        {
+          "label": "hero_order_azmvdnow",
+          "visitors": 71,
+          "clicks": 82
+        },
+        {
+          "label": "sticky_order_azmvdnow",
+          "visitors": 22,
+          "clicks": 23
+        },
+        {
+          "label": "milestone_25k_cta",
+          "visitors": 15,
+          "clicks": 15
+        },
+        {
+          "label": "final_cta_order_plate",
+          "visitors": 2,
+          "clicks": 2
+        },
+        {
+          "label": "mobile_nav_order_azmvdnow",
+          "visitors": 2,
+          "clicks": 2
+        },
+        {
+          "label": "nav_order_azmvdnow",
+          "visitors": 2,
+          "clicks": 2
+        }
+      ],
+      "utmSources": [
+        {
+          "label": "direct",
+          "visitors": 46,
+          "clicks": 55
+        },
+        {
+          "label": "ig",
+          "visitors": 31,
+          "clicks": 36
+        },
+        {
+          "label": "fb",
+          "visitors": 34,
+          "clicks": 35
+        }
+      ],
+      "utmCampaigns": [
+        {
+          "label": "none",
+          "visitors": 49,
+          "clicks": 58
+        },
+        {
+          "label": "120247009195540117",
+          "visitors": 47,
+          "clicks": 51
+        },
+        {
+          "label": "120246864342430117",
+          "visitors": 14,
+          "clicks": 15
+        },
+        {
+          "label": "120246213460280117",
+          "visitors": 2,
+          "clicks": 2
+        }
+      ],
+      "utmCoverage": 1,
+      "official": null,
+      "reports": [],
+      "adotSummary": {
+        "plateCount": 0,
+        "initialCount": 0,
+        "renewalCount": 0,
+        "amount": 0
+      },
+      "projection": null,
+      "methodology": {
+        "billboard": "Directional signal: direct and organic/search visitors are grouped as likely billboard response while the Valley campaign is live.",
+        "meta": "Paid Meta signal: visitors arriving from Facebook and Instagram referrers, supported by first-party UTM values captured on ADOT clicks.",
+        "estimated": "Observed click-throughs are unique visitors who clicked an order link to AZ MVD. Tracking begins July 14, 2026; they are not confirmed purchases.",
+        "official": "Confirmed conversions use ADOT initial plate counts. Renewals and total plate activity are reported separately.",
+        "projection": "Planning scenarios use the latest three official ADOT months. The range is not a causal forecast; it establishes a benchmark for the next report."
+      },
+      "liveDataAvailable": true,
+      "dataSource": "live",
+      "liveError": null,
+      "fallbackGeneratedAt": null
+    },
+    "14": {
+      "generatedAt": "2026-08-18T02:28:34.663Z",
+      "window": {
+        "days": 14,
+        "label": "Aug 5 - Aug 18",
+        "comparisonLabel": "Jul 22 - Aug 4"
+      },
+      "current": {
+        "visitors": 3741,
+        "pageviews": 3997,
+        "estimatedConversions": 171,
+        "outboundClicks": 207,
+        "intentRate": 0.04570970328789094
+      },
+      "previous": {
+        "visitors": 10220,
+        "pageviews": 10834,
+        "estimatedConversions": 572,
+        "outboundClicks": 688,
+        "intentRate": 0.055968688845401175
+      },
+      "sourceMix": {
+        "meta": 3107,
+        "billboardSignal": 884,
+        "other": 6
+      },
+      "previousSourceMix": {
+        "meta": 9716,
+        "billboardSignal": 1072,
+        "other": 46
+      },
+      "dailyTrend": [
+        {
+          "date": "2026-08-05T00:00:00.000Z",
+          "label": "Aug 5",
+          "visitors": 38,
+          "pageviews": 47,
+          "estimatedConversions": 4,
+          "outboundClicks": 4
+        },
+        {
+          "date": "2026-08-06T00:00:00.000Z",
+          "label": "Aug 6",
+          "visitors": 33,
+          "pageviews": 38,
+          "estimatedConversions": 4,
+          "outboundClicks": 6
+        },
+        {
+          "date": "2026-08-07T00:00:00.000Z",
+          "label": "Aug 7",
+          "visitors": 205,
+          "pageviews": 217,
+          "estimatedConversions": 8,
+          "outboundClicks": 8
+        },
+        {
+          "date": "2026-08-08T00:00:00.000Z",
+          "label": "Aug 8",
+          "visitors": 186,
+          "pageviews": 194,
+          "estimatedConversions": 15,
+          "outboundClicks": 24
+        },
+        {
+          "date": "2026-08-09T00:00:00.000Z",
+          "label": "Aug 9",
+          "visitors": 206,
+          "pageviews": 216,
+          "estimatedConversions": 8,
+          "outboundClicks": 11
+        },
+        {
+          "date": "2026-08-10T00:00:00.000Z",
+          "label": "Aug 10",
+          "visitors": 189,
+          "pageviews": 201,
+          "estimatedConversions": 9,
+          "outboundClicks": 11
+        },
+        {
+          "date": "2026-08-11T00:00:00.000Z",
+          "label": "Aug 11",
+          "visitors": 225,
+          "pageviews": 238,
+          "estimatedConversions": 14,
+          "outboundClicks": 17
+        },
+        {
+          "date": "2026-08-12T00:00:00.000Z",
+          "label": "Aug 12",
+          "visitors": 355,
+          "pageviews": 382,
+          "estimatedConversions": 16,
+          "outboundClicks": 19
+        },
+        {
+          "date": "2026-08-13T00:00:00.000Z",
+          "label": "Aug 13",
+          "visitors": 464,
+          "pageviews": 493,
+          "estimatedConversions": 17,
+          "outboundClicks": 20
+        },
+        {
+          "date": "2026-08-14T00:00:00.000Z",
+          "label": "Aug 14",
+          "visitors": 457,
+          "pageviews": 494,
+          "estimatedConversions": 25,
+          "outboundClicks": 28
+        },
+        {
+          "date": "2026-08-15T00:00:00.000Z",
+          "label": "Aug 15",
+          "visitors": 502,
+          "pageviews": 541,
+          "estimatedConversions": 20,
+          "outboundClicks": 22
+        },
+        {
+          "date": "2026-08-16T00:00:00.000Z",
+          "label": "Aug 16",
+          "visitors": 516,
+          "pageviews": 557,
+          "estimatedConversions": 22,
+          "outboundClicks": 27
+        },
+        {
+          "date": "2026-08-17T00:00:00.000Z",
+          "label": "Aug 17",
+          "visitors": 364,
+          "pageviews": 378,
+          "estimatedConversions": 9,
+          "outboundClicks": 10
+        },
+        {
+          "date": "2026-08-18T00:00:00.000Z",
+          "label": "Aug 18",
+          "visitors": 1,
+          "pageviews": 1,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        }
+      ],
+      "topCtas": [
+        {
+          "label": "hero_order_azmvdnow",
+          "visitors": 114,
+          "clicks": 132
+        },
+        {
+          "label": "sticky_order_azmvdnow",
+          "visitors": 34,
+          "clicks": 37
+        },
+        {
+          "label": "milestone_25k_cta",
+          "visitors": 23,
+          "clicks": 23
+        },
+        {
+          "label": "mobile_nav_order_azmvdnow",
+          "visitors": 6,
+          "clicks": 6
+        },
+        {
+          "label": "final_cta_order_plate",
+          "visitors": 5,
+          "clicks": 5
+        },
+        {
+          "label": "nav_order_azmvdnow",
+          "visitors": 4,
+          "clicks": 4
+        }
+      ],
+      "utmSources": [
+        {
+          "label": "direct",
+          "visitors": 87,
+          "clicks": 113
+        },
+        {
+          "label": "fb",
+          "visitors": 48,
+          "clicks": 51
+        },
+        {
+          "label": "ig",
+          "visitors": 38,
+          "clicks": 43
+        }
+      ],
+      "utmCampaigns": [
+        {
+          "label": "none",
+          "visitors": 92,
+          "clicks": 118
+        },
+        {
+          "label": "120247009195540117",
+          "visitors": 47,
+          "clicks": 51
+        },
+        {
+          "label": "120246864342430117",
+          "visitors": 32,
+          "clicks": 35
+        },
+        {
+          "label": "120246213460280117",
+          "visitors": 2,
+          "clicks": 2
+        },
+        {
+          "label": "copytest_jul",
+          "visitors": 1,
+          "clicks": 1
+        }
+      ],
+      "utmCoverage": 1,
+      "official": null,
+      "reports": [],
+      "adotSummary": {
+        "plateCount": 0,
+        "initialCount": 0,
+        "renewalCount": 0,
+        "amount": 0
+      },
+      "projection": null,
+      "methodology": {
+        "billboard": "Directional signal: direct and organic/search visitors are grouped as likely billboard response while the Valley campaign is live.",
+        "meta": "Paid Meta signal: visitors arriving from Facebook and Instagram referrers, supported by first-party UTM values captured on ADOT clicks.",
+        "estimated": "Observed click-throughs are unique visitors who clicked an order link to AZ MVD. Tracking begins July 14, 2026; they are not confirmed purchases.",
+        "official": "Confirmed conversions use ADOT initial plate counts. Renewals and total plate activity are reported separately.",
+        "projection": "Planning scenarios use the latest three official ADOT months. The range is not a causal forecast; it establishes a benchmark for the next report."
+      },
+      "liveDataAvailable": true,
+      "dataSource": "live",
+      "liveError": null,
+      "fallbackGeneratedAt": null
+    },
+    "30": {
+      "generatedAt": "2026-08-18T02:29:03.072Z",
+      "window": {
+        "days": 30,
+        "label": "Jul 20 - Aug 18",
+        "comparisonLabel": "Jun 20 - Jul 19"
+      },
+      "current": {
+        "visitors": 15353,
+        "pageviews": 16287,
+        "estimatedConversions": 829,
+        "outboundClicks": 1000,
+        "intentRate": 0.05399596170129616
+      },
+      "previous": {
+        "visitors": 5008,
+        "pageviews": 5331,
+        "estimatedConversions": 195,
+        "outboundClicks": 234,
+        "intentRate": 0.03893769968051118
+      },
+      "sourceMix": {
+        "meta": 14039,
+        "billboardSignal": 2196,
+        "other": 52
+      },
+      "previousSourceMix": {
+        "meta": 3916,
+        "billboardSignal": 1414,
+        "other": 1
+      },
+      "dailyTrend": [
+        {
+          "date": "2026-07-20T00:00:00.000Z",
+          "label": "Jul 20",
+          "visitors": 714,
+          "pageviews": 739,
+          "estimatedConversions": 40,
+          "outboundClicks": 46
+        },
+        {
+          "date": "2026-07-21T00:00:00.000Z",
+          "label": "Jul 21",
+          "visitors": 678,
+          "pageviews": 717,
+          "estimatedConversions": 46,
+          "outboundClicks": 59
+        },
+        {
+          "date": "2026-07-22T00:00:00.000Z",
+          "label": "Jul 22",
+          "visitors": 919,
+          "pageviews": 960,
+          "estimatedConversions": 55,
+          "outboundClicks": 67
+        },
+        {
+          "date": "2026-07-23T00:00:00.000Z",
+          "label": "Jul 23",
+          "visitors": 789,
+          "pageviews": 840,
+          "estimatedConversions": 49,
+          "outboundClicks": 59
+        },
+        {
+          "date": "2026-07-24T00:00:00.000Z",
+          "label": "Jul 24",
+          "visitors": 899,
+          "pageviews": 950,
+          "estimatedConversions": 45,
+          "outboundClicks": 61
+        },
+        {
+          "date": "2026-07-25T00:00:00.000Z",
+          "label": "Jul 25",
+          "visitors": 1056,
+          "pageviews": 1109,
+          "estimatedConversions": 62,
+          "outboundClicks": 69
+        },
+        {
+          "date": "2026-07-26T00:00:00.000Z",
+          "label": "Jul 26",
+          "visitors": 1092,
+          "pageviews": 1147,
+          "estimatedConversions": 54,
+          "outboundClicks": 62
+        },
+        {
+          "date": "2026-07-27T00:00:00.000Z",
+          "label": "Jul 27",
+          "visitors": 1274,
+          "pageviews": 1346,
+          "estimatedConversions": 75,
+          "outboundClicks": 88
+        },
+        {
+          "date": "2026-07-28T00:00:00.000Z",
+          "label": "Jul 28",
+          "visitors": 1048,
+          "pageviews": 1118,
+          "estimatedConversions": 58,
+          "outboundClicks": 78
+        },
+        {
+          "date": "2026-07-29T00:00:00.000Z",
+          "label": "Jul 29",
+          "visitors": 1131,
+          "pageviews": 1176,
+          "estimatedConversions": 49,
+          "outboundClicks": 56
+        },
+        {
+          "date": "2026-07-30T00:00:00.000Z",
+          "label": "Jul 30",
+          "visitors": 1068,
+          "pageviews": 1110,
+          "estimatedConversions": 51,
+          "outboundClicks": 55
+        },
+        {
+          "date": "2026-07-31T00:00:00.000Z",
+          "label": "Jul 31",
+          "visitors": 742,
+          "pageviews": 798,
+          "estimatedConversions": 42,
+          "outboundClicks": 50
+        },
+        {
+          "date": "2026-08-01T00:00:00.000Z",
+          "label": "Aug 1",
+          "visitors": 47,
+          "pageviews": 63,
+          "estimatedConversions": 6,
+          "outboundClicks": 8
+        },
+        {
+          "date": "2026-08-02T00:00:00.000Z",
+          "label": "Aug 2",
+          "visitors": 51,
+          "pageviews": 69,
+          "estimatedConversions": 9,
+          "outboundClicks": 10
+        },
+        {
+          "date": "2026-08-03T00:00:00.000Z",
+          "label": "Aug 3",
+          "visitors": 48,
+          "pageviews": 71,
+          "estimatedConversions": 8,
+          "outboundClicks": 13
+        },
+        {
+          "date": "2026-08-04T00:00:00.000Z",
+          "label": "Aug 4",
+          "visitors": 57,
+          "pageviews": 77,
+          "estimatedConversions": 9,
+          "outboundClicks": 12
+        },
+        {
+          "date": "2026-08-05T00:00:00.000Z",
+          "label": "Aug 5",
+          "visitors": 38,
+          "pageviews": 47,
+          "estimatedConversions": 4,
+          "outboundClicks": 4
+        },
+        {
+          "date": "2026-08-06T00:00:00.000Z",
+          "label": "Aug 6",
+          "visitors": 33,
+          "pageviews": 38,
+          "estimatedConversions": 4,
+          "outboundClicks": 6
+        },
+        {
+          "date": "2026-08-07T00:00:00.000Z",
+          "label": "Aug 7",
+          "visitors": 205,
+          "pageviews": 217,
+          "estimatedConversions": 8,
+          "outboundClicks": 8
+        },
+        {
+          "date": "2026-08-08T00:00:00.000Z",
+          "label": "Aug 8",
+          "visitors": 186,
+          "pageviews": 194,
+          "estimatedConversions": 15,
+          "outboundClicks": 24
+        },
+        {
+          "date": "2026-08-09T00:00:00.000Z",
+          "label": "Aug 9",
+          "visitors": 206,
+          "pageviews": 216,
+          "estimatedConversions": 8,
+          "outboundClicks": 11
+        },
+        {
+          "date": "2026-08-10T00:00:00.000Z",
+          "label": "Aug 10",
+          "visitors": 189,
+          "pageviews": 201,
+          "estimatedConversions": 9,
+          "outboundClicks": 11
+        },
+        {
+          "date": "2026-08-11T00:00:00.000Z",
+          "label": "Aug 11",
+          "visitors": 225,
+          "pageviews": 238,
+          "estimatedConversions": 14,
+          "outboundClicks": 17
+        },
+        {
+          "date": "2026-08-12T00:00:00.000Z",
+          "label": "Aug 12",
+          "visitors": 355,
+          "pageviews": 382,
+          "estimatedConversions": 16,
+          "outboundClicks": 19
+        },
+        {
+          "date": "2026-08-13T00:00:00.000Z",
+          "label": "Aug 13",
+          "visitors": 464,
+          "pageviews": 493,
+          "estimatedConversions": 17,
+          "outboundClicks": 20
+        },
+        {
+          "date": "2026-08-14T00:00:00.000Z",
+          "label": "Aug 14",
+          "visitors": 457,
+          "pageviews": 494,
+          "estimatedConversions": 25,
+          "outboundClicks": 28
+        },
+        {
+          "date": "2026-08-15T00:00:00.000Z",
+          "label": "Aug 15",
+          "visitors": 502,
+          "pageviews": 541,
+          "estimatedConversions": 20,
+          "outboundClicks": 22
+        },
+        {
+          "date": "2026-08-16T00:00:00.000Z",
+          "label": "Aug 16",
+          "visitors": 516,
+          "pageviews": 557,
+          "estimatedConversions": 22,
+          "outboundClicks": 27
+        },
+        {
+          "date": "2026-08-17T00:00:00.000Z",
+          "label": "Aug 17",
+          "visitors": 364,
+          "pageviews": 378,
+          "estimatedConversions": 9,
+          "outboundClicks": 10
+        },
+        {
+          "date": "2026-08-18T00:00:00.000Z",
+          "label": "Aug 18",
+          "visitors": 1,
+          "pageviews": 1,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        }
+      ],
+      "topCtas": [
+        {
+          "label": "hero_order_azmvdnow",
+          "visitors": 535,
+          "clicks": 613
+        },
+        {
+          "label": "sticky_order_azmvdnow",
+          "visitors": 148,
+          "clicks": 169
+        },
+        {
+          "label": "milestone_25k_cta",
+          "visitors": 123,
+          "clicks": 127
+        },
+        {
+          "label": "final_cta_order_plate",
+          "visitors": 25,
+          "clicks": 29
+        },
+        {
+          "label": "mobile_nav_order_azmvdnow",
+          "visitors": 23,
+          "clicks": 24
+        },
+        {
+          "label": "nav_order_azmvdnow",
+          "visitors": 18,
+          "clicks": 24
+        },
+        {
+          "label": "order_primary_cta",
+          "visitors": 14,
+          "clicks": 14
+        }
+      ],
+      "utmSources": [
+        {
+          "label": "fb",
+          "visitors": 419,
+          "clicks": 474
+        },
+        {
+          "label": "direct",
+          "visitors": 220,
+          "clicks": 303
+        },
+        {
+          "label": "ig",
+          "visitors": 190,
+          "clicks": 215
+        },
+        {
+          "label": "chatgpt.com",
+          "visitors": 2,
+          "clicks": 8
+        }
+      ],
+      "utmCampaigns": [
+        {
+          "label": "copytest_jul",
+          "visitors": 372,
+          "clicks": 424
+        },
+        {
+          "label": "none",
+          "visitors": 233,
+          "clicks": 322
+        },
+        {
+          "label": "120246213460280117",
+          "visitors": 148,
+          "clicks": 168
+        },
+        {
+          "label": "120247009195540117",
+          "visitors": 47,
+          "clicks": 51
+        },
+        {
+          "label": "120246864342430117",
+          "visitors": 32,
+          "clicks": 35
+        }
+      ],
+      "utmCoverage": 1,
+      "official": null,
+      "reports": [],
+      "adotSummary": {
+        "plateCount": 0,
+        "initialCount": 0,
+        "renewalCount": 0,
+        "amount": 0
+      },
+      "projection": null,
+      "methodology": {
+        "billboard": "Directional signal: direct and organic/search visitors are grouped as likely billboard response while the Valley campaign is live.",
+        "meta": "Paid Meta signal: visitors arriving from Facebook and Instagram referrers, supported by first-party UTM values captured on ADOT clicks.",
+        "estimated": "Observed click-throughs are unique visitors who clicked an order link to AZ MVD. Tracking begins July 14, 2026; they are not confirmed purchases.",
+        "official": "Confirmed conversions use ADOT initial plate counts. Renewals and total plate activity are reported separately.",
+        "projection": "Planning scenarios use the latest three official ADOT months. The range is not a causal forecast; it establishes a benchmark for the next report."
+      },
+      "liveDataAvailable": true,
+      "dataSource": "live",
+      "liveError": null,
+      "fallbackGeneratedAt": null
+    },
+    "90": {
+      "generatedAt": "2026-08-18T02:29:41.384Z",
+      "window": {
+        "days": 90,
+        "label": "May 21 - Aug 18",
+        "comparisonLabel": "Feb 20 - May 20"
+      },
+      "current": {
+        "visitors": 21256,
+        "pageviews": 22736,
+        "estimatedConversions": 1024,
+        "outboundClicks": 1234,
+        "intentRate": 0.048174633044787356
+      },
+      "previous": {
+        "visitors": 4031,
+        "pageviews": 5578,
+        "estimatedConversions": 0,
+        "outboundClicks": 0,
+        "intentRate": 0
+      },
+      "sourceMix": {
+        "meta": 17972,
+        "billboardSignal": 4693,
+        "other": 71
+      },
+      "previousSourceMix": {
+        "meta": 311,
+        "billboardSignal": 5243,
+        "other": 24
+      },
+      "dailyTrend": [
+        {
+          "date": "2026-05-21T00:00:00.000Z",
+          "label": "May 21",
+          "visitors": 29,
+          "pageviews": 33,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-05-22T00:00:00.000Z",
+          "label": "May 22",
+          "visitors": 32,
+          "pageviews": 42,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-05-23T00:00:00.000Z",
+          "label": "May 23",
+          "visitors": 30,
+          "pageviews": 38,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-05-24T00:00:00.000Z",
+          "label": "May 24",
+          "visitors": 31,
+          "pageviews": 35,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-05-25T00:00:00.000Z",
+          "label": "May 25",
+          "visitors": 37,
+          "pageviews": 40,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-05-26T00:00:00.000Z",
+          "label": "May 26",
+          "visitors": 44,
+          "pageviews": 62,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-05-27T00:00:00.000Z",
+          "label": "May 27",
+          "visitors": 34,
+          "pageviews": 55,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-05-28T00:00:00.000Z",
+          "label": "May 28",
+          "visitors": 34,
+          "pageviews": 38,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-05-29T00:00:00.000Z",
+          "label": "May 29",
+          "visitors": 28,
+          "pageviews": 30,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-05-30T00:00:00.000Z",
+          "label": "May 30",
+          "visitors": 28,
+          "pageviews": 30,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-05-31T00:00:00.000Z",
+          "label": "May 31",
+          "visitors": 24,
+          "pageviews": 30,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-06-01T00:00:00.000Z",
+          "label": "Jun 1",
+          "visitors": 35,
+          "pageviews": 48,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-06-02T00:00:00.000Z",
+          "label": "Jun 2",
+          "visitors": 40,
+          "pageviews": 50,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-06-03T00:00:00.000Z",
+          "label": "Jun 3",
+          "visitors": 20,
+          "pageviews": 24,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-06-04T00:00:00.000Z",
+          "label": "Jun 4",
+          "visitors": 23,
+          "pageviews": 28,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-06-05T00:00:00.000Z",
+          "label": "Jun 5",
+          "visitors": 32,
+          "pageviews": 43,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-06-06T00:00:00.000Z",
+          "label": "Jun 6",
+          "visitors": 27,
+          "pageviews": 34,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-06-07T00:00:00.000Z",
+          "label": "Jun 7",
+          "visitors": 24,
+          "pageviews": 27,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-06-08T00:00:00.000Z",
+          "label": "Jun 8",
+          "visitors": 29,
+          "pageviews": 34,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-06-09T00:00:00.000Z",
+          "label": "Jun 9",
+          "visitors": 39,
+          "pageviews": 51,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-06-10T00:00:00.000Z",
+          "label": "Jun 10",
+          "visitors": 37,
+          "pageviews": 49,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-06-11T00:00:00.000Z",
+          "label": "Jun 11",
+          "visitors": 30,
+          "pageviews": 38,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-06-12T00:00:00.000Z",
+          "label": "Jun 12",
+          "visitors": 26,
+          "pageviews": 33,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-06-13T00:00:00.000Z",
+          "label": "Jun 13",
+          "visitors": 23,
+          "pageviews": 26,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-06-14T00:00:00.000Z",
+          "label": "Jun 14",
+          "visitors": 22,
+          "pageviews": 26,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-06-15T00:00:00.000Z",
+          "label": "Jun 15",
+          "visitors": 35,
+          "pageviews": 44,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-06-16T00:00:00.000Z",
+          "label": "Jun 16",
+          "visitors": 21,
+          "pageviews": 28,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-06-17T00:00:00.000Z",
+          "label": "Jun 17",
+          "visitors": 27,
+          "pageviews": 31,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-06-18T00:00:00.000Z",
+          "label": "Jun 18",
+          "visitors": 28,
+          "pageviews": 41,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-06-19T00:00:00.000Z",
+          "label": "Jun 19",
+          "visitors": 26,
+          "pageviews": 30,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-06-20T00:00:00.000Z",
+          "label": "Jun 20",
+          "visitors": 15,
+          "pageviews": 20,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-06-21T00:00:00.000Z",
+          "label": "Jun 21",
+          "visitors": 16,
+          "pageviews": 21,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-06-22T00:00:00.000Z",
+          "label": "Jun 22",
+          "visitors": 26,
+          "pageviews": 29,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-06-23T00:00:00.000Z",
+          "label": "Jun 23",
+          "visitors": 32,
+          "pageviews": 48,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-06-24T00:00:00.000Z",
+          "label": "Jun 24",
+          "visitors": 24,
+          "pageviews": 37,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-06-25T00:00:00.000Z",
+          "label": "Jun 25",
+          "visitors": 25,
+          "pageviews": 28,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-06-26T00:00:00.000Z",
+          "label": "Jun 26",
+          "visitors": 4,
+          "pageviews": 4,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-06-27T00:00:00.000Z",
+          "label": "Jun 27",
+          "visitors": 0,
+          "pageviews": 0,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-06-28T00:00:00.000Z",
+          "label": "Jun 28",
+          "visitors": 0,
+          "pageviews": 0,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-06-29T00:00:00.000Z",
+          "label": "Jun 29",
+          "visitors": 0,
+          "pageviews": 0,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-06-30T00:00:00.000Z",
+          "label": "Jun 30",
+          "visitors": 0,
+          "pageviews": 0,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-07-01T00:00:00.000Z",
+          "label": "Jul 1",
+          "visitors": 0,
+          "pageviews": 0,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-07-02T00:00:00.000Z",
+          "label": "Jul 2",
+          "visitors": 1,
+          "pageviews": 1,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-07-03T00:00:00.000Z",
+          "label": "Jul 3",
+          "visitors": 0,
+          "pageviews": 0,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-07-04T00:00:00.000Z",
+          "label": "Jul 4",
+          "visitors": 0,
+          "pageviews": 0,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-07-05T00:00:00.000Z",
+          "label": "Jul 5",
+          "visitors": 0,
+          "pageviews": 0,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-07-06T00:00:00.000Z",
+          "label": "Jul 6",
+          "visitors": 0,
+          "pageviews": 0,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-07-07T00:00:00.000Z",
+          "label": "Jul 7",
+          "visitors": 0,
+          "pageviews": 0,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-07-08T00:00:00.000Z",
+          "label": "Jul 8",
+          "visitors": 3,
+          "pageviews": 5,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-07-09T00:00:00.000Z",
+          "label": "Jul 9",
+          "visitors": 101,
+          "pageviews": 111,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-07-10T00:00:00.000Z",
+          "label": "Jul 10",
+          "visitors": 418,
+          "pageviews": 443,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-07-11T00:00:00.000Z",
+          "label": "Jul 11",
+          "visitors": 296,
+          "pageviews": 314,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-07-12T00:00:00.000Z",
+          "label": "Jul 12",
+          "visitors": 373,
+          "pageviews": 386,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-07-13T00:00:00.000Z",
+          "label": "Jul 13",
+          "visitors": 385,
+          "pageviews": 416,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        },
+        {
+          "date": "2026-07-14T00:00:00.000Z",
+          "label": "Jul 14",
+          "visitors": 358,
+          "pageviews": 379,
+          "estimatedConversions": 31,
+          "outboundClicks": 35
+        },
+        {
+          "date": "2026-07-15T00:00:00.000Z",
+          "label": "Jul 15",
+          "visitors": 345,
+          "pageviews": 362,
+          "estimatedConversions": 16,
+          "outboundClicks": 21
+        },
+        {
+          "date": "2026-07-16T00:00:00.000Z",
+          "label": "Jul 16",
+          "visitors": 464,
+          "pageviews": 506,
+          "estimatedConversions": 28,
+          "outboundClicks": 40
+        },
+        {
+          "date": "2026-07-17T00:00:00.000Z",
+          "label": "Jul 17",
+          "visitors": 685,
+          "pageviews": 714,
+          "estimatedConversions": 39,
+          "outboundClicks": 41
+        },
+        {
+          "date": "2026-07-18T00:00:00.000Z",
+          "label": "Jul 18",
+          "visitors": 693,
+          "pageviews": 727,
+          "estimatedConversions": 41,
+          "outboundClicks": 49
+        },
+        {
+          "date": "2026-07-19T00:00:00.000Z",
+          "label": "Jul 19",
+          "visitors": 744,
+          "pageviews": 780,
+          "estimatedConversions": 40,
+          "outboundClicks": 48
+        },
+        {
+          "date": "2026-07-20T00:00:00.000Z",
+          "label": "Jul 20",
+          "visitors": 714,
+          "pageviews": 739,
+          "estimatedConversions": 40,
+          "outboundClicks": 46
+        },
+        {
+          "date": "2026-07-21T00:00:00.000Z",
+          "label": "Jul 21",
+          "visitors": 678,
+          "pageviews": 717,
+          "estimatedConversions": 46,
+          "outboundClicks": 59
+        },
+        {
+          "date": "2026-07-22T00:00:00.000Z",
+          "label": "Jul 22",
+          "visitors": 919,
+          "pageviews": 960,
+          "estimatedConversions": 55,
+          "outboundClicks": 67
+        },
+        {
+          "date": "2026-07-23T00:00:00.000Z",
+          "label": "Jul 23",
+          "visitors": 789,
+          "pageviews": 840,
+          "estimatedConversions": 49,
+          "outboundClicks": 59
+        },
+        {
+          "date": "2026-07-24T00:00:00.000Z",
+          "label": "Jul 24",
+          "visitors": 899,
+          "pageviews": 950,
+          "estimatedConversions": 45,
+          "outboundClicks": 61
+        },
+        {
+          "date": "2026-07-25T00:00:00.000Z",
+          "label": "Jul 25",
+          "visitors": 1056,
+          "pageviews": 1109,
+          "estimatedConversions": 62,
+          "outboundClicks": 69
+        },
+        {
+          "date": "2026-07-26T00:00:00.000Z",
+          "label": "Jul 26",
+          "visitors": 1092,
+          "pageviews": 1147,
+          "estimatedConversions": 54,
+          "outboundClicks": 62
+        },
+        {
+          "date": "2026-07-27T00:00:00.000Z",
+          "label": "Jul 27",
+          "visitors": 1274,
+          "pageviews": 1346,
+          "estimatedConversions": 75,
+          "outboundClicks": 88
+        },
+        {
+          "date": "2026-07-28T00:00:00.000Z",
+          "label": "Jul 28",
+          "visitors": 1048,
+          "pageviews": 1118,
+          "estimatedConversions": 58,
+          "outboundClicks": 78
+        },
+        {
+          "date": "2026-07-29T00:00:00.000Z",
+          "label": "Jul 29",
+          "visitors": 1131,
+          "pageviews": 1176,
+          "estimatedConversions": 49,
+          "outboundClicks": 56
+        },
+        {
+          "date": "2026-07-30T00:00:00.000Z",
+          "label": "Jul 30",
+          "visitors": 1068,
+          "pageviews": 1110,
+          "estimatedConversions": 51,
+          "outboundClicks": 55
+        },
+        {
+          "date": "2026-07-31T00:00:00.000Z",
+          "label": "Jul 31",
+          "visitors": 742,
+          "pageviews": 798,
+          "estimatedConversions": 42,
+          "outboundClicks": 50
+        },
+        {
+          "date": "2026-08-01T00:00:00.000Z",
+          "label": "Aug 1",
+          "visitors": 47,
+          "pageviews": 63,
+          "estimatedConversions": 6,
+          "outboundClicks": 8
+        },
+        {
+          "date": "2026-08-02T00:00:00.000Z",
+          "label": "Aug 2",
+          "visitors": 51,
+          "pageviews": 69,
+          "estimatedConversions": 9,
+          "outboundClicks": 10
+        },
+        {
+          "date": "2026-08-03T00:00:00.000Z",
+          "label": "Aug 3",
+          "visitors": 48,
+          "pageviews": 71,
+          "estimatedConversions": 8,
+          "outboundClicks": 13
+        },
+        {
+          "date": "2026-08-04T00:00:00.000Z",
+          "label": "Aug 4",
+          "visitors": 57,
+          "pageviews": 77,
+          "estimatedConversions": 9,
+          "outboundClicks": 12
+        },
+        {
+          "date": "2026-08-05T00:00:00.000Z",
+          "label": "Aug 5",
+          "visitors": 38,
+          "pageviews": 47,
+          "estimatedConversions": 4,
+          "outboundClicks": 4
+        },
+        {
+          "date": "2026-08-06T00:00:00.000Z",
+          "label": "Aug 6",
+          "visitors": 33,
+          "pageviews": 38,
+          "estimatedConversions": 4,
+          "outboundClicks": 6
+        },
+        {
+          "date": "2026-08-07T00:00:00.000Z",
+          "label": "Aug 7",
+          "visitors": 205,
+          "pageviews": 217,
+          "estimatedConversions": 8,
+          "outboundClicks": 8
+        },
+        {
+          "date": "2026-08-08T00:00:00.000Z",
+          "label": "Aug 8",
+          "visitors": 186,
+          "pageviews": 194,
+          "estimatedConversions": 15,
+          "outboundClicks": 24
+        },
+        {
+          "date": "2026-08-09T00:00:00.000Z",
+          "label": "Aug 9",
+          "visitors": 206,
+          "pageviews": 216,
+          "estimatedConversions": 8,
+          "outboundClicks": 11
+        },
+        {
+          "date": "2026-08-10T00:00:00.000Z",
+          "label": "Aug 10",
+          "visitors": 189,
+          "pageviews": 201,
+          "estimatedConversions": 9,
+          "outboundClicks": 11
+        },
+        {
+          "date": "2026-08-11T00:00:00.000Z",
+          "label": "Aug 11",
+          "visitors": 225,
+          "pageviews": 238,
+          "estimatedConversions": 14,
+          "outboundClicks": 17
+        },
+        {
+          "date": "2026-08-12T00:00:00.000Z",
+          "label": "Aug 12",
+          "visitors": 355,
+          "pageviews": 382,
+          "estimatedConversions": 16,
+          "outboundClicks": 19
+        },
+        {
+          "date": "2026-08-13T00:00:00.000Z",
+          "label": "Aug 13",
+          "visitors": 464,
+          "pageviews": 493,
+          "estimatedConversions": 17,
+          "outboundClicks": 20
+        },
+        {
+          "date": "2026-08-14T00:00:00.000Z",
+          "label": "Aug 14",
+          "visitors": 457,
+          "pageviews": 494,
+          "estimatedConversions": 25,
+          "outboundClicks": 28
+        },
+        {
+          "date": "2026-08-15T00:00:00.000Z",
+          "label": "Aug 15",
+          "visitors": 502,
+          "pageviews": 541,
+          "estimatedConversions": 20,
+          "outboundClicks": 22
+        },
+        {
+          "date": "2026-08-16T00:00:00.000Z",
+          "label": "Aug 16",
+          "visitors": 516,
+          "pageviews": 557,
+          "estimatedConversions": 22,
+          "outboundClicks": 27
+        },
+        {
+          "date": "2026-08-17T00:00:00.000Z",
+          "label": "Aug 17",
+          "visitors": 364,
+          "pageviews": 378,
+          "estimatedConversions": 9,
+          "outboundClicks": 10
+        },
+        {
+          "date": "2026-08-18T00:00:00.000Z",
+          "label": "Aug 18",
+          "visitors": 1,
+          "pageviews": 1,
+          "estimatedConversions": 0,
+          "outboundClicks": 0
+        }
+      ],
+      "topCtas": [
+        {
+          "label": "hero_order_azmvdnow",
+          "visitors": 655,
+          "clicks": 743
+        },
+        {
+          "label": "sticky_order_azmvdnow",
+          "visitors": 172,
+          "clicks": 194
+        },
+        {
+          "label": "milestone_25k_cta",
+          "visitors": 142,
+          "clicks": 147
+        },
+        {
+          "label": "order_primary_cta",
+          "visitors": 46,
+          "clicks": 47
+        },
+        {
+          "label": "final_cta_order_plate",
+          "visitors": 36,
+          "clicks": 43
+        },
+        {
+          "label": "nav_order_azmvdnow",
+          "visitors": 25,
+          "clicks": 31
+        },
+        {
+          "label": "mobile_nav_order_azmvdnow",
+          "visitors": 28,
+          "clicks": 29
+        }
+      ],
+      "utmSources": [
+        {
+          "label": "fb",
+          "visitors": 484,
+          "clicks": 558
+        },
+        {
+          "label": "direct",
+          "visitors": 260,
+          "clicks": 351
+        },
+        {
+          "label": "ig",
+          "visitors": 280,
+          "clicks": 317
+        },
+        {
+          "label": "chatgpt.com",
+          "visitors": 2,
+          "clicks": 8
+        }
+      ],
+      "utmCampaigns": [
+        {
+          "label": "copytest_jul",
+          "visitors": 437,
+          "clicks": 508
+        },
+        {
+          "label": "none",
+          "visitors": 273,
+          "clicks": 370
+        },
+        {
+          "label": "120246213460280117",
+          "visitors": 238,
+          "clicks": 270
+        },
+        {
+          "label": "120247009195540117",
+          "visitors": 47,
+          "clicks": 51
+        },
+        {
+          "label": "120246864342430117",
+          "visitors": 32,
+          "clicks": 35
+        }
+      ],
+      "utmCoverage": 1,
+      "official": null,
+      "reports": [],
+      "adotSummary": {
+        "plateCount": 0,
+        "initialCount": 0,
+        "renewalCount": 0,
+        "amount": 0
+      },
+      "projection": null,
+      "methodology": {
+        "billboard": "Directional signal: direct and organic/search visitors are grouped as likely billboard response while the Valley campaign is live.",
+        "meta": "Paid Meta signal: visitors arriving from Facebook and Instagram referrers, supported by first-party UTM values captured on ADOT clicks.",
+        "estimated": "Observed click-throughs are unique visitors who clicked an order link to AZ MVD. Tracking begins July 14, 2026; they are not confirmed purchases.",
+        "official": "Confirmed conversions use ADOT initial plate counts. Renewals and total plate activity are reported separately.",
+        "projection": "Planning scenarios use the latest three official ADOT months. The range is not a causal forecast; it establishes a benchmark for the next report."
+      },
+      "liveDataAvailable": true,
+      "dataSource": "live",
+      "liveError": null,
+      "fallbackGeneratedAt": null
+    }
+  }
+}
