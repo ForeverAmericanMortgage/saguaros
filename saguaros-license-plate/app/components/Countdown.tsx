@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import TrackedOutboundLink from "@/components/TrackedOutboundLink";
 import { useLanguage } from "@/lib/LanguageContext";
 
 const LAUNCH_DATE = new Date("2026-03-26T00:00:00-07:00"); // Phoenix time
@@ -72,14 +73,15 @@ export default function Countdown() {
         <p className="font-display text-2xl sm:text-4xl font-bold text-pure-white">
           {t("countdownAvailable")}
         </p>
-        <a
+        <TrackedOutboundLink
           href="https://azmvdnow.gov/plates"
           target="_blank"
           rel="noopener noreferrer"
+          eventLabel="countdown_get_plate"
           className="mt-4 inline-block bg-pure-white text-black px-8 py-3 rounded text-sm font-semibold tracking-wide uppercase hover:bg-light transition-colors"
         >
           {t("countdownGetPlate")}
-        </a>
+        </TrackedOutboundLink>
       </div>
     );
   }

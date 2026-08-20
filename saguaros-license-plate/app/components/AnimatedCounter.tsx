@@ -3,6 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
 
+function zeroValue(value: string) {
+  const numericMatch = value.match(/[\d,]+/);
+  if (!numericMatch) return value;
+  const prefix = value.slice(0, value.indexOf(numericMatch[0]));
+  const suffix = value.slice(value.indexOf(numericMatch[0]) + numericMatch[0].length);
+  return `${prefix}0${suffix}`;
+}
+
 /**
  * Animates a number from 0 to its target value when it scrolls into view.
  * Handles formatted strings like "$750K+", "13,000+", "$17", "1987".
@@ -10,17 +18,28 @@ import { motion, useInView, useReducedMotion } from "framer-motion";
 export default function AnimatedCounter({
   value,
   className = "",
+  useGrouping = true,
+  duration = 1500,
+  animate: shouldAnimate = false,
 }: {
   value: string;
   className?: string;
+  useGrouping?: boolean;
+  duration?: number;
+  animate?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, amount: 0.5 });
   const prefersReducedMotion = useReducedMotion();
-  const [displayValue, setDisplayValue] = useState(value);
+  const [animatedValue, setAnimatedValue] = useState(() => zeroValue(value));
+  const displayValue = shouldAnimate ? animatedValue : value;
 
   useEffect(() => {
-    if (!isInView || prefersReducedMotion) return;
+    if (!shouldAnimate || !isInView) return;
+    if (prefersReducedMotion) {
+      setAnimatedValue(value);
+      return;
+    }
 
     // Extract numeric part from the string
     const numericMatch = value.match(/[\d,]+/);
@@ -33,7 +52,6 @@ export default function AnimatedCounter({
     const prefix = value.slice(0, value.indexOf(numericMatch[0]));
     const suffix = value.slice(value.indexOf(numericMatch[0]) + numericMatch[0].length);
 
-    const duration = 1500; // ms
     const startTime = performance.now();
 
     const animate = (now: number) => {
@@ -43,9 +61,8 @@ export default function AnimatedCounter({
       const eased = 1 - Math.pow(1 - progress, 3);
       const current = Math.round(eased * target);
 
-      // Format with commas
-      const formatted = current.toLocaleString();
-      setDisplayValue(`${prefix}${formatted}${suffix}`);
+      const formatted = current.toLocaleString(undefined, { useGrouping });
+      setAnimatedValue(`${prefix}${formatted}${suffix}`);
 
       if (progress < 1) {
         requestAnimationFrame(animate);
@@ -53,7 +70,7 @@ export default function AnimatedCounter({
     };
 
     requestAnimationFrame(animate);
-  }, [isInView, value, prefersReducedMotion]);
+  }, [shouldAnimate, duration, isInView, value, prefersReducedMotion, useGrouping]);
 
   return (
     <motion.div
@@ -62,8 +79,9 @@ export default function AnimatedCounter({
       initial={{ opacity: 0, scale: 0.8 }}
       animate={isInView ? { opacity: 1, scale: 1 } : {}}
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      aria-label={value}
     >
-      {displayValue}
+      <span aria-hidden="true">{displayValue}</span>
     </motion.div>
   );
 }

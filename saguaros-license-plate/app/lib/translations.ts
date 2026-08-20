@@ -10,15 +10,31 @@ export const translations = {
 
     // Hero
     heroBadge: "Arizona\u2019s First All-Black Specialty Plate",
-    heroTitle1: "THE",
-    heroTitle2: "BLACKOUT",
-    heroTitle3: "PLATE",
+    heroTitle1: "ARIZONA\u2019S",
+    heroTitle2: "BLACK PLATE.",
+    heroTitle3: "STRONG.",
     heroSubtitle:
-      "Arizona\u2019s all-black 4AZ Kids specialty plate is live now, with more than 10,500 plates already on the road and counting.",
+      "Get Arizona\u2019s clean all-black 4AZKIDS plate for just $25 a year. $17 of each license plate sale goes directly to supporting Saguaro Children\u2019s Charities across Arizona. The balance of the license plate sale goes to the Arizona Department of Transportation.",
     heroLaunchLabel: "Available now through AZMVDNow.gov",
+    heroOrderHint: "Opens AZMVDNow.gov \u2022 Search \u201c4AZ Kids\u201d",
+    trustOfficial: "Official Arizona MVD Ordering",
+    trustPrice: "$25 Annual Specialty Fee",
+    trustTiming: "Allow Up To 4 Weeks",
     statCharities: "Children\u2019s Charities",
-    statPerPlate: "Per Plate, Per Year",
+    statPerPlate: "ADOT Gross",
     statPlatesOnRoad: "Plates On The Road",
+
+    // Community milestone
+    milestoneLabel: "Next Community Milestone",
+    milestoneHeading: "Help Arizona reach 50,000 black plates.",
+    milestoneCurrent: "30,000 on the road",
+    milestoneRemaining: "20,000 to go",
+    milestoneProgressLabel: "Progress toward 50,000 Blackout Plates",
+    milestoneCta: "Get Yours",
+    toastLabel: "ADOT Milestone Update",
+    toastText: "23,250 Blackout Plates are now on Arizona roads.",
+    toastDate: "Updated July 2026",
+    toastDismiss: "Dismiss milestone update",
 
     // Countdown
     countdownDays: "Days",
@@ -30,15 +46,15 @@ export const translations = {
 
     // Order
     orderLabel: "Now On The Road",
-    orderHeading: "10,500+ plates and counting.",
+    orderHeading: "23,250 plates and counting.",
     orderDescription:
-      "The 4AZ Kids Blackout Plate is active through Arizona MVD. More than 10,500 Arizona drivers have already put one on the road, and every plate helps fund Saguaros nonprofit partners serving children and families.",
-    orderPrimaryCta: "Order The Plate",
+      "There are now 23,250 4AZ Kids Blackout Plates on Arizona roads. Order yours through Arizona MVD and help fund Saguaros nonprofit partners serving children and families.",
+    orderPrimaryCta: "Order on AZMVDNow",
     orderSecondaryCta: "How To Order",
     waitlistLabel: "Now On The Road",
-    waitlistHeading: "10,500+ plates and counting.",
+    waitlistHeading: "23,250 plates and counting.",
     waitlistDescription:
-      "The 4AZ Kids Blackout Plate is active through Arizona MVD. More than 10,500 Arizona drivers have already put one on the road, and every plate helps fund Saguaros nonprofit partners serving children and families.",
+      "There are now 23,250 4AZ Kids Blackout Plates on Arizona roads. Order yours through Arizona MVD and help fund Saguaros nonprofit partners serving children and families.",
     waitlistName: "Your name",
     waitlistEmail: "Email address",
     waitlistPhone: "Phone (optional)",
@@ -58,20 +74,21 @@ export const translations = {
     aboutStandardTitle: "Standard Plate",
     aboutStandardPrice: "$25",
     aboutStandardDesc:
-      "ADOT assigns your unique plate number. $17 goes directly to Arizona children\u2019s charities.",
+      "ADOT assigns your unique plate number. ADOT keeps $8.00 gross and the remaining specialty fee supports Saguaros Children\u2019s Charities.",
     aboutVanityTitle: "Custom Vanity",
     aboutVanityPrice: "$50",
     aboutVanityDesc:
-      "Choose up to 7 characters. Same $17 per year to charity.",
+      "Choose up to 7 characters. ADOT keeps $33.00 gross and the remaining specialty fee supports Saguaros Children\u2019s Charities.",
     aboutPerYear: "/yr",
 
     // Gallery
     galleryLabel: "See It",
-    galleryHeading: "Every angle. Still clean.",
-    galleryCaption1: "The Blackout Plate",
-    galleryCaption2: "Studio Shot",
-    galleryCaption3: "Detail View",
-    galleryCaption4: "On The Road",
+    galleryHeading: "Real plates. Real drivers.",
+    galleryCaption1: "Truck",
+    galleryCaption2: "Ferrari",
+    galleryCaption3: "Convertible",
+    galleryCaption4: "Porsche",
+    galleryCaption5: "Handheld",
 
     // How It Works
     howLabel: "How To Order",
@@ -85,6 +102,27 @@ export const translations = {
     howStep3Title: "Drive it. Fund it.",
     howStep3Desc:
       "$17 from every plate goes to 30+ children\u2019s charities every year.",
+
+    // FAQ
+    faqLabel: "Before You Order",
+    faqHeading: "Good to know.",
+    faqIntro:
+      "The Blackout Plate is ordered through Arizona MVD. Here are the details drivers ask about most.",
+    faqCostQuestion: "How much does the plate cost?",
+    faqCostAnswer:
+      "The specialty plate adds a $25 initial and annual fee. Personalization adds another $25 annually, and postage is not included.",
+    faqPersonalQuestion: "Can I personalize the plate?",
+    faqPersonalAnswer:
+      "Yes. Personalized letters and numbers add $25 per year and are subject to Arizona MVD review.",
+    faqTimingQuestion: "How long does delivery take?",
+    faqTimingAnswer:
+      "Arizona MVD advises allowing up to four weeks for processing. Your plate and updated documents are mailed to you.",
+    faqCurrentQuestion: "What happens to my current plate?",
+    faqCurrentAnswer:
+      "Keep using your current plate until the new Blackout Plate arrives.",
+    faqImpactQuestion: "Where does the $17 contribution go?",
+    faqImpactAnswer:
+      "$17 from each plate purchase and renewal goes to Saguaros Children\u2019s Charities, supporting more than 30 local children\u2019s charities across Arizona.",
 
     // Charities
     charityLabel: "Where Your $17 Goes",
@@ -110,12 +148,12 @@ export const translations = {
 
     // Impact
     impactLabel: "The Impact",
-    impactHeading1: "10,500+ plates on the road",
-    impactHeading2: "and counting.",
+    impactHeading1: "Saguaros Children\u2019s Charities",
+    impactHeading2: "on the road since 1987.",
     impactDescription:
-      "Every 4AZ Kids plate turns a clean all-black design into annual support for Arizona children\u2019s nonprofits. The Saguaros have been fundraising for Arizona\u2019s children since 1987, distributing grants to 30+ nonprofit partners across the state.",
+      "Every 4AZ Kids plate helps fund Saguaros Children\u2019s Charities across Arizona. The plate program pairs a clean all-black design with annual support for more than 30 nonprofit partners serving children statewide.",
     impactYearFounded: "Year Founded",
-    impactRecentGrants: "Recent Grants",
+    impactRecentGrants: "Gifted Since 1987",
     impactCharitiesFunded: "Charities Funded",
     impactPerPlateYear: "Per Plate / Year",
 
@@ -123,7 +161,7 @@ export const translations = {
     ctaHeading: "Put the Blackout Plate on the road.",
     ctaDescription:
       "Order through AZMVDNow.gov, search for 4AZ Kids, and choose standard or vanity. Every plate keeps the impact growing.",
-    ctaOrderPlate: "Order The Plate",
+    ctaOrderPlate: "Order on AZMVDNow",
     ctaJoinWaitlist: "Order The Plate",
 
     // Footer
@@ -133,7 +171,7 @@ export const translations = {
       "Proceeds benefit 30+ Arizona children\u2019s nonprofits through the Saguaros 501(c)(3) Foundation",
 
     // Sticky bar
-    stickyLaunch: "10,500+ plates on the road",
+    stickyLaunch: "23,250 plates on the road",
     stickyJoin: "Order Plate",
   },
   es: {
@@ -145,15 +183,31 @@ export const translations = {
 
     // Hero
     heroBadge: "La Primera Placa Especial Totalmente Negra de Arizona",
-    heroTitle1: "THE",
-    heroTitle2: "BLACKOUT",
-    heroTitle3: "PLATE",
+    heroTitle1: "LA PLACA NEGRA",
+    heroTitle2: "DE ARIZONA.",
+    heroTitle3: "EN LAS CALLES.",
     heroSubtitle:
-      "La placa especial totalmente negra 4AZ Kids ya est\u00E1 disponible, con m\u00E1s de 10,500 placas en las carreteras de Arizona y contando.",
+      "Obt\u00E9n la placa 4AZKIDS totalmente negra por solo $25 al a\u00F1o. $17 de cada venta de placa se destinan directamente a apoyar a Saguaro Children\u2019s Charities en todo Arizona. El saldo de la venta de la placa va al Departamento de Transporte de Arizona.",
     heroLaunchLabel: "Disponible ahora en AZMVDNow.gov",
+    heroOrderHint: "Abre AZMVDNow.gov \u2022 Busca \u201c4AZ Kids\u201d",
+    trustOfficial: "Pedido Oficial del MVD de Arizona",
+    trustPrice: "Tarifa Anual de $25",
+    trustTiming: "Hasta 4 Semanas",
     statCharities: "Organizaciones Ben\u00E9ficas",
-    statPerPlate: "Por Placa, Por A\u00F1o",
+    statPerPlate: "Ingreso Bruto de ADOT",
     statPlatesOnRoad: "Placas En La Carretera",
+
+    // Community milestone
+    milestoneLabel: "Pr\u00F3ximo Hito Comunitario",
+    milestoneHeading: "Ayuda a Arizona a alcanzar 50,000 placas negras.",
+    milestoneCurrent: "30,000 en la carretera",
+    milestoneRemaining: "Faltan 20,000",
+    milestoneProgressLabel: "Progreso hacia 50,000 placas Blackout",
+    milestoneCta: "Obt\u00E9n La Tuya",
+    toastLabel: "Actualizaci\u00F3n de ADOT",
+    toastText: "23,250 placas Blackout ya est\u00E1n en las carreteras de Arizona.",
+    toastDate: "Actualizado en julio de 2026",
+    toastDismiss: "Cerrar actualizaci\u00F3n",
 
     // Countdown
     countdownDays: "D\u00EDas",
@@ -165,15 +219,15 @@ export const translations = {
 
     // Order
     orderLabel: "Ya En La Carretera",
-    orderHeading: "M\u00E1s de 10,500 placas y contando.",
+    orderHeading: "23,250 placas y contando.",
     orderDescription:
-      "La placa Blackout 4AZ Kids est\u00E1 activa a trav\u00E9s del MVD de Arizona. M\u00E1s de 10,500 conductores de Arizona ya la llevan en la carretera, y cada placa ayuda a financiar a socios sin fines de lucro de Saguaros que sirven a ni\u00F1os y familias.",
-    orderPrimaryCta: "Ordena La Placa",
+      "Ya hay 23,250 placas Blackout 4AZ Kids en las carreteras de Arizona. Ordena la tuya a trav\u00E9s del MVD de Arizona y ayuda a financiar a organizaciones que sirven a ni\u00F1os y familias.",
+    orderPrimaryCta: "Ordenar en AZMVDNow",
     orderSecondaryCta: "C\u00F3mo Ordenar",
     waitlistLabel: "Ya En La Carretera",
-    waitlistHeading: "M\u00E1s de 10,500 placas y contando.",
+    waitlistHeading: "23,250 placas y contando.",
     waitlistDescription:
-      "La placa Blackout 4AZ Kids est\u00E1 activa a trav\u00E9s del MVD de Arizona. M\u00E1s de 10,500 conductores de Arizona ya la llevan en la carretera, y cada placa ayuda a financiar a socios sin fines de lucro de Saguaros que sirven a ni\u00F1os y familias.",
+      "Ya hay 23,250 placas Blackout 4AZ Kids en las carreteras de Arizona. Ordena la tuya a trav\u00E9s del MVD de Arizona y ayuda a financiar a organizaciones que sirven a ni\u00F1os y familias.",
     waitlistName: "Tu nombre",
     waitlistEmail: "Correo electr\u00F3nico",
     waitlistPhone: "Tel\u00E9fono (opcional)",
@@ -193,20 +247,21 @@ export const translations = {
     aboutStandardTitle: "Placa Est\u00E1ndar",
     aboutStandardPrice: "$25",
     aboutStandardDesc:
-      "ADOT asigna tu n\u00FAmero de placa \u00FAnico. $17 van directamente a organizaciones ben\u00E9ficas infantiles de Arizona.",
+      "ADOT asigna tu n\u00FAmero de placa \u00FAnico. ADOT conserva $8.00 brutos y el resto de la tarifa especial apoya a Saguaros Children\u2019s Charities.",
     aboutVanityTitle: "Personalizada",
     aboutVanityPrice: "$50",
     aboutVanityDesc:
-      "Elige hasta 7 caracteres. Los mismos $17 por a\u00F1o para caridad.",
+      "Elige hasta 7 caracteres. ADOT conserva $33.00 brutos y el resto de la tarifa especial apoya a Saguaros Children\u2019s Charities.",
     aboutPerYear: "/a\u00F1o",
 
     // Gallery
     galleryLabel: "M\u00EDrala",
-    galleryHeading: "Cada \u00E1ngulo. Siempre limpia.",
-    galleryCaption1: "La Blackout Plate",
-    galleryCaption2: "Foto de Estudio",
-    galleryCaption3: "Vista de Detalle",
-    galleryCaption4: "En la Carretera",
+    galleryHeading: "Placas reales. Conductores reales.",
+    galleryCaption1: "Camioneta",
+    galleryCaption2: "Ferrari",
+    galleryCaption3: "Convertible",
+    galleryCaption4: "Porsche",
+    galleryCaption5: "En mano",
 
     // How It Works
     howLabel: "C\u00F3mo Ordenar",
@@ -220,6 +275,27 @@ export const translations = {
     howStep3Title: "Cond\u00FAcela. Financ\u00EDala.",
     howStep3Desc:
       "$17 de cada placa van a m\u00E1s de 30 organizaciones ben\u00E9ficas infantiles cada a\u00F1o.",
+
+    // FAQ
+    faqLabel: "Antes de Ordenar",
+    faqHeading: "Lo que debes saber.",
+    faqIntro:
+      "La Blackout Plate se ordena a trav\u00E9s del MVD de Arizona. Estas son las preguntas m\u00E1s frecuentes de los conductores.",
+    faqCostQuestion: "\u00BFCu\u00E1nto cuesta la placa?",
+    faqCostAnswer:
+      "La placa especial agrega una tarifa inicial y anual de $25. La personalizaci\u00F3n agrega otros $25 al a\u00F1o y el franqueo no est\u00E1 incluido.",
+    faqPersonalQuestion: "\u00BFPuedo personalizar la placa?",
+    faqPersonalAnswer:
+      "S\u00ED. Las letras y n\u00FAmeros personalizados agregan $25 al a\u00F1o y est\u00E1n sujetos a la revisi\u00F3n del MVD de Arizona.",
+    faqTimingQuestion: "\u00BFCu\u00E1nto tarda la entrega?",
+    faqTimingAnswer:
+      "El MVD de Arizona recomienda permitir hasta cuatro semanas para el procesamiento. La placa y los documentos actualizados se env\u00EDan por correo.",
+    faqCurrentQuestion: "\u00BFQu\u00E9 pasa con mi placa actual?",
+    faqCurrentAnswer:
+      "Sigue usando tu placa actual hasta que llegue la nueva Blackout Plate.",
+    faqImpactQuestion: "\u00BFA d\u00F3nde va la contribuci\u00F3n de $17?",
+    faqImpactAnswer:
+      "$17 de cada compra y renovaci\u00F3n van a Saguaros Children\u2019s Charities, que apoya a m\u00E1s de 30 organizaciones infantiles locales en Arizona.",
 
     // Charities
     charityLabel: "A D\u00F3nde Van Tus $17",
@@ -245,12 +321,12 @@ export const translations = {
 
     // Impact
     impactLabel: "El Impacto",
-    impactHeading1: "M\u00E1s de 10,500 placas en la carretera",
-    impactHeading2: "y contando.",
+    impactHeading1: "Saguaros Children\u2019s Charities",
+    impactHeading2: "en movimiento desde 1987.",
     impactDescription:
-      "Cada placa 4AZ Kids convierte un dise\u00F1o limpio y totalmente negro en apoyo anual para organizaciones infantiles de Arizona. Los Saguaros han recaudado fondos para los ni\u00F1os de Arizona desde 1987, distribuyendo becas a m\u00E1s de 30 socios sin fines de lucro en todo el estado.",
+      "Cada placa 4AZ Kids ayuda a financiar a Saguaros Children\u2019s Charities en Arizona. El programa combina un dise\u00F1o negro limpio con apoyo anual para m\u00E1s de 30 organizaciones sin fines de lucro que sirven a ni\u00F1os en todo el estado.",
     impactYearFounded: "A\u00F1o de Fundaci\u00F3n",
-    impactRecentGrants: "Becas Recientes",
+    impactRecentGrants: "Donado Desde 1987",
     impactCharitiesFunded: "Organizaciones Financiadas",
     impactPerPlateYear: "Por Placa / A\u00F1o",
 
@@ -258,7 +334,7 @@ export const translations = {
     ctaHeading: "Pon la Blackout Plate en la carretera.",
     ctaDescription:
       "Ordena a trav\u00E9s de AZMVDNow.gov, busca 4AZ Kids y elige est\u00E1ndar o personalizada. Cada placa ayuda a que el impacto siga creciendo.",
-    ctaOrderPlate: "Ordena La Placa",
+    ctaOrderPlate: "Ordenar en AZMVDNow",
     ctaJoinWaitlist: "Ordena La Placa",
 
     // Footer
@@ -268,7 +344,7 @@ export const translations = {
       "Los fondos benefician a m\u00E1s de 30 organizaciones infantiles de Arizona a trav\u00E9s de la Fundaci\u00F3n Saguaros 501(c)(3)",
 
     // Sticky bar
-    stickyLaunch: "M\u00E1s de 10,500 placas",
+    stickyLaunch: "23,250 placas en la carretera",
     stickyJoin: "Ordenar",
   },
 } as const;

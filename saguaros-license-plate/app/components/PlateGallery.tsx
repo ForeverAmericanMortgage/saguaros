@@ -8,24 +8,29 @@ import { useLanguage } from "@/lib/LanguageContext";
 
 const GALLERY_IMAGES = [
   {
-    src: "/images/saguaros-plate.jpeg",
-    alt: "Blackout Plate — front view",
+    src: "/images/real-plate-truck.png",
+    alt: "Blackout Plate mounted on a black Ford truck",
     captionKey: "galleryCaption1" as const,
   },
   {
-    src: "/images/4AZKIDS_white.png",
-    alt: "Blackout Plate — studio lighting with white border",
+    src: "/images/real-plate-black-ferrari.png",
+    alt: "Blackout Plate mounted on a matte black Ferrari",
     captionKey: "galleryCaption2" as const,
   },
   {
-    src: "/images/ref_closeup_macro.png",
-    alt: "Blackout Plate — close-up detail",
+    src: "/images/real-plate-white-mercedes.png",
+    alt: "Blackout Plate mounted on a white Mercedes convertible",
     captionKey: "galleryCaption3" as const,
   },
   {
-    src: "/images/ref_truck_desert.png",
-    alt: "Blackout Plate — on a truck in the Arizona desert",
+    src: "/images/real-plate-porsche.png",
+    alt: "Blackout Plate mounted on a gray Porsche 911",
     captionKey: "galleryCaption4" as const,
+  },
+  {
+    src: "/images/real-plate-handheld-red-car.png",
+    alt: "Blackout Plate held beside a red sports car",
+    captionKey: "galleryCaption5" as const,
   },
 ];
 
@@ -57,9 +62,9 @@ export default function PlateGallery() {
       <motion.div className="flex gap-4 px-6" style={{ x }}>
         {GALLERY_IMAGES.map((img, i) => (
           <FadeIn key={img.src} delay={i * 0.1}>
-            <div className="group relative shrink-0 w-[280px] sm:w-[420px] lg:w-[500px]">
+            <div className="group relative shrink-0 w-[260px] sm:w-[320px] lg:w-[360px]">
               <div
-                className="relative overflow-hidden rounded-xl border border-border group-hover:border-border-light transition-colors"
+                className="relative h-[360px] sm:h-[460px] overflow-hidden rounded-xl border border-border group-hover:border-border-light transition-colors"
                 style={{
                   perspective: "800px",
                 }}
@@ -72,14 +77,14 @@ export default function PlateGallery() {
                   }}
                   transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                   style={{ transformStyle: "preserve-3d" }}
+                  className="relative h-full w-full"
                 >
                   <Image
                     src={img.src}
                     alt={img.alt}
-                    width={500}
-                    height={300}
-                    sizes="(max-width: 640px) 320px, (max-width: 1024px) 420px, 500px"
-                    className="w-full h-auto"
+                    fill
+                    sizes="(max-width: 640px) 260px, (max-width: 1024px) 320px, 360px"
+                    className="object-cover"
                   />
                 </motion.div>
 

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useLanguage, LanguageToggle } from "@/lib/LanguageContext";
+import TrackedOutboundLink from "@/components/TrackedOutboundLink";
 
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false);
@@ -35,12 +36,15 @@ export default function Nav() {
             {t("navImpact")}
           </a>
           <LanguageToggle />
-          <a
-            href="#order"
+          <TrackedOutboundLink
+            href="https://azmvdnow.gov/plates"
+            target="_blank"
+            rel="noopener noreferrer"
+            eventLabel="nav_order_azmvdnow"
             className="text-xs tracking-widest uppercase bg-pure-white text-black px-5 py-2 rounded hover:bg-light transition-colors font-semibold"
           >
             {t("navGetNotified")}
-          </a>
+          </TrackedOutboundLink>
         </div>
 
         {/* Mobile hamburger button */}
@@ -92,13 +96,16 @@ export default function Nav() {
             {t("navImpact")}
           </a>
           <LanguageToggle />
-          <a
-            href="#order"
+          <TrackedOutboundLink
+            href="https://azmvdnow.gov/plates"
+            target="_blank"
+            rel="noopener noreferrer"
+            eventLabel="mobile_nav_order_azmvdnow"
             onClick={() => setMenuOpen(false)}
             className="text-xs tracking-widest uppercase bg-pure-white text-black px-5 py-2 rounded hover:bg-light transition-colors font-semibold"
           >
             {t("navGetNotified")}
-          </a>
+          </TrackedOutboundLink>
         </div>
       </div>
     </nav>

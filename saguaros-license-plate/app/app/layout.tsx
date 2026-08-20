@@ -1,8 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Space_Grotesk } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import { Inter, Space_Grotesk } from "next/font/google";
 import BrandBackground from "@/components/BrandBackground";
 import { LanguageProvider } from "@/lib/LanguageContext";
+import TrackingScripts from "@/components/TrackingScripts";
 import "./globals.css";
 
 const inter = Inter({
@@ -26,11 +27,16 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: "The Blackout Plate | 4AZ Kids — Arizona's First All-Black Specialty Plate",
   description:
-    "Arizona's all-black 4AZ Kids specialty license plate is available now through AZMVDNow.gov, with 10,500+ plates on the road and every plate supporting children's charities.",
+    "Arizona's all-black 4AZ Kids specialty license plate is available now through AZMVDNow.gov, with 23,250 plates on the road and every plate supporting children's charities.",
+  verification: {
+    other: {
+      "facebook-domain-verification": "r12na9sncj0zjkal6812z17mubfrvd",
+    },
+  },
   openGraph: {
     title: "The Blackout Plate | 4AZ Kids",
     description:
-      "Arizona's all-black 4AZ Kids specialty plate is available now, with 10,500+ plates on the road and every plate supporting children's charities.",
+      "Arizona's all-black 4AZ Kids specialty plate is available now, with 23,250 plates on the road and every plate supporting children's charities.",
     type: "website",
     url: "https://blackplateaz.com",
   },
@@ -38,7 +44,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "The Blackout Plate | 4AZ Kids",
     description:
-      "Arizona's all-black 4AZ Kids specialty plate is available now, with 10,500+ plates on the road and every plate supporting children's charities.",
+      "Arizona's all-black 4AZ Kids specialty plate is available now, with 23,250 plates on the road and every plate supporting children's charities.",
   },
 };
 
@@ -55,6 +61,7 @@ export default function RootLayout({
           {children}
           <div className="noise-overlay" aria-hidden="true" />
         </LanguageProvider>
+        <TrackingScripts />
         <Analytics />
       </body>
     </html>

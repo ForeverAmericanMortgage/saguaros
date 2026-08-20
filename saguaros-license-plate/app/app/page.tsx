@@ -1,14 +1,16 @@
 "use client";
 
 import Image from "next/image";
+import { motion } from "framer-motion";
 import Nav from "@/components/Nav";
 import PlateHero from "@/components/PlateHero";
-import Countdown from "@/components/Countdown";
 import FadeIn from "@/components/FadeIn";
 import CharityPartners from "@/components/CharityPartners";
 import PlateGallery from "@/components/PlateGallery";
 import AnimatedCounter from "@/components/AnimatedCounter";
 import StickyWaitlistBar from "@/components/StickyWaitlistBar";
+import TrackedOutboundLink from "@/components/TrackedOutboundLink";
+import MilestoneToast from "@/components/MilestoneToast";
 import { useLanguage } from "@/lib/LanguageContext";
 
 export default function Home() {
@@ -18,9 +20,10 @@ export default function Home() {
     <>
       <Nav />
       <StickyWaitlistBar />
+      <MilestoneToast />
 
       {/* ─── HERO ─── */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 pt-20 pb-16 overflow-hidden">
+      <section className="relative min-h-[100svh] flex flex-col items-center justify-start sm:justify-center text-center px-6 pt-24 sm:pt-20 pb-12 sm:pb-16 overflow-hidden">
         {/* Background gradient */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,#111_0%,#050505_70%)]" />
         {/* Grid lines */}
@@ -35,92 +38,104 @@ export default function Home() {
 
         <div className="relative z-10 flex flex-col items-center">
           {/* Badge */}
-          <div className="mb-8 px-4 py-1.5 border border-border-light rounded-full">
+          <div className="mb-5 sm:mb-8 px-4 py-1.5 border border-border-light rounded-full">
             <span className="text-[10px] sm:text-xs font-medium tracking-[0.25em] uppercase text-muted">
               {t("heroBadge")}
             </span>
           </div>
 
           {/* Title */}
-          <h1 className="font-display text-5xl sm:text-7xl lg:text-8xl font-bold tracking-tight text-pure-white leading-[0.95]">
+          <h1 className="font-display text-4xl sm:text-7xl lg:text-8xl font-bold tracking-tight text-pure-white leading-[0.95]">
             {t("heroTitle1")}
             <br />
             {t("heroTitle2")}
             <br />
-            <span className="font-light text-gray">{t("heroTitle3")}</span>
+            <span className="font-light text-gray">30K {t("heroTitle3")}</span>
           </h1>
 
-          <p className="mt-6 text-base sm:text-lg text-gray max-w-xl leading-relaxed">
+          <p className="mt-6 text-sm sm:text-lg text-gray max-w-2xl leading-relaxed">
             {t("heroSubtitle")}
           </p>
 
-          {/* Plate */}
-          <div className="mt-10 mb-12 w-full">
-            <PlateHero />
+          <div className="mt-6 flex items-center justify-center w-full">
+            <TrackedOutboundLink
+              href="https://azmvdnow.gov/plates"
+              target="_blank"
+              rel="noopener noreferrer"
+              eventLabel="hero_order_azmvdnow"
+              className="w-full sm:w-auto bg-pure-white text-black px-8 py-3.5 rounded text-sm font-semibold tracking-wide uppercase hover:bg-light transition-colors"
+            >
+              {t("orderPrimaryCta")}
+            </TrackedOutboundLink>
           </div>
+          <p className="mt-3 text-[10px] sm:text-xs tracking-[0.12em] uppercase text-muted">
+            {t("heroOrderHint")}
+          </p>
 
-          {/* Countdown */}
-          <div className="mb-6">
-            <p className="text-[10px] sm:text-xs tracking-[0.3em] uppercase text-muted mb-4 font-medium">
-              {t("heroLaunchLabel")}
-            </p>
-            <Countdown />
-          </div>
-
-          {/* Stats — animated counters */}
-          <div className="mt-10 flex flex-wrap justify-center gap-10 sm:gap-16">
-            {[
-              { value: "30+", label: t("statCharities") },
-              { value: "$17", label: t("statPerPlate") },
-              { value: "10,500+", label: t("statPlatesOnRoad") },
-            ].map(({ value, label }) => (
-              <div key={label} className="text-center">
-                <AnimatedCounter
-                  value={value}
-                  className="font-display text-2xl sm:text-3xl font-bold text-pure-white"
-                />
-                <div className="text-[10px] sm:text-xs tracking-[0.15em] uppercase text-muted mt-1">
-                  {label}
-                </div>
+          <div className="mt-5 grid grid-cols-3 divide-x divide-border-light border border-border-light rounded-lg bg-card/70 w-full max-w-3xl">
+            {[t("trustOfficial"), t("trustPrice"), t("trustTiming")].map((item) => (
+              <div
+                key={item}
+                className="px-2 sm:px-4 py-3 text-[8px] sm:text-[10px] font-medium tracking-[0.08em] uppercase text-light leading-tight sm:whitespace-nowrap"
+              >
+                {item}
               </div>
             ))}
           </div>
+
+          {/* Plate */}
+          <div className="mt-6 sm:mt-8 mb-2 sm:mb-4 w-full">
+            <PlateHero />
+          </div>
+
         </div>
       </section>
 
-      {/* ─── ORDER ─── */}
-      <section id="order" className="py-20 sm:py-28 px-6 border-t border-border">
-        <div className="max-w-6xl mx-auto text-center">
-          <FadeIn>
-            <p className="text-[10px] sm:text-xs tracking-[0.3em] uppercase text-muted mb-4 font-medium">
-              {t("orderLabel")}
-            </p>
-            <h2 className="font-display text-3xl sm:text-5xl font-bold text-pure-white tracking-tight">
-              {t("orderHeading")}
-            </h2>
-            <p className="mt-4 text-gray max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
-              {t("orderDescription")}
-            </p>
-          </FadeIn>
-          <FadeIn delay={0.15}>
-            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <a
-                href="https://azmvdnow.gov/plates"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-pure-white text-black px-8 py-3 rounded text-sm font-semibold tracking-wide uppercase hover:bg-light transition-colors"
-              >
-                {t("orderPrimaryCta")}
-              </a>
-              <a
-                href="#how-to-order"
-                className="border border-border-light text-light px-8 py-3 rounded text-sm font-semibold tracking-wide uppercase hover:border-gray hover:text-pure-white transition-colors"
-              >
-                {t("orderSecondaryCta")}
-              </a>
+      {/* ─── COMMUNITY MILESTONE ─── */}
+      <section className="px-6 py-8 sm:py-10 border-y border-border bg-card/35">
+        <FadeIn>
+          <div className="max-w-5xl mx-auto grid gap-6 sm:grid-cols-[1fr_auto] sm:items-center">
+            <div>
+              <p className="text-[9px] sm:text-[10px] tracking-[0.25em] uppercase text-muted font-medium">
+                {t("milestoneLabel")}
+              </p>
+              <h2 className="mt-2 font-display text-xl sm:text-3xl font-bold text-pure-white tracking-tight">
+                {t("milestoneHeading")}
+              </h2>
+              <div className="mt-4 max-w-2xl">
+                <div className="flex items-center justify-between gap-4 text-[10px] sm:text-xs uppercase tracking-[0.12em]">
+                  <span className="font-semibold text-light">{t("milestoneCurrent")}</span>
+                  <span className="text-muted">{t("milestoneRemaining")}</span>
+                </div>
+                <div
+                  className="mt-2 h-2 overflow-hidden rounded-full bg-border-light"
+                  role="progressbar"
+                  aria-label={t("milestoneProgressLabel")}
+                  aria-valuemin={0}
+                  aria-valuemax={50000}
+                  aria-valuenow={30000}
+                >
+                  <motion.div
+                    initial={{ width: 0 }}
+                    whileInView={{ width: "60%" }}
+                    viewport={{ once: true, amount: 0.8 }}
+                    transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+                    className="h-full rounded-full bg-pure-white"
+                  />
+                </div>
+              </div>
             </div>
-          </FadeIn>
-        </div>
+            <TrackedOutboundLink
+              href="https://azmvdnow.gov/plates"
+              target="_blank"
+              rel="noopener noreferrer"
+              eventLabel="milestone_25k_cta"
+              className="w-full sm:w-auto text-center bg-pure-white text-black px-7 py-3 rounded text-xs font-semibold tracking-wide uppercase hover:bg-light transition-colors"
+            >
+              {t("milestoneCta")}
+            </TrackedOutboundLink>
+          </div>
+        </FadeIn>
       </section>
 
       {/* ─── ABOUT ─── */}
@@ -143,17 +158,12 @@ export default function Home() {
           </FadeIn>
 
           {/* Pricing cards with 3D hover */}
-          <div className="mt-12 grid sm:grid-cols-2 gap-4">
+          <div className="mt-12 max-w-xl">
             {[
               {
                 type: t("aboutStandardTitle"),
                 price: t("aboutStandardPrice"),
                 desc: t("aboutStandardDesc"),
-              },
-              {
-                type: t("aboutVanityTitle"),
-                price: t("aboutVanityPrice"),
-                desc: t("aboutVanityDesc"),
               },
             ].map(({ type, price, desc }, i) => (
               <FadeIn key={type} delay={i * 0.1}>
@@ -170,60 +180,6 @@ export default function Home() {
                       <span className="text-lg font-normal text-muted">{t("aboutPerYear")}</span>
                     </div>
                     <p className="mt-2 text-sm text-gray">{desc}</p>
-                  </div>
-                </div>
-              </FadeIn>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ─── GALLERY ─── */}
-      <PlateGallery />
-
-      {/* ─── HOW IT WORKS ─── */}
-      <section id="how-to-order" className="py-20 sm:py-28 px-6 border-t border-border">
-        <div className="max-w-6xl mx-auto">
-          <FadeIn>
-            <p className="text-[10px] sm:text-xs tracking-[0.3em] uppercase text-muted mb-4 font-medium">
-              {t("howLabel")}
-            </p>
-            <h2 className="font-display text-3xl sm:text-5xl font-bold text-pure-white tracking-tight">
-              {t("howHeading")}
-            </h2>
-          </FadeIn>
-
-          <div className="mt-12 grid sm:grid-cols-3 gap-4">
-            {[
-              {
-                num: "01",
-                title: t("howStep1Title"),
-                desc: t("howStep1Desc"),
-              },
-              {
-                num: "02",
-                title: t("howStep2Title"),
-                desc: t("howStep2Desc"),
-              },
-              {
-                num: "03",
-                title: t("howStep3Title"),
-                desc: t("howStep3Desc"),
-              },
-            ].map(({ num, title, desc }, i) => (
-              <FadeIn key={num} delay={i * 0.1}>
-                <div
-                  className="group bg-card border border-border rounded-xl p-8 text-center hover:border-border-light transition-all duration-300 h-full cursor-default"
-                  style={{ perspective: "600px" }}
-                >
-                  <div className="transition-transform duration-300 group-hover:[transform:rotateY(4deg)_rotateX(-2deg)_translateZ(10px)]">
-                    <div className="font-display text-4xl font-bold text-border-light mb-4 group-hover:text-muted transition-colors">
-                      {num}
-                    </div>
-                    <h3 className="font-display text-lg font-semibold text-pure-white mb-2">
-                      {title}
-                    </h3>
-                    <p className="text-sm text-gray leading-relaxed">{desc}</p>
                   </div>
                 </div>
               </FadeIn>
@@ -253,13 +209,12 @@ export default function Home() {
           </FadeIn>
 
           {/* Impact stats — animated counters */}
-          <div className="mt-12 grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
-              { value: "1987", label: t("impactYearFounded") },
-              { value: "$750,000+", label: t("impactRecentGrants") },
-              { value: "30+", label: t("impactCharitiesFunded") },
-              { value: "$17", label: t("impactPerPlateYear") },
-            ].map(({ value, label }, i) => (
+              { value: "1987", label: t("impactYearFounded"), useGrouping: false },
+              { value: "$30M", label: t("impactRecentGrants"), useGrouping: false },
+              { value: "30+", label: t("impactCharitiesFunded"), useGrouping: true },
+            ].map(({ value, label, useGrouping }, i) => (
               <FadeIn key={label} delay={i * 0.08}>
                 <div
                   className="group bg-card border border-border rounded-xl p-6 sm:p-8 text-center hover:border-border-light transition-all duration-300 cursor-default"
@@ -268,6 +223,7 @@ export default function Home() {
                   <div className="transition-transform duration-300 group-hover:[transform:rotateY(3deg)_rotateX(-2deg)]">
                     <AnimatedCounter
                       value={value}
+                      useGrouping={useGrouping}
                       className="font-display text-2xl sm:text-3xl lg:text-4xl font-bold text-pure-white"
                     />
                     <div className="text-xs text-muted mt-2 tracking-wide">
@@ -276,6 +232,51 @@ export default function Home() {
                   </div>
                 </div>
               </FadeIn>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── GALLERY ─── */}
+      <PlateGallery />
+
+      {/* ─── FAQ ─── */}
+      <section id="faq" className="py-20 sm:py-28 px-6 border-t border-border">
+        <div className="max-w-3xl mx-auto">
+          <FadeIn>
+            <p className="text-[10px] sm:text-xs tracking-[0.3em] uppercase text-muted mb-4 font-medium">
+              {t("faqLabel")}
+            </p>
+            <h2 className="font-display text-3xl sm:text-5xl font-bold text-pure-white tracking-tight">
+              {t("faqHeading")}
+            </h2>
+            <p className="mt-4 text-gray text-sm sm:text-base leading-relaxed">
+              {t("faqIntro")}
+            </p>
+          </FadeIn>
+
+          <div className="mt-10 border-y border-border">
+            {[
+              { question: t("faqCostQuestion"), answer: t("faqCostAnswer") },
+              { question: t("faqPersonalQuestion"), answer: t("faqPersonalAnswer") },
+              { question: t("faqTimingQuestion"), answer: t("faqTimingAnswer") },
+              { question: t("faqCurrentQuestion"), answer: t("faqCurrentAnswer") },
+              { question: t("faqImpactQuestion"), answer: t("faqImpactAnswer") },
+            ].map(({ question, answer }) => (
+              <details key={question} className="group border-b border-border last:border-b-0">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-5 text-left text-sm sm:text-base font-semibold text-pure-white">
+                  {question}
+                  <span
+                    className="shrink-0 text-xl font-light text-muted transition-transform duration-200 group-open:rotate-45"
+                    aria-hidden="true"
+                  >
+                    +
+                  </span>
+                </summary>
+                <p className="pb-5 pr-10 text-sm sm:text-base leading-relaxed text-gray">
+                  {answer}
+                </p>
+              </details>
             ))}
           </div>
         </div>
@@ -290,23 +291,19 @@ export default function Home() {
           <p className="mt-4 text-gray max-w-lg mx-auto text-sm sm:text-base">
             {t("ctaDescription")}
           </p>
-          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a
+          <div className="mt-8 flex flex-col items-center justify-center gap-3">
+            <TrackedOutboundLink
               href="https://azmvdnow.gov/plates"
               target="_blank"
               rel="noopener noreferrer"
+              eventLabel="final_cta_order_plate"
               className="bg-pure-white text-black px-8 py-3 rounded text-sm font-semibold tracking-wide uppercase hover:bg-light transition-colors"
             >
               {t("ctaOrderPlate")}
-            </a>
-            <a
-              href="https://azmvdnow.gov/plates"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="border border-border-light text-light px-8 py-3 rounded text-sm font-semibold tracking-wide uppercase hover:border-gray hover:text-pure-white transition-colors"
-            >
-              AZMVDNow.gov
-            </a>
+            </TrackedOutboundLink>
+            <p className="text-[10px] sm:text-xs tracking-[0.12em] uppercase text-muted">
+              {t("heroOrderHint")}
+            </p>
           </div>
         </FadeIn>
       </section>
