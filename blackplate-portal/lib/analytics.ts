@@ -469,6 +469,23 @@ async function loadSnapshot(days: number) {
   }
 }
 
+export async function getSnapshotDashboard(daysInput: number) {
+  const days = [7, 14, 30, 90].includes(daysInput) ? daysInput : 30;
+  const reports = await getAdotReports().catch(() => [] as AdotMonthlyReport[]);
+  const snapshot = await loadSnapshot(days);
+
+  if (snapshot.payload) {
+    return applyFallbackMetadata(
+      { ...snapshot.payload, reports, adotSummary: summarizeReports(reports), projection: projectionPlan(reports) },
+      "Refreshing live analytics.",
+      "snapshot",
+      snapshot.snapshotGeneratedAt
+    );
+  }
+
+  return buildEmptyDashboard(days, reports, "Live analytics are unavailable and no saved snapshot exists yet.");
+}
+
 function applyFallbackMetadata(payload: DashboardPayload, liveError: string, source: "snapshot" | "empty", generatedAt: string | null) {
   return {
     ...payload,

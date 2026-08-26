@@ -132,6 +132,14 @@ export default function CampaignDashboard() {
 
     async function refresh() {
       try {
+        // Render the last known-good report before waiting on the live analytics provider.
+        const fallbackResponse = await fetch(`/api/dashboard?days=${days}&fallback=1`, { cache: "no-store" });
+        const fallbackPayload = (await fallbackResponse.json()) as DashboardData;
+        if (fallbackResponse.ok && fallbackPayload.ok && active) {
+          setData(fallbackPayload);
+          setLoading(false);
+        }
+
         const response = await fetch(`/api/dashboard?days=${days}`, { cache: "no-store" });
         const payload = (await response.json()) as DashboardData;
         if (!response.ok || !payload.ok) throw new Error(payload.error || "Live campaign data failed to load.");
