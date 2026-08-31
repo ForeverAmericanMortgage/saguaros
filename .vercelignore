@@ -6,7 +6,19 @@
 
 PLAN.md
 saguaros-sa-key.json
-saguaros-license-plate
+# Keep the Black Plate application in Git and CLI deployment payloads.
+# Excluding its parent directory lets Next.js publish a successful /404-only build.
+saguaros-license-plate/.DS_Store
+saguaros-license-plate/Project_Scope_Blackout_Plate.docx
+saguaros-license-plate/Project_Scope_Blackout_Plate.pdf
+saguaros-license-plate/assets
+saguaros-license-plate/landing-page
+saguaros-license-plate/app/.env*
+saguaros-license-plate/app/.next
+saguaros-license-plate/app/node_modules
+saguaros-license-plate/app/tmp
+saguaros-license-plate/app/exports
+saguaros-license-plate/app/campaigns/generated
 
 app/.env*
 app/.next

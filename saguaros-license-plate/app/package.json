@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node scripts/verify-deployment.mjs source && next build && node scripts/verify-deployment.mjs build",
     "start": "next start",
     "lint": "eslint",
     "import:supporter-customers:csv": "node --env-file=.env.local scripts/import-supporter-customers-csv.mjs",
