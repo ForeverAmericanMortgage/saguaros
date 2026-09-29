@@ -1,0 +1,137 @@
+{
+  "segment_id": 3417343,
+  "campaigns": [
+    {
+      "key": "01",
+      "id": "a81d65b48d",
+      "web_id": 7250186,
+      "window": "December 2026 · early month",
+      "audience": "Prospective and returning businesses without a 2027 team",
+      "release_gate": "Release only after general registration or this exact recipient cohort is enabled.",
+      "verified_status": "save",
+      "recipient_count": 0,
+      "url": "https://us8.admin.mailchimp.com/campaigns/edit?id=7250186"
+    },
+    {
+      "key": "02",
+      "id": "e27b44fac2",
+      "web_id": 7250187,
+      "window": "December 2026 · mid month",
+      "audience": "Eligible prospects who have not registered",
+      "release_gate": "Confirm all impact-page claims and linked grant-recipient information before sending.",
+      "verified_status": "save",
+      "recipient_count": 0,
+      "url": "https://us8.admin.mailchimp.com/campaigns/edit?id=7250187"
+    },
+    {
+      "key": "03",
+      "id": "8eeee099c4",
+      "web_id": 7250188,
+      "window": "January 2027 · early month",
+      "audience": "Past participants without a 2027 registration",
+      "release_gate": "Past participation must be supported by actual historical records; exclude registered teams.",
+      "verified_status": "save",
+      "recipient_count": 0,
+      "url": "https://us8.admin.mailchimp.com/campaigns/edit?id=7250188"
+    },
+    {
+      "key": "04",
+      "id": "aed23fd76c",
+      "web_id": 7250189,
+      "window": "January 2027 · mid month",
+      "audience": "New prospects without a team",
+      "release_gate": "Confirm contact-permission copy and registration availability.",
+      "verified_status": "save",
+      "recipient_count": 0,
+      "url": "https://us8.admin.mailchimp.com/campaigns/edit?id=7250189"
+    },
+    {
+      "key": "05",
+      "id": "1838fa4b14",
+      "web_id": 7250190,
+      "window": "January 2027 · late month",
+      "audience": "Approved captains; exclude declined teams",
+      "release_gate": "Open signup or approve referred email addresses first. Verify cross-tab recruitment attribution before claiming referrals are tracked.",
+      "verified_status": "save",
+      "recipient_count": 0,
+      "url": "https://us8.admin.mailchimp.com/campaigns/edit?id=7250190"
+    },
+    {
+      "key": "06",
+      "id": "c7706917e5",
+      "web_id": 7250191,
+      "window": "February 2027 · early month",
+      "audience": "Approved captains with incomplete rosters",
+      "release_gate": "Send only to currently incomplete rosters. Roster entry must not automatically enroll participants in marketing.",
+      "verified_status": "save",
+      "recipient_count": 0,
+      "url": "https://us8.admin.mailchimp.com/campaigns/edit?id=7250191"
+    },
+    {
+      "key": "07",
+      "id": "5314943e62",
+      "web_id": 7250192,
+      "window": "February 2027 · mid month",
+      "audience": "Approved captains; fundraising enabled",
+      "release_gate": "Hold until 2027 offers, prices, team credit instructions and transaction tracking are verified live.",
+      "verified_status": "save",
+      "recipient_count": 0,
+      "url": "https://us8.admin.mailchimp.com/campaigns/edit?id=7250192"
+    },
+    {
+      "key": "08",
+      "id": "e451dc7ff9",
+      "web_id": 7250193,
+      "window": "February 2027 · late month",
+      "audience": "Eligible unregistered prospects only",
+      "release_gate": "Do not claim last chance, limited inventory or a deadline until the chairman confirms it.",
+      "verified_status": "save",
+      "recipient_count": 0,
+      "url": "https://us8.admin.mailchimp.com/campaigns/edit?id=7250193"
+    },
+    {
+      "key": "09",
+      "id": "0babd26d04",
+      "web_id": 7250194,
+      "window": "March 2027 · early month",
+      "audience": "Approved teams below $3,000; fundraising enabled",
+      "release_gate": "Use only active 2027 products. No Bronco, raffle price, tax benefit or sponsorship inventory claim carried over from 2026.",
+      "verified_status": "save",
+      "recipient_count": 0,
+      "url": "https://us8.admin.mailchimp.com/campaigns/edit?id=7250194"
+    },
+    {
+      "key": "10",
+      "id": "5ccc5eefdd",
+      "web_id": 7250195,
+      "window": "March 2027 · mid month",
+      "audience": "Approved teams; split below minimum vs minimum reached",
+      "release_gate": "Hold until leaderboard uses verified 2027 transactions, approved teams and current refund-adjusted totals. Never link this campaign to sample standings.",
+      "verified_status": "save",
+      "recipient_count": 0,
+      "url": "https://us8.admin.mailchimp.com/campaigns/edit?id=7250195"
+    },
+    {
+      "key": "11",
+      "id": "40eb6c40d0",
+      "web_id": 7250196,
+      "window": "April 2027 · timing tied to confirmed fundraising deadline",
+      "audience": "Approved teams still below minimum",
+      "release_gate": "Confirm actual deadline and transaction reconciliation. Exclude teams already at minimum and teams with unresolved totals; use personal follow-up for disputes.",
+      "verified_status": "save",
+      "recipient_count": 0,
+      "url": "https://us8.admin.mailchimp.com/campaigns/edit?id=7250196"
+    },
+    {
+      "key": "12",
+      "id": "541afb9322",
+      "web_id": 7250197,
+      "window": "April 2027 · 7–10 days before confirmed event",
+      "audience": "Approved captains and separately permissioned participants",
+      "release_gate": "Confirm event date, venue, arrival window, schedule, parking, accessibility, weather plan and guide URL. Do not reuse April 17, 2026 or the old after-party details. Verify participant permission before direct sends.",
+      "verified_status": "save",
+      "recipient_count": 0,
+      "url": "https://us8.admin.mailchimp.com/campaigns/edit?id=7250197"
+    }
+  ]
+}

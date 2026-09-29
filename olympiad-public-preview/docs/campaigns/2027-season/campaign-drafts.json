@@ -1,0 +1,194 @@
+[
+  {
+    "key": "01",
+    "window": "December 2026 · early month",
+    "audience": "Prospective and returning businesses without a 2027 team",
+    "subject": "Put your business in the game for Olympiad 2027",
+    "preview": "Start with a captain. Build the roster as you go.",
+    "headline": "Put your business in the game.",
+    "paragraphs": [
+      "Olympiad brings local businesses together for friendly competition and support for Arizona children’s charities. We’re getting ready for the 2027 season—and your business can be part of it.",
+      "Choose a captain, create your business and team profile, and add teammates as you confirm them. You need at least six participants, including the captain, and every team has a $3,000 minimum fundraising goal.",
+      "Industry cups recognize the top fundraising teams. Medals recognize the teams that win the games. Start with the basics now; your full roster can come together later."
+    ],
+    "cta": "Start your team",
+    "url": "https://scottsdaleolympiad.com/#captain",
+    "release_gate": "Release only after general registration or this exact recipient cohort is enabled."
+  },
+  {
+    "key": "02",
+    "window": "December 2026 · mid month",
+    "audience": "Eligible prospects who have not registered",
+    "subject": "Your next team outing can do more",
+    "preview": "Competition, connection and a shared charitable purpose.",
+    "headline": "A team day with a bigger purpose.",
+    "paragraphs": [
+      "Bring colleagues together, meet other businesses and compete for a cause. That’s the idea behind Olympiad.",
+      "Your business joins as a sponsor team. A captain organizes the roster, and the team works toward a minimum $3,000 fundraising goal in support of Arizona children’s charities.",
+      "Explore the event and its charitable purpose, then choose the person who will lead your team. You don’t need every teammate confirmed to get started."
+    ],
+    "cta": "Explore Olympiad",
+    "url": "https://scottsdaleolympiad.com/#home",
+    "release_gate": "Confirm all impact-page claims and linked grant-recipient information before sending."
+  },
+  {
+    "key": "03",
+    "window": "January 2027 · early month",
+    "audience": "Past participants without a 2027 registration",
+    "subject": "New year. New team. Same competitive spirit.",
+    "preview": "Returning to Olympiad? Start your 2027 team in the new hub.",
+    "headline": "Bring your business back.",
+    "paragraphs": [
+      "If Olympiad is part of your company’s calendar, now is a good time to get your 2027 team started.",
+      "The new team hub brings your business profile, captain contact information and private roster together. Save what you know, then return with your email sign-in link to finish the details.",
+      "Every team needs at least six participants and has the same $3,000 minimum fundraising goal. Select your industry when registering so your team is in the right fundraising competition."
+    ],
+    "cta": "Create your 2027 team",
+    "url": "https://scottsdaleolympiad.com/#captain",
+    "release_gate": "Past participation must be supported by actual historical records; exclude registered teams."
+  },
+  {
+    "key": "04",
+    "window": "January 2027 · mid month",
+    "audience": "New prospects without a team",
+    "subject": "What does it take to enter Olympiad?",
+    "preview": "A captain, at least six teammates and a shared $3,000 goal.",
+    "headline": "Here’s how your team gets started.",
+    "paragraphs": [
+      "First, choose a captain. They’ll register your business, enter a team name and select your industry.",
+      "Next, start your roster. Include the captain and work toward at least six participants. Names, email addresses, phone numbers and shirt preferences help us keep everyone informed and prepared.",
+      "Finally, make a fundraising plan together. The minimum is $3,000 per team. You can build toward a larger stretch goal as the season progresses. Fundraising cups are awarded within industries; game medals are earned on the field."
+    ],
+    "cta": "Start with your captain",
+    "url": "https://scottsdaleolympiad.com/#captain",
+    "release_gate": "Confirm contact-permission copy and registration availability."
+  },
+  {
+    "key": "05",
+    "window": "January 2027 · late month",
+    "audience": "Approved captains; exclude declined teams",
+    "subject": "Who would your business love to compete against?",
+    "preview": "Invite a friendly rival to join you on the field.",
+    "headline": "Make the competition personal.",
+    "paragraphs": [
+      "You’ve started your Olympiad team. Now think of one business you’d enjoy competing against: a client, a partner or a friendly rival.",
+      "Share the Olympiad website or use Invite a business in your team hub. They’ll choose their own captain, register their own team and compete in their industry’s fundraising standings.",
+      "Share the public event invitation—not your personal sign-in email. Your magic link is just for you."
+    ],
+    "cta": "Open your team hub",
+    "url": "https://scottsdaleolympiad.com/#signin",
+    "release_gate": "Open signup or approve referred email addresses first. Verify cross-tab recruitment attribution before claiming referrals are tracked."
+  },
+  {
+    "key": "06",
+    "window": "February 2027 · early month",
+    "audience": "Approved captains with incomplete rosters",
+    "subject": "Your team is in. Let’s get your roster ready.",
+    "preview": "Add the people you know now; finish the missing details later.",
+    "headline": "A few details make a big difference.",
+    "paragraphs": [
+      "Your team hub is the place to keep your Olympiad roster up to date. Include yourself as a participant and work toward at least six people.",
+      "For each teammate, add their name, email, phone number, shirt fit and shirt size. Save a partial roster now if you’re still waiting on a few answers.",
+      "Use the same captain email when returning. We’ll send you a secure sign-in link so you can pick up where you left off. Please have permission to provide your teammates’ contact information."
+    ],
+    "cta": "Update your roster",
+    "url": "https://scottsdaleolympiad.com/#signin",
+    "release_gate": "Send only to currently incomplete rosters. Roster entry must not automatically enroll participants in marketing."
+  },
+  {
+    "key": "07",
+    "window": "February 2027 · mid month",
+    "audience": "Approved captains; fundraising enabled",
+    "subject": "Your first $3,000 starts with a simple team plan",
+    "preview": "Give every teammate one clear next step.",
+    "headline": "Make the goal a team effort.",
+    "paragraphs": [
+      "Your team’s minimum fundraising goal is $3,000. Break that into a shared plan instead of leaving the full ask with the captain.",
+      "For a six-person team, $500 per person would total $3,000. That’s a planning example, not an individual requirement—your business and team can decide how to reach the goal together.",
+      "Choose one approved fundraising option, identify the people you’ll reach out to and set a date for a team check-in. Use the current fundraising guide so supporters know how to credit your team."
+    ],
+    "cta": "See fundraising options",
+    "url": "https://scottsdaleolympiad.com/#fundraising",
+    "release_gate": "Hold until 2027 offers, prices, team credit instructions and transaction tracking are verified live."
+  },
+  {
+    "key": "08",
+    "window": "February 2027 · late month",
+    "audience": "Eligible unregistered prospects only",
+    "subject": "Still thinking about an Olympiad team?",
+    "preview": "Here’s what to do next—and how to get help.",
+    "headline": "There’s a team to build.",
+    "paragraphs": [
+      "If your business is considering Olympiad 2027, start with a captain and the basic team details. You can add participants as they’re confirmed.",
+      "Teams have at least six participants and a $3,000 minimum fundraising goal. You’ll compete against other businesses and help support Arizona children’s charities.",
+      "Not sure where your business fits or how to approach fundraising? Reply to this email and I’ll help you work through it."
+    ],
+    "cta": "Start your team",
+    "url": "https://scottsdaleolympiad.com/#captain",
+    "release_gate": "Do not claim last chance, limited inventory or a deadline until the chairman confirms it."
+  },
+  {
+    "key": "09",
+    "window": "March 2027 · early month",
+    "audience": "Approved teams below $3,000; fundraising enabled",
+    "subject": "One clear ask can move your team forward",
+    "preview": "Choose a current fundraising option and make it easy to support you.",
+    "headline": "Make your next ask specific.",
+    "paragraphs": [
+      "A simple fundraising message gives supporters three things: why your team is participating, a current way to help and clear instructions for crediting your team.",
+      "Try this starting point: “Our business is competing in Olympiad 2027 to support Arizona children’s charities. We’re working toward our team’s fundraising goal and would appreciate your support.” Add your team’s name and the approved fundraising link before sharing.",
+      "Choose an option from the current fundraising guide. If you’re unsure which products count or how credit is applied, reply before sharing so we can help."
+    ],
+    "cta": "Open the fundraising guide",
+    "url": "https://scottsdaleolympiad.com/#fundraising",
+    "release_gate": "Use only active 2027 products. No Bronco, raffle price, tax benefit or sponsorship inventory claim carried over from 2026."
+  },
+  {
+    "key": "10",
+    "window": "March 2027 · mid month",
+    "audience": "Approved teams; split below minimum vs minimum reached",
+    "subject": "Check your progress. Choose your next milestone.",
+    "preview": "Bring your team together for a quick fundraising check-in.",
+    "headline": "Know where your team stands.",
+    "paragraphs": [
+      "Open the current standings and review your team’s credited fundraising. Then set one practical next step for the coming week.",
+      "If you’re still working toward $3,000, focus on one achievable push and ask for help where needed. If your team has reached the minimum, discuss a stretch goal with the chairman.",
+      "The top fundraising team in each industry earns its cup. Keep the competition friendly and the purpose front and center."
+    ],
+    "cta": "View team standings",
+    "url": "https://scottsdaleolympiad.com/#leaderboard",
+    "release_gate": "Hold until leaderboard uses verified 2027 transactions, approved teams and current refund-adjusted totals. Never link this campaign to sample standings."
+  },
+  {
+    "key": "11",
+    "window": "April 2027 · timing tied to confirmed fundraising deadline",
+    "audience": "Approved teams still below minimum",
+    "subject": "Let’s get your team across the fundraising line",
+    "preview": "A focused final push—and support if you need it.",
+    "headline": "Finish with a clear plan.",
+    "paragraphs": [
+      "If your team is still working toward its $3,000 fundraising minimum, bring everyone together for a short check-in.",
+      "Confirm your credited total, choose one current fundraising option and decide who will make each ask. Keep the message easy to share and include your team name so support can be credited correctly.",
+      "If you’re stuck or a transaction appears to be missing, reply with your team name. We’ll help you review the next step."
+    ],
+    "cta": "Review fundraising options",
+    "url": "https://scottsdaleolympiad.com/#fundraising",
+    "release_gate": "Confirm actual deadline and transaction reconciliation. Exclude teams already at minimum and teams with unresolved totals; use personal follow-up for disputes."
+  },
+  {
+    "key": "12",
+    "window": "April 2027 · 7–10 days before confirmed event",
+    "audience": "Approved captains and separately permissioned participants",
+    "subject": "Your Olympiad team: what to know before game day",
+    "preview": "One place for arrival details, the schedule and team preparation.",
+    "headline": "Get ready for the field.",
+    "paragraphs": [
+      "Your team’s next step is to review the current event guide and confirm everyone knows where to find updates.",
+      "Captains: check that your roster, contact details and shirt preferences are complete. Participants: review the confirmed arrival instructions, game-day schedule and what to bring before heading out.",
+      "Event updates will be posted in the hub. If anything is unclear, reply with your team name so we can help."
+    ],
+    "cta": "Read the team guide",
+    "url": "https://scottsdaleolympiad.com/#guide",
+    "release_gate": "Confirm event date, venue, arrival window, schedule, parking, accessibility, weather plan and guide URL. Do not reuse April 17, 2026 or the old after-party details. Verify participant permission before direct sends."
+  }
+]

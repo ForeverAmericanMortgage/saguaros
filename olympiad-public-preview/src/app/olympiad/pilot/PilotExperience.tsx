@@ -1,0 +1,211 @@
+'use client';
+
+import { useEffect, useRef, useState, type FormEvent } from 'react';
+import s from './pilot.module.css';
+import EmailPreferences from './EmailPreferences';
+
+type Person = { id?: string; name: string; email: string; phone: string; shirt_size: string; shirt_fit: string };
+type ClubMember = { id: string; name: string };
+type Team = { referring_club_member_id?: string | null; approval_status?: 'pending' | 'approved' | 'needs_changes' | 'declined'; approval_message?: string; id: string; slug: string; name: string; company: string; industry: string; description: string; event_year: number; captain_name?: string; captain_phone?: string; is_public?: boolean; roster_version?: number; stretch_goal_cents?: number; roster?: Person[] };
+type Props = { mode: 'teams' | 'captain' | 'invite' | 'team'; slug?: string; accessIntent?: 'new' | 'returning'; onNavigate: (hash: string) => void };
+const fallbackIndustries = ['Commercial real estate', 'Residential real estate', 'Finance', 'Healthcare', 'Technology', 'Other businesses', 'Construction & trades', 'Hospitality'];
+const blankPerson = (): Person => ({ name: '', email: '', phone: '', shirt_size: '', shirt_fit: '' });
+class PilotApiError extends Error {
+  constructor(message: string, readonly status: number) { super(message); }
+}
+async function api(action: string, body?: Record<string, unknown>) {
+  const response = await fetch(`/olympiad/api/pilot${body ? '' : `?${action}`}`, body ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action, ...body }) } : { cache: 'no-store' });
+  const data = await response.json();
+  if (!response.ok) throw new PilotApiError(data.error || 'Something went wrong. Please try again.', response.status);
+  return data;
+}
+export default function PilotExperience({ mode, slug, accessIntent = 'new', onNavigate }: Props) {
+  const dirty = useRef(false);
+  const dirtyForms = useRef(new Set<string>());
+  const region = useRef<HTMLElement>(null);
+  const markDirty = (value: boolean, formId?: string) => { if (value && formId) dirtyForms.current.add(formId); if (!value) dirtyForms.current.clear(); dirty.current = value; window.dispatchEvent(new CustomEvent('olympiad-dirty', { detail: value })); };
+  const navigate = (hash: string) => { if (!dirty.current || window.confirm('You have unsaved changes. Leave without saving?')) { markDirty(false); onNavigate(hash); } };
+  useEffect(() => {
+    const beforeUnload = (event: BeforeUnloadEvent) => { if (dirty.current) { event.preventDefault(); event.returnValue = ''; } };
+    window.addEventListener('beforeunload', beforeUnload);
+    return () => { window.removeEventListener('beforeunload', beforeUnload); window.dispatchEvent(new CustomEvent('olympiad-dirty', { detail: false })); };
+  }, []);
+  const [industries, setIndustries] = useState(fallbackIndustries);
+  const [clubMembers, setClubMembers] = useState<ClubMember[]>([]);
+  const [adding, setAdding] = useState(false);
+  const [enabled, setEnabled] = useState(false);
+  const [registrationOpen, setRegistrationOpen] = useState(false);
+  const [pilotOnly, setPilotOnly] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [notice, setNotice] = useState('');
+  const [teams, setTeams] = useState<Team[]>([]);
+  const [user, setUser] = useState<{ email: string; is_organizer?: boolean } | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [refreshRequired, setRefreshRequired] = useState(false);
+  const pendingRefresh = useRef<{ action: string; body: Record<string, unknown> } | null>(null);
+  const [sessionExpired, setSessionExpired] = useState(false);
+  const [linkEmail, setLinkEmail] = useState('');
+  const accessMode = accessIntent;
+  useEffect(() => { setLinkEmail(''); setError(''); setNotice(''); }, [accessIntent]);
+  const [filter, setFilter] = useState('');
+  const [industryFilter, setIndustryFilter] = useState('');
+  const [revision, setRevision] = useState(0);
+  const [inviter, setInviter] = useState('');
+  useEffect(() => {
+    try {
+      const incoming = new URLSearchParams(window.location.search).get('from');
+      if (incoming && /^[a-zA-Z0-9-]{1,160}$/.test(incoming)) sessionStorage.setItem('olympiad-inviter', incoming);
+      setInviter(sessionStorage.getItem('olympiad-inviter') || '');
+    } catch { setInviter(new URLSearchParams(window.location.search).get('from') || ''); }
+  }, []);
+  useEffect(() => {
+    let active = true;
+    setLoading(true); setError(''); setNotice('');
+    api('action=status').then(async status => [status, mode === 'captain' && !status.enabled ? {} : await api(mode === 'captain' ? 'action=mine' : mode === 'team' ? `action=team&slug=${encodeURIComponent(slug || '')}` : 'action=directory')])
+      .then(([status, data]) => { if (active) { setEnabled(status.enabled); setPilotOnly(status.pilot_only === true); setRegistrationOpen(mode === 'captain' && data.user ? data.registration_allowed ?? status.registration_open === true : status.registration_open === true); setIndustries(status.industries || fallbackIndustries); setClubMembers(mode === 'captain' && data.user ? data.club_members || [] : []); setTeams(data.team ? [data.team] : data.teams || []); setUser(data.user || null); setRefreshRequired(false); if (new URLSearchParams(window.location.search).get('auth_error') === 'link_expired') setError('This sign-in link could not be completed. Request a fresh sign-in link below.'); } })
+      .catch(e => { if (active) setError(e.message); }).finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, [mode, slug, revision]);
+  async function share(team?: Team) {
+    const url = `${window.location.origin}/?${team && team.is_public !== false && (team.approval_status === 'approved' || mode === 'team') ? `from=${encodeURIComponent(team.slug)}` : ''}#invite`;
+    const title = team ? `${team.company} invites you to Olympiad` : 'Bring your business to Scottsdale Olympiad';
+    try { if (navigator.share) await navigator.share({ title, text: 'Friendly rivals. A shared purpose. Discover Scottsdale Olympiad 2027.', url }); else { await navigator.clipboard.writeText(url); setNotice('Invitation link copied. Share it with another business.'); } }
+    catch (e) { if (!(e instanceof DOMException && e.name === 'AbortError')) setNotice(`Copy this invitation link: ${url}`); }
+  }
+  async function copyTeam(team: Team) {
+    const url = `${window.location.origin}/#team/${encodeURIComponent(team.slug)}`;
+    try { await navigator.clipboard.writeText(url); setNotice('Team page link copied.'); } catch { setNotice(`Copy this team page link: ${url}`); }
+  }
+  function startFromTeam(team: Team) {
+    try { sessionStorage.setItem('olympiad-inviter', team.slug); } catch {}
+    setInviter(team.slug); navigate('#captain');
+  }
+  function clearInvitation() {
+    try { sessionStorage.removeItem('olympiad-inviter'); const url = new URL(window.location.href); url.searchParams.delete('from'); window.history.replaceState(null, '', url); } catch {}
+    setInviter(''); setNotice('Remembered invitation removed. You can register without it.');
+  }
+  async function submit(action: string, body: Record<string, unknown>, refresh = true) {
+    if (action === 'sign-out' && dirty.current && !window.confirm('Sign out and discard unsaved changes?')) return false;
+    setBusy(true); setError(''); setNotice('');
+    if (action === 'sign-in') {
+      const cleanUrl = new URL(window.location.href); cleanUrl.searchParams.delete('auth_error'); window.history.replaceState(null, '', cleanUrl);
+    }
+    try {
+      let refreshFailed = false;
+      const data = await api(action, body);
+      if (['save-roster', 'update-team', 'register'].includes(action)) {
+        try {
+          const latest = await api('action=mine');
+          if (!latest.user || latest.user.email !== user?.email) throw new Error('Session changed while refreshing');
+          mergeSavedTeam(action, body, latest);
+        } catch {
+          refreshFailed = true; pendingRefresh.current = { action, body }; setRefreshRequired(true);
+          setError('Your changes were saved. We could not reload the saved details. Retry the refresh below; your other drafts will stay here.');
+        }
+      }
+      dirtyForms.current.delete(action === 'save-roster' ? `roster-${body.team_id}` : action === 'update-team' ? `profile-${body.team_id}` : action);
+      if (dirtyForms.current.size === 0) markDirty(false);
+      if (action === 'register') { setAdding(false); try { sessionStorage.removeItem('olympiad-onboarding'); } catch {} }
+      if (action === 'sign-out') { markDirty(false); setUser(null); setTeams([]); }
+      else if (!['save-roster', 'update-team', 'register'].includes(action) && refresh) setRevision(v => v + 1);
+      else if (!refreshFailed) setNotice(data.message || 'Saved.');
+      return !refreshFailed;
+    } catch (e) {
+      if (e instanceof PilotApiError && e.status === 401) { setSessionExpired(true); setError('Your session ended. Your unsaved changes are still here. Sign in again in a new tab, then return here to continue.'); }
+      else setError(e instanceof Error ? e.message : 'Unable to save. Please try again.');
+      return false;
+    }
+    finally { setBusy(false); }
+  }
+  function mergeSavedTeam(action: string, body: Record<string, unknown>, latest: { teams: Team[] }) {
+          setTeams(current => {
+            if (action === 'register') return [...current, ...latest.teams.filter((fresh: Team) => !current.some(team => team.id === fresh.id))];
+            return current.map(team => {
+              if (team.id !== body.team_id) return team;
+              const fresh = latest.teams.find((row: Team) => row.id === team.id);
+              if (!fresh) return team;
+              return action === 'update-team' ? { ...fresh, roster: team.roster, roster_version: team.roster_version } : { ...team, roster: fresh.roster, roster_version: fresh.roster_version };
+            });
+          });
+  }
+  async function retrySavedRefresh() {
+    const pending = pendingRefresh.current;
+    if (!pending) return;
+    setBusy(true);
+    try {
+      const latest = await api('action=mine');
+      if (!latest.user || latest.user.email !== user?.email) { setSessionExpired(true); setError('Sign in again with the same captain email. Your drafts remain here.'); return; }
+      mergeSavedTeam(pending.action, pending.body, latest);
+      pendingRefresh.current = null; setRefreshRequired(false); setError(''); setNotice('Saved details refreshed. Your other drafts are unchanged.');
+    } catch { setError('Saved details are still unavailable. Your drafts remain here; try refreshing saved details again shortly.'); }
+    finally { setBusy(false); }
+  }
+  async function resumeSession() {
+    setBusy(true);
+    try {
+      const latest = await api('action=mine');
+      if (!latest.user || latest.user.email !== user?.email) { setError('Sign in in the new tab using ' + user?.email + ', then return here. Your drafts remain here.'); return; }
+      setSessionExpired(false); setError(pendingRefresh.current ? 'Your changes were saved. Refresh the saved details to continue.' : ''); setNotice('You are signed in again. Your drafts are ready to save.');
+    } catch { setError('We could not check your sign-in. Your drafts remain here. Please try again.'); }
+    finally { setBusy(false); }
+  }
+  const visibleTeams = teams.filter(t => (!industryFilter || t.industry === industryFilter) && `${t.name} ${t.company} ${t.industry}`.toLowerCase().includes(filter.toLowerCase()));
+  const heading = mode === 'captain' ? user && teams.length ? 'Your team hub.' : accessMode === 'returning' ? 'Welcome back to your team.' : 'Your team starts here.' : mode === 'invite' ? 'A little friendly competition. A lasting local impact.' : mode === 'team' ? teams[0]?.name || 'Meet the team.' : 'Meet the businesses taking the field.';
+  return <section ref={region} onChange={event => { if (mode === 'captain') { const form = (event.target as HTMLElement).closest('form'); dirtyForms.current.add(form?.dataset.draft || 'draft'); markDirty(true); } }} className={`${s.page} ${mode === 'captain' && !user ? s.captainAccess : ''}`} aria-labelledby="pilot-heading">
+    <header className={s.hero}><span className={s.eyebrow}>SCOTTSDALE OLYMPIAD · 2027</span><h1 id="pilot-heading">{heading}</h1>{mode !== 'captain' && <p>Local businesses come together for spirited games and support for Arizona children’s charities.</p>}</header>
+    {(mode !== 'captain' || user) && <nav className={s.hubNav} aria-label="Team hub">{user?.is_organizer && <a className={s.primary} href="/olympiad/organizer">Chairman dashboard →</a>}<button className={mode === 'teams' ? s.primary : s.secondary} onClick={() => navigate('#teams')}>Teams</button><button className={mode === 'captain' ? s.primary : s.secondary} onClick={() => navigate('#signin')}>{user ? 'My team hub' : 'Manage my team'}</button><button className={s.secondary} onClick={() => share()}>Invite business ↗</button></nav>}
+    {mode === 'captain' && inviter && <p className={s.notice}>An invitation is attached to your registration. <button className={s.secondary} onClick={clearInvitation}>Remove invitation</button></p>}{notice && <p className={s.notice} role="status">{notice}</p>}{error && <div className={s.error} role="alert">{error} {sessionExpired ? <><a href="/#signin" target="_blank" rel="noopener noreferrer">Sign in again in a new tab</a> <button disabled={busy} onClick={resumeSession}>I’ve signed in · continue here</button></> : refreshRequired ? <button disabled={busy} onClick={retrySavedRefresh}>Refresh saved details</button> : <button onClick={() => { if (!dirty.current || window.confirm('Reload and discard unsaved changes?')) { markDirty(false); setRevision(v => v + 1); } }}>Try again</button>}</div>}
+    {loading ? <p className={s.empty} role="status">Loading team information…</p> : <>
+      {!enabled && <p className={s.notice}>Registration is not open yet. Explore the event and share an invitation now; captain registration will be available when the pilot opens.</p>}
+      {enabled && pilotOnly && <p className={s.notice}>{user ? registrationOpen ? 'Invited pilot · Team setup is enabled for your account.' : 'Invited pilot · You’re signed in. New team setup is not enabled for this account.' : 'Early access · Use your invited email address.'}</p>}
+      {enabled && !registrationOpen && !pilotOnly && <p className={s.notice}>New team registration is closed; registered captains can still manage their team.</p>}
+      {mode === 'invite' && <><div className={s.intro}><div><span className={s.eyebrow}>YOU’RE INVITED</span><h2>Bring your colleagues.<br />Challenge your rivals.</h2><p>Olympiad is a company team competition hosted by the Saguaros. Your business participates as a sponsor team, connecting colleagues and friendly competitors around a shared charitable purpose.</p>{inviter && <p className={s.notice}>You arrived through a team invitation. We’ll carry that invitation into your registration.</p>}<button className={s.primary} disabled={!enabled || !registrationOpen} onClick={() => navigate('#captain')}>Start your team</button><p className={s.fine}>Early access is limited to invited email addresses. A shared invitation does not enable registration automatically; contact the event team to join the pilot.</p></div><div className={s.facts}><div><strong>6 people minimum</strong><span>Including your captain. Start now and finish the roster later.</span></div><div><strong>$3,000 team commitment</strong><span>A fundraising goal for every team. No payment is collected in this registration pilot.</span></div><div><strong>Two ways to win</strong><span>Top fundraising in each industry earns a cup. Winning games earns medals.</span></div></div></div><div className={s.steps}>{[['01','A captain gets things started','Register your company and team. Choose whether to appear in the public business directory.'],['02','Bring your people together','Add participant details privately, including contact information and shirt preferences.'],['03','Make it a friendly rivalry','Share an invitation with another business and get ready to take the field.']].map(([number,title,copy]) => <article key={number}><span>{number}</span><h3>{title}</h3><p>{copy}</p></article>)}</div><p className={s.fine}>2027 event date, final schedule, and other event details will be announced. Registration does not collect a deposit.</p><button className={s.secondary} onClick={() => navigate('#guide')}>Explore the team guide →</button></>}
+      {mode === 'teams' && <><div className={s.sectionHead}><div><h2>The company you’ll keep.</h2><p>Businesses that have chosen to share their participation. Participant rosters and contact details stay private.</p></div><label className={s.field}>Find a business<input type="search" value={filter} onChange={e => setFilter(e.target.value)} placeholder="Company, team, or industry" /></label></div><div className={s.directoryTools}><label className={s.field}>Industry<select value={industryFilter} onChange={e => setIndustryFilter(e.target.value)}><option value="">All industries</option>{industries.map(industry => <option key={industry}>{industry}</option>)}</select></label><button className={s.secondary} onClick={() => setRevision(v => v + 1)}>Refresh teams</button><span role="status">{visibleTeams.length} {visibleTeams.length === 1 ? "team" : "teams"} shown</span>{(filter || industryFilter) && <button className={s.secondary} onClick={() => { setFilter(''); setIndustryFilter(''); }}>Clear filters</button>}</div><div className={s.grid}>{visibleTeams.map(t => <article key={t.id} className={s.card}><span className={s.eyebrow}>{t.industry}</span><h3>{t.company}</h3><p>{t.name}</p>{t.description && <p>{t.description}</p>}<button className={s.secondary} onClick={() => navigate(`#team/${t.slug}`)}>Meet this team →</button></article>)}</div>{!teams.length ? <div className={s.empty}><h3>The field is taking shape.</h3><p>Public team profiles will appear here as businesses register and opt in. There are no sample teams in this directory.</p><button className={s.primary} disabled={!enabled || !registrationOpen} onClick={() => navigate('#captain')}>Be part of the field</button></div> : !visibleTeams.length && <p className={s.empty}>No businesses match your search.</p>}</>}
+      {mode === 'team' && (teams[0] ? <article className={s.teamDetail}><span className={s.eyebrow}>{teams[0].industry}</span><h2>{teams[0].company}</h2><p className={s.teamName}>{teams[0].name}</p><p>{teams[0].description || 'Taking the field with local businesses in support of Arizona children’s charities.'}</p><div className={s.actions}><button className={s.primary} onClick={() => share(teams[0])}>Invite a friendly rival ↗</button><button className={s.secondary} onClick={() => copyTeam(teams[0])}>Copy team page link</button><button className={s.secondary} disabled={!enabled || !registrationOpen} onClick={() => startFromTeam(teams[0])}>Start your own team</button></div><p className={s.fine}>Public business profile · Participant details are private.</p></article> : <p className={s.empty}>This team isn’t publicly listed. Explore participating businesses or start your own team.</p>)}
+      {mode === 'captain' && enabled && (!user ? <div className={s.formCard}><div className={s.accessChoices} role="group" aria-label="Captain journey"><button aria-pressed={accessMode === 'new'} className={accessMode === 'new' ? s.primary : s.secondary} onClick={() => navigate('#captain')}>Register a team</button><button aria-pressed={accessMode === 'returning'} className={accessMode === 'returning' ? s.primary : s.secondary} onClick={() => navigate('#signin')}>Manage my team</button></div>{!linkEmail ? <AccessForm mode={accessMode} busy={busy || refreshRequired || sessionExpired} submit={submit} onSent={setLinkEmail} /> : <div className={s.linkSent} role="status"><span className={s.eyebrow}>CHECK YOUR INBOX</span><h2>Your team hub is ready to open.</h2><p>We sent a secure sign-in link to <strong>{linkEmail}</strong>. Open it, then choose Continue to team hub. No password or code to enter.</p><p className={s.fine}>If you don’t see it, check spam and your company’s email quarantine, or ask your email administrator to look for mail from teams@scottsdaleolympiad.com. After confirming your email, you can create or reopen your team.</p><div className={s.actions}><button className={s.secondary} disabled={busy} onClick={() => submit('sign-in', { email: linkEmail }, false)}>Send a fresh link</button><button className={s.secondary} disabled={busy} onClick={() => { setLinkEmail(''); setError(''); setNotice(''); markDirty(false); }}>Use another email</button></div></div>}<p className={s.fine}>Sign-in emails give you access to your team. They do not subscribe you to marketing messages.</p></div> : <><div className={s.account}><p>Signed in as <strong>{user.email}</strong></p><button className={s.secondary} onClick={async () => { const url = `${window.location.origin}/#signin`; try { await navigator.clipboard.writeText(url); setNotice('Return page copied. This is a bookmark, not a personal magic link.'); } catch { setNotice(`Save this team sign-in address: ${url}`); } }}>Copy return page link</button><button className={s.secondary} disabled={busy} onClick={() => submit('sign-out', {})}>Sign out</button></div><p className={s.fine}>Your saved team and roster stay here when you sign out. Bookmark <a href="/#signin">Manage my team</a> to return with the same email.</p><EmailPreferences />{registrationOpen && teams.length > 0 && teams.length < 10 && <button className={s.secondary} onClick={() => { if (!dirty.current || window.confirm('Discard unsaved changes?')) { markDirty(false); setAdding(v => !v); } }}>{adding ? 'Cancel new team' : '+ Register another team'}</button>}{registrationOpen && adding && <Registration email={user.email} busy={busy || refreshRequired || sessionExpired} inviter={inviter} submit={submit} industries={industries} clubMembers={clubMembers} />}{teams.length ? teams.map(t => <CaptainTeam key={t.id} team={t} industries={industries} clubMembers={clubMembers} email={user.email} busy={busy || refreshRequired || sessionExpired} submit={submit} share={share} copyTeam={copyTeam} markDirty={markDirty} />) : registrationOpen ? <Registration email={user.email} busy={busy || refreshRequired || sessionExpired} inviter={inviter} submit={submit} industries={industries} clubMembers={clubMembers} /> : <p className={s.empty}>You’re signed in. New team registration isn’t open for this account yet. Your details have not been submitted.</p>}</>)}
+    </>}
+  </section>;
+}
+
+type Submit = (action: string, body: Record<string, unknown>, refresh?: boolean) => Promise<boolean>;
+type OnboardingDraft = { email: string; company: string; name: string; captain_name: string; captain_phone: string; expires: number };
+function readDraft(email: string): Partial<OnboardingDraft> {
+ try { const draft = JSON.parse(sessionStorage.getItem('olympiad-onboarding') || 'null'); if (draft && draft.expires > Date.now() && draft.email === email.trim().toLowerCase()) return draft; sessionStorage.removeItem('olympiad-onboarding'); } catch {} return {};
+}
+function AccessForm({ mode, busy, submit, onSent }: { mode: 'new' | 'returning'; busy: boolean; submit: Submit; onSent: (email: string) => void }) {
+ return <form data-draft="sign-in" onSubmit={async (e: FormEvent<HTMLFormElement>) => { e.preventDefault(); const f = new FormData(e.currentTarget); const email = String(f.get('email') || '').trim().toLowerCase(); if (await submit('sign-in', { email }, false)) onSent(email); }}><span className={s.eyebrow}>{mode === 'new' ? '01 · YOUR STARTING LINE' : 'WELCOME BACK'}</span><h2>{mode === 'new' ? 'Bring your business to Olympiad.' : 'Back to your team.'}</h2><p>{mode === 'new' ? 'Start with your email. After confirming your email, you’ll confirm your team and add people whenever you’re ready.' : 'Enter the email you used to register your team. We’ll email you a secure link that opens your saved team and roster. No password to remember, and no need to register again.'}</p><label className={s.field}>Your email<input required type="email" name="email" autoComplete="email" maxLength={254} /></label><button className={s.primary} disabled={busy}>{busy ? 'Sending your link…' : mode === 'new' ? 'Email my get-started link' : 'Email my sign-in link'}</button>{mode === 'new' && <p className={s.fine}>Six people minimum, including you. $3,000 team fundraising goal. No deposit or payment today.</p>}<details className={s.settings}><summary>What is Olympiad?</summary><p>Local businesses compete in spirited games and raise support for Arizona children’s charities. The top fundraising team in each industry earns a cup; game winners earn medals.</p><p>Start with your company and captain details, then bring together at least six people. The 2027 date and event-day details will follow.</p></details></form>;
+}
+function ClubMemberField({ members, disabled, value }: { members: ClubMember[]; disabled: boolean; value?: string | null }) {
+ return <div><label className={s.field}>Referring Saguaros club member <span>(optional)</span><select name="referring_club_member_id" disabled={disabled} defaultValue={value || ''}><option value="">No member / not sure</option>{members.map(member => <option key={member.id} value={member.id}>{member.name}</option>)}</select></label><p className={s.fine}>Optional. Used internally for referral tracking; never shown on your public team page.</p></div>;
+}
+function TeamApproval({ team }: { team: Team }) {
+ const status = team.approval_status || 'pending';
+ const heading = status === 'approved' ? 'Approved by the chairman' : status === 'needs_changes' ? 'An update is needed' : status === 'declined' ? 'Team not approved' : 'Awaiting chairman approval';
+ const copy = status === 'approved' ? team.is_public ? 'Your business can appear in the public directory. Participant details stay private.' : 'Your team is approved. You can opt into the public directory in Team profile & public visibility.' : status === 'needs_changes' ? 'Review the chairman’s feedback below and update your team profile. Your team stays out of the public directory while it is reviewed.' : status === 'declined' ? 'Your team is not listed publicly. Contact the chairman to discuss your submission.' : 'Your submission is saved. You can finish your private roster while the chairman reviews your team. Public listing begins only after approval and your permission.';
+ return <aside className={s.approval} aria-label="Team approval"><strong>{heading}</strong><p>{copy}</p>{team.approval_message && <p><strong>Chairman’s message:</strong> {team.approval_message}</p>}{(status === 'needs_changes' || status === 'declined') && <a href="mailto:scaldwell@saguaros.com?subject=Olympiad%202027%20team%20submission">Contact the chairman</a>}</aside>;
+}
+function Registration({ email, busy, inviter, submit, industries, clubMembers }: { email: string; industries: string[]; clubMembers: ClubMember[]; busy: boolean; inviter: string; submit: Submit }) {
+ const [draft, setDraft] = useState<Partial<OnboardingDraft>>({});
+ useEffect(() => { setDraft(readDraft(email)); }, [email]);
+ function update(field: keyof OnboardingDraft, value: string) { setDraft(current => { const next = { ...current, [field]: value, email: email.trim().toLowerCase(), expires: Date.now() + 30 * 60 * 1000 }; try { sessionStorage.setItem('olympiad-onboarding', JSON.stringify(next)); } catch {} return next; }); }
+ return <form data-draft="register" className={s.formCard} onSubmit={e => { e.preventDefault(); const f = new FormData(e.currentTarget); void submit('register', { company: f.get('company'), name: f.get('name'), industry: f.get('industry'), captain_name: f.get('captain_name'), captain_phone: f.get('captain_phone'), description: '', is_public: f.get('is_public') === 'on', referring_club_member_id: f.get('referring_club_member_id') || null, invited_by_slug: inviter || null }); }}><ol className={s.progressSteps} aria-label="Team setup"><li>Email confirmed</li><li aria-current="step">Create your team</li><li>Add people later</li></ol><h2>Make it your team.</h2><p>A few basics get your business on the field. Your roster can come next—even if you only know a couple of teammates today.</p><div className={s.formGrid}><label className={s.field}>Business name<input name="company" required value={draft.company || ''} onChange={e => update('company', e.target.value)} maxLength={120} autoComplete="organization" /></label><label className={s.field}>Team name<input name="name" required value={draft.name || ''} onChange={e => update('name', e.target.value)} maxLength={120} /></label><label className={s.field}>Industry<select name="industry" required defaultValue=""><option value="" disabled>Select your industry</option>{industries.map(i => <option key={i}>{i}</option>)}</select></label><label className={s.field}>Your name<input name="captain_name" required value={draft.captain_name || ''} onChange={e => update('captain_name', e.target.value)} maxLength={120} autoComplete="name" /></label><label className={s.field}>Your phone<input name="captain_phone" required value={draft.captain_phone || ''} onChange={e => update('captain_phone', e.target.value)} type="tel" maxLength={40} autoComplete="tel" /></label></div><ClubMemberField members={clubMembers} disabled={busy} /><p className={s.fine}>Captain email: {email}. If you opened your link on another device, enter your team details here to continue.</p><label className={s.check}><input name="is_public" type="checkbox" /><span>Show our business, team name and industry in the public directory after chairman approval. Participant names and contact details stay private.</span></label><p className={s.fine}>Your team commits to at least six people and a $3,000 fundraising goal. Fundraising collection is not open; no payment is collected here.</p><button className={s.primary} disabled={busy}>{busy ? 'Creating your team…' : 'Submit team & continue'}</button></form>;
+}
+function CaptainTeam({ team, industries, clubMembers, email, busy, submit, share, copyTeam, markDirty }: { team: Team; industries: string[]; clubMembers: ClubMember[]; email: string; busy: boolean; submit: (action: string, body: Record<string, unknown>, refresh?: boolean) => Promise<boolean>; share: (team?: Team) => Promise<void>; copyTeam: (team: Team) => Promise<void>; markDirty: (value: boolean, formId?: string) => void }) {
+ const captain = (): Person => ({ ...blankPerson(), name: team.captain_name || '', email, phone: team.captain_phone || '' });
+ const [roster, setRoster] = useState<Person[]>(team.roster?.length ? team.roster : [captain()]);
+ const [showRoster, setShowRoster] = useState(true);
+ const [saved, setSaved] = useState(false);
+ const [rosterDirty, setRosterDirty] = useState(false);
+ const displayedRosterVersion = useRef(team.roster_version);
+ useEffect(() => {
+   setRoster(team.roster?.length ? team.roster : [captain()]); setRosterDirty(false);
+   if (displayedRosterVersion.current !== team.roster_version) setSaved(true);
+   displayedRosterVersion.current = team.roster_version;
+ }, [team.roster_version, team.roster]);
+ const savedCount = (team.roster || []).length;
+ const savedComplete = (team.roster || []).filter(p => p.name && p.email && p.phone && p.shirt_fit && p.shirt_size).length;
+ const complete = roster.filter(p => p.name && p.email && p.phone && p.shirt_fit && p.shirt_size).length;
+ function update(index: number, field: keyof Person, value: string) { setSaved(false); setRosterDirty(true); setRoster(rows => rows.map((p, i) => i === index ? { ...p, [field]: value } : p)); }
+ return <div className={s.workspace}><TeamApproval team={team} /><div className={s.sectionHead}><div><span className={s.eyebrow}>{team.company}</span><h2>{team.name}</h2><p>{savedComplete} saved complete profiles · Minimum six, including the captain</p></div><button className={s.secondary} onClick={() => share(team)}>Invite another business ↗</button>{team.is_public && team.approval_status === 'approved' && <button className={s.secondary} onClick={() => copyTeam(team)}>Copy team page link</button>}</div><div className={s.readiness}><div><span className={s.eyebrow}>YOUR NEXT STEPS</span><h3>{team.approval_status === 'approved' ? 'Your team is approved.' : team.approval_status === 'needs_changes' ? 'Your team needs an update.' : team.approval_status === 'declined' ? 'Your team was not approved.' : 'Your team is submitted.'}</h3><ul><li>✓ Business and captain details saved</li><li>{savedCount >= 6 ? '✓' : '○'} {savedCount} people saved · {Math.max(0, 6 - savedCount)} more to reach six</li><li>{savedComplete >= 6 && savedComplete === savedCount ? '✓' : '○'} {savedComplete} complete contact and shirt profiles</li></ul><p className={s.fine}>{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format((team.stretch_goal_cents ?? 300000) / 100)} team goal · Fundraising opens later. There is no payment due in this pilot.</p></div><div><h3>{savedCount ? 'Keep your team ready.' : 'Add a few people—or come back later.'}</h3><p>We’ve filled in your captain details below. Add teammates you know, save a partial roster, and return through your email link.</p><button type="button" className={s.secondary} onClick={() => setShowRoster(v => !v)}>{showRoster ? 'Do this later · hide roster' : 'Open private roster'}</button></div></div><details className={s.settings}><summary>Team profile & public visibility</summary><form data-draft={`profile-${team.id}`} onSubmit={e => { e.preventDefault(); const f = new FormData(e.currentTarget); void submit('update-team', { team_id: team.id, company: f.get('company'), industry: f.get('industry'), captain_name: f.get('captain_name'), captain_phone: f.get('captain_phone'), name: f.get('name'), description: f.get('description'), is_public: f.get('is_public') === 'on', referring_club_member_id: f.get('referring_club_member_id') || null }); }}><label className={s.field}>Business name<input disabled={busy} required name="company" defaultValue={team.company} maxLength={120} autoComplete="organization" /></label><label className={s.field}>Industry<select disabled={busy} required name="industry" defaultValue={team.industry}>{industries.map(industry => <option key={industry}>{industry}</option>)}</select></label><label className={s.field}>Captain name<input disabled={busy} required name="captain_name" defaultValue={team.captain_name} maxLength={120} autoComplete="name" /></label><label className={s.field}>Captain phone<input disabled={busy} required type="tel" name="captain_phone" defaultValue={team.captain_phone} maxLength={40} autoComplete="tel" /></label><ClubMemberField members={clubMembers} disabled={busy} value={team.referring_club_member_id} /><p className={s.fine}>Sign-in email: {email}. Updating captain contact details does not change existing participant roster entries. Changing the business, team name, industry or referring member may return your team to chairman review.</p><label className={s.field}>Team name<input disabled={busy} required name="name" defaultValue={team.name} maxLength={120} /></label><label className={s.field}>Team introduction<textarea disabled={busy} name="description" defaultValue={team.description} rows={3} maxLength={500} /></label><label className={s.check}><input disabled={busy} type="checkbox" name="is_public" defaultChecked={team.is_public} /><span>Show our business publicly after chairman approval. Only company, team name, industry, and introduction are shared. Participant details stay private.</span></label><button className={s.primary} disabled={busy}>Save team profile</button></form></details><form hidden={!showRoster} onKeyDown={event => { if (event.key === 'Enter' && event.target instanceof HTMLSelectElement) event.preventDefault(); }} data-draft={`roster-${team.id}`} onSubmit={async e => { e.preventDefault(); const ok = await submit('save-roster', { team_id: team.id, expected_version: team.roster_version ?? 0, roster: roster.filter(p => p.name || p.email || p.phone || p.shirt_size || p.shirt_fit) }, false); setSaved(ok); if (ok) setRosterDirty(false); }}><div className={s.sectionHead}><div><h3>Private participant roster</h3><p className={s.fine}>{complete} complete profiles in this draft · Changes count after you save.</p><p>Include yourself as a participant. Save what you know now and return for missing details. Please have permission to provide your teammates’ contact information.</p></div></div>{roster.map((p, index) => <fieldset className={s.person} key={index} disabled={busy}><legend>Participant {index + 1}</legend><div className={s.formGrid}><label className={s.field}>Full name<input value={p.name} maxLength={120} onChange={e => update(index, 'name', e.target.value)} autoComplete="off" /></label><label className={s.field}>Email<input type="email" value={p.email} maxLength={254} onChange={e => update(index, 'email', e.target.value)} autoComplete="off" /></label><label className={s.field}>Phone<input type="tel" value={p.phone} maxLength={40} onChange={e => update(index, 'phone', e.target.value)} autoComplete="off" /></label><label className={s.field}>Shirt fit<select value={p.shirt_fit} onChange={e => update(index, 'shirt_fit', e.target.value)}><option value="">Choose later</option><option value="male">Male</option><option value="female">Female</option></select></label><label className={s.field}>Shirt size<select value={p.shirt_size} onChange={e => update(index, 'shirt_size', e.target.value)}><option value="">Choose later</option>{['XS','S','M','L','XL','2XL','3XL'].map(size => <option key={size}>{size}</option>)}</select></label></div><button className={s.remove} type="button" disabled={busy} aria-label={`Remove participant ${index + 1}`} onClick={() => { setRoster(rows => rows.filter((_, i) => i !== index)); setSaved(false); setRosterDirty(true); markDirty(true, `roster-${team.id}`); }}>Remove participant</button></fieldset>)}<div className={s.actions}><button type="button" className={s.secondary} disabled={busy || roster.length >= 50} onClick={() => { setRoster(rows => rows.length < 50 ? [...rows, blankPerson()] : rows); setSaved(false); setRosterDirty(true); markDirty(true, `roster-${team.id}`); }}>+ Add participant</button>{roster.length >= 50 && <span>Maximum 50 participants.</span>}<button className={s.primary} disabled={busy}>{busy ? 'Saving…' : 'Save roster'}</button>{rosterDirty && <span role="status">Unsaved roster changes</span>}{saved && <span role="status">Roster saved.</span>}</div><p className={s.fine}>Saving a roster does not send invitations or enroll participants in email or SMS campaigns.</p></form></div>;
+}

@@ -1,0 +1,21 @@
+const {PGlite}=await import(process.env.PGLITE_MODULE || '@electric-sql/pglite');
+import {readFileSync} from 'node:fs';
+import assert from 'node:assert/strict';
+const db=new PGlite();
+const ids=Array.from({length:4},(_,i)=>`${i+1}`.repeat(8)+'-1111-4111-8111-111111111111');
+await db.exec(`create role anon;create role authenticated;create schema auth;create table auth.users(id uuid primary key,email text,email_confirmed_at timestamptz);create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;grant usage on schema public,auth to anon,authenticated;`);
+for(const f of ['20260928235416_olympiad_pilot.sql','20260929021348_pilot_cohort_gate.sql','20260929164837_pilot_invitation_enrollment.sql'])await db.exec(readFileSync(new URL('../supabase/migrations/'+f,import.meta.url),'utf8'));
+const count=async()=>Number((await db.query('select count(*) as n from public.pilot_captains')).rows[0].n);
+await db.query('insert into public.pilot_invitations(email) values($1)',['invited@example.invalid']);
+await db.query('insert into auth.users values($1,$2,null)',[ids[0],'invited@example.invalid']);assert.equal(await count(),0);
+await db.query('insert into auth.users values($1,$2,now())',[ids[1],'uninvited@example.invalid']);assert.equal(await count(),0);
+await db.query('update auth.users set email_confirmed_at=now() where id=$1',[ids[0]]);assert.equal(await count(),1);
+await db.query('update auth.users set email_confirmed_at=now() where id=$1',[ids[0]]);assert.equal(await count(),1);
+await db.query('insert into auth.users values($1,$2,now())',[ids[2],'LATER@EXAMPLE.INVALID']);assert.equal(await count(),1);
+await db.query('insert into public.pilot_invitations(email) values($1)',['later@example.invalid']);assert.equal(await count(),2);
+await db.query('insert into public.pilot_invitations(email) values($1)',['insert@example.invalid']);
+await db.query('insert into auth.users values($1,$2,now())',[ids[3],'insert@example.invalid']);assert.equal(await count(),3);
+assert.equal(Number((await db.query('select count(*) n from public.organizer_memberships')).rows[0].n),0);
+for(const role of ['anon','authenticated'])for(const sql of ["select * from public.pilot_invitations","insert into public.pilot_invitations(email) values('attacker@example.invalid')"]){await db.exec('begin');await db.exec(`set local role ${role}`);await assert.rejects(()=>db.query(sql),/permission denied/);await db.exec('rollback');}
+console.log('PASS unconfirmed/uninvited excluded; confirmed invitation enrolls on update and insert; later invitation backfills verified exact identity; idempotent; no organizer grant; client read/write denied.');
+await db.close();

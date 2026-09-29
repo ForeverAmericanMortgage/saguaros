@@ -1,0 +1,21 @@
+const {PGlite}=await import(process.env.PGLITE_MODULE || '@electric-sql/pglite');
+import {readFileSync} from 'node:fs';
+import assert from 'node:assert/strict';
+const db=new PGlite();
+const A='11111111-1111-4111-8111-111111111111';
+await db.exec(`create role anon;create role authenticated;create schema auth;create table auth.users(id uuid primary key);create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;grant usage on schema public,auth to anon,authenticated;grant execute on function auth.uid() to anon,authenticated;insert into auth.users values('${A}');`);
+for(const f of ['20260928235416_olympiad_pilot.sql','20260929021348_pilot_cohort_gate.sql'])await db.exec(readFileSync(new URL('../supabase/migrations/'+f,import.meta.url),'utf8'));
+async function as(sql,p=[]){await db.exec('begin');try{await db.exec('set local role authenticated');await db.query("select set_config('request.jwt.claim.sub',$1,true)",[A]);const r=await db.query(sql,p);await db.exec('commit');return r.rows;}catch(e){await db.exec('rollback');throw e;}}
+const register=()=>as("select * from public.register_team('PILOT TEST A','Test Company','technology','Test Captain','2025550100')");
+await db.exec('update public.event_editions set registration_open=true');
+await assert.rejects(register,/row-level security/);
+await assert.rejects(()=>as('insert into public.pilot_captains(user_id) values($1)',[A]),/permission denied/);
+await assert.rejects(()=>as("insert into public.businesses(name) values('Bypass')"),/row-level security/);
+await db.query('insert into public.pilot_captains(user_id) values($1)',[A]);
+const team=(await register())[0].team_id;
+await db.exec('delete from public.pilot_captains;update public.event_editions set registration_open=false');
+await as("select public.save_roster($1,'[]'::jsonb,0)",[team]);
+assert.equal((await as('select roster_version from public.teams where id=$1',[team]))[0].roster_version,1);
+await assert.rejects(register,/Registration is not open/);
+console.log('PASS cohort blocks unapproved RPC/direct inserts and self-enrollment; approved captain registers; removal/closure preserves existing roster access');
+await db.close();

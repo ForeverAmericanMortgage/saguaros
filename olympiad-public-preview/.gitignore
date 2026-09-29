@@ -1,0 +1,10 @@
+node_modules/
+.next/
+.vercel/
+.env*
+.vercel
+
+*.tsbuildinfo
+supabase/.temp/
+# Generated Finder/iCloud conflict copies
+* [0-9].*

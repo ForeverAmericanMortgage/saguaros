@@ -1,0 +1,13 @@
+import {readFileSync} from 'node:fs';
+import assert from 'node:assert/strict';
+import ts from 'typescript';
+const src=readFileSync(new URL('../src/app/olympiad/auth/magic-link.ts',import.meta.url),'utf8');
+const js=ts.transpileModule(src,{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText;
+const {validMagicPayload,magicHeaders}=await import('data:text/javascript;base64,'+Buffer.from(js).toString('base64'));
+assert.equal(validMagicPayload({token_hash:'a'.repeat(64),type:'email'}),true);
+for(const p of [null,[],{}, {token_hash:'a'.repeat(64),type:'recovery'}, {token_hash:'a'.repeat(257),type:'email'}, {token_hash:'<script>',type:'email'}, {token_hash:12,type:'email'}])assert.equal(validMagicPayload(p),false);
+assert.match(magicHeaders['Cache-Control'],/no-store/);assert.equal(magicHeaders['Referrer-Policy'],'no-referrer');
+const route=readFileSync(new URL('../src/app/olympiad/auth/confirm/route.ts',import.meta.url),'utf8');
+const get=route.slice(route.indexOf('export async function GET'),route.indexOf('export async function POST'));
+assert.equal(get.includes('await client.auth'),false);assert.equal(get.includes("button.addEventListener('click'"),true);assert.equal(get.includes("window.history.replaceState(null, '', window.location.pathname)"),true);
+console.log('PASS token validation and response-header checks; GET source contains no provider exchange and uses explicit click. Full hosted/browser confirmation remains required.');
