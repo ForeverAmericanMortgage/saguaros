@@ -52,3 +52,21 @@
 
 /* Lead with the event promise, followed by concise supporting details. */
 .heroContent .heroLead{font-size:clamp(18px,1.5vw,23px);font-weight:600;color:#fff;line-height:1.4;margin-top:22px;margin-bottom:12px}.heroContent .heroLead+p{margin-top:0}.heroContent h1{max-width:700px}
+
+/* Mobile is a focused journey, with details available on demand. */
+.heroMobileDescription,.mobileSteps{display:none}.recipientLogo{overflow:hidden}.hub svg{flex-shrink:0;vertical-align:middle}
+@media(max-width:760px){
+ .hub{padding-bottom:calc(76px + env(safe-area-inset-bottom));scroll-padding-bottom:96px}
+ .header{padding:12px 18px;gap:12px}.brandLogo{display:block;width:38px;height:34px}.brand{gap:8px}.brand b{font-size:18px}.brand small{font-size:7px;letter-spacing:1.4px}.menuToggle{min-height:44px;min-width:58px;font-size:13px}
+ .headerActions{position:fixed;bottom:0;left:0;right:0;z-index:30;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:#fcfbf7;border-top:1px solid #d6ddd2;box-shadow:0 -6px 20px #182d2510;gap:10px}.headerActions button{min-height:46px;border-radius:6px;font-size:12px!important}
+ .hub[data-view=captain] .headerActions,.hub[data-view=signin] .headerActions{display:none}
+ .previewBar{align-items:center;font-size:9px;padding:7px 18px;gap:8px}.previewBar button{font-size:10px}
+ .earlyAccessHelp{padding:7px 18px;font-size:11px}.earlyAccessHelp>span{display:none}.returningCaptain{display:none}
+ .heroPhoto{background-image:linear-gradient(90deg,rgba(17,34,35,.9),rgba(17,34,35,.5)),url('/olympiad/stadium.jpg');background-position:58% center}
+ .heroContent{padding:38px 22px 30px}.hero h1{font-size:clamp(38px,10vw,48px);line-height:1.06}.hero .eyebrow{font-size:9px;margin-bottom:18px}.heroContent .heroLead{font-size:18px;line-height:1.45;margin:18px 0 10px;max-width:29ch}.heroDesktopDescription{display:none}.hero .heroMobileDescription{display:block;font-size:14px;line-height:1.6;margin:0;max-width:28ch}.hero .actions{margin:22px 0 0;gap:14px}.hero .goldButton{min-height:48px}.heroDetails{margin-top:20px}.heroDetails>span:nth-child(2){display:none}
+ .statsStrip{padding:0 18px;gap:0}.statsStrip>div,.statsStrip>button{padding:15px 8px!important;min-width:0}.statsStrip strong,.statsStrip button b{font-size:16px;letter-spacing:-.3px}.statsStrip span{font-size:11px;line-height:1.5}.statsStrip button>span{font-size:8px;letter-spacing:.6px}.statsStrip button small{display:none}
+ .section{padding:32px 20px}.sectionIntro h2{font-size:27px}.sectionIntro>p{font-size:13px;line-height:1.65}.desktopSteps{display:none}.mobileSteps{display:block;border-top:1px solid #d4dccd}.mobileSteps details{border-bottom:1px solid #d4dccd}.mobileSteps summary{min-height:56px;padding:16px 0;font-size:14px;font-weight:600;cursor:pointer}.mobileSteps p{font-size:14px;color:#536258;line-height:1.65;padding:0 0 18px}
+ .leaderSection,.joinBanner{display:none}.routeSection .sectionTop h2{font-size:27px}.routeCard{padding:18px 16px}.routeCard h3{font-size:16px}.routeCard>p{display:none}.routeCard>span{margin-top:8px;font-size:12px}.routeGrid{gap:10px;margin-top:20px}
+ .recipientLogo{height:120px}.recipientGrid{gap:10px}.recipientGrid article{padding:12px}.recipientGrid h3{font-size:13px;line-height:1.5}.partnerDetails summary{min-height:44px;font-size:12px}
+ .footer{padding:24px 20px}.hub button,.hub summary{touch-action:manipulation}
+}
