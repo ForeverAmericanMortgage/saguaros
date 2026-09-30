@@ -1,6 +1,6 @@
 # Google captain sign-in
 
-Status: implementation prepared, not enabled or deployed. Google project consent and OAuth credentials are still pending. No end-to-end Google login has been completed.
+Status: enabled and deployed to scottsdaleolympiad.com on September 30, 2026. Live first and returning Google sign-in passed for scaldwell@saguaros.com. The same user ID, saved team, roster and organizer membership were preserved. Clayton’s first Google login remains pending.
 
 ## Implementation
 
@@ -11,13 +11,13 @@ Status: implementation prepared, not enabled or deployed. Google project consent
 - Only basic identity scopes are needed; no Gmail, Drive or contacts access.
 - Email magic links remain available.
 
-## Provider setup pending
+## Provider setup
 
 Existing Google Cloud project: Saguaros / gen-lang-client-0908092386.
 Consent app name: Scottsdale Olympiad. Google permits only the currently selected project user's support address in the dropdown (sean.caldwell4@gmail.com); developer notification address is scaldwell@saguaros.com. Review the support address before public launch.
-Google requires the operator to accept the API Services User Data Policy and create the consent configuration. That acceptance was not performed by the agent.
+The operator accepted the Google API Services User Data Policy, created the OAuth client and saved its credentials directly in Supabase. Google provider is enabled. Google publishing status is Testing; test users are scaldwell@saguaros.com and clayton.wolfe@theagencyre.com.
 
-After consent configuration, create a Web application OAuth client:
+Configured Web application OAuth client:
 - Origin: https://scottsdaleolympiad.com
 - Authorized redirect: https://nwonwhyyvqgqxigrskqc.supabase.co/auth/v1/callback
 - Supabase project: Olympiad / nwonwhyyvqgqxigrskqc
@@ -30,7 +30,9 @@ After consent configuration, create a Web application OAuth client:
 
 TypeScript check passed. Production build passed with webpack in an isolated checkout. The initial Turbopack build rejected the temporary checkout's node_modules symlink; this was a local build layout issue, not an authentication result.
 
-Before enabling: test Google account selection, cancellation, wrong-account rejection, same-email identity linking and user-ID preservation (including unconfirmed Clayton account), saved team/roster persistence, returning sign-in, and captain denial of chairman access. An existing unconfirmed email identity must not be assumed linked without a live check. No test captain or new invitation was created.
+Live checks passed: account selection, basic name/profile/email permissions, same-email identity linking, user-ID preservation, saved team/roster persistence and returning sign-in without another consent prompt. Backend verified email and google identities on the same existing scaldwell account, with captain and organizer memberships intact. Vercel production deployment dpl_6Rys6cd8CLJyuXuthfshbYxWrJRM is Ready; its build and TypeScript checks passed.
+
+Remaining pilot checks: Clayton’s first Google login and existing unconfirmed-email identity handling, cancellation, wrong-account rejection and captain denial of chairman access. Before broad launch, complete Google branding and production audience setup and review the support email. No new captain, team or invitation was created by this Google smoke test.
 
 References:
 - https://supabase.com/docs/guides/auth/social-login/auth-google
