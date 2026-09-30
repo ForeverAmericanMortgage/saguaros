@@ -17,3 +17,6 @@
 
 /* Journey navigation is distinct from the sign-in action buttons. */
 .accessChoices{gap:8px;border-bottom:1px solid #d9dfd3;align-items:stretch;flex-wrap:nowrap}.accessCurrent,.accessLink{display:flex;flex-direction:column;justify-content:center;min-height:56px;padding:10px 14px;font-size:14px;line-height:1.4;flex:1;text-align:center;border-bottom:3px solid transparent}.accessCurrent{font-weight:700;color:#173f35;border-bottom-color:#286747;cursor:default}.accessCurrent small{font-size:10px;font-weight:500;color:#637066;margin-top:3px}.accessLink{color:#536258;text-decoration:underline;text-underline-offset:4px}.accessLink:hover{color:#173f35;background:#f2f3ed}.accessLink:focus-visible{outline:3px solid #b88015;outline-offset:3px}@media(max-width:760px){.captainAccess .accessChoices{gap:0}.accessCurrent,.accessLink{padding:8px;font-size:13px;min-height:54px}}
+
+/* Keep captain guidance short and scannable on every screen. */
+.quickFacts{margin:12px 0 18px;padding-left:20px;color:#536258;font-size:14px;line-height:1.6}.quickFacts li{padding-left:2px;margin:8px 0}.quickFacts strong{color:#1e2b46}.accountHint{margin:18px 0;color:#536258}.accountHint .quickFacts{margin:8px 0 0;font-size:13px}.accountHint .quickFacts strong{display:inline}.formCard form>p strong{color:#1e2b46}
