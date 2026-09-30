@@ -15,7 +15,7 @@ Status: enabled and deployed to scottsdaleolympiad.com on September 30, 2026. Li
 
 Existing Google Cloud project: Saguaros / gen-lang-client-0908092386.
 Consent app name: Scottsdale Olympiad. Google permits only the currently selected project user's support address in the dropdown (sean.caldwell4@gmail.com); developer notification address is scaldwell@saguaros.com. Review the support address before public launch.
-The operator accepted the Google API Services User Data Policy, created the OAuth client and saved its credentials directly in Supabase. Google provider is enabled. Google publishing status is Testing; test users are scaldwell@saguaros.com and clayton.wolfe@theagencyre.com.
+The operator accepted the Google API Services User Data Policy, created the OAuth client and saved its credentials directly in Supabase. Google provider is enabled. Google publishing status is Testing; test users are scaldwell@saguaros.com, clayton.wolfe@theagencyre.com and megan@thebrokery.com (added and verified September 30). Megan is also in the 2027 invitation table and production pilot allowlist; her actual login remains pending.
 
 Configured Web application OAuth client:
 - Origin: https://scottsdaleolympiad.com
