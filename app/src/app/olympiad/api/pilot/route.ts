@@ -35,7 +35,7 @@ export async function GET(request: Request) {
   }
   try {
     const { client, event, industries, map } = await context();
-    if (action === 'status') return reply({ enabled: config.enabled, registration_open: event.registration_open, configured: true, pilot_only: true, fundraising_active: event.fundraising_active, industries: industries.map(i => i.name) });
+    if (action === 'status') return reply({ enabled: config.enabled, registration_open: event.registration_open, configured: true, pilot_only: true, google_sign_in_enabled: process.env.OLYMPIAD_GOOGLE_SIGN_IN_ENABLED === 'true', fundraising_active: event.fundraising_active, industries: industries.map(i => i.name) });
     if (action === 'leaderboard') {
       if (!event.fundraising_active) return reply({ active: false, teams: [], message: 'Fundraising standings open when verified purchase tracking begins.' });
       const { data, error } = await client.from('fundraising_leaderboard').select('*').eq('event_id', event.id).order('total_cents', { ascending: false }).limit(500);
@@ -130,6 +130,12 @@ export async function POST(request: Request) {
     if (!data || typeof data !== 'object' || Array.isArray(data)) return reply({ error: 'Invalid request.' }, 400);
     const { client, event, industries } = await context();
     if (data.action === 'sign-out') { const { error } = await client.auth.signOut({scope:'local'}); if (error) throw error; return reply({ ok: true }); }
+    if (data.action === 'google-sign-in') {
+      if (process.env.OLYMPIAD_GOOGLE_SIGN_IN_ENABLED !== 'true') return reply({ error: 'Google sign-in is not available yet. Please use an email link.' }, 503);
+      const { data: oauth, error } = await client.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${SITE_URL}/olympiad/auth/callback`, skipBrowserRedirect: true, queryParams: { prompt: 'select_account' } } });
+      if (error || !oauth.url) return reply({ error: 'Google sign-in could not start. Please try again or use an email link.' }, 503);
+      return reply({ url: oauth.url });
+    }
     if (data.action === 'sign-in') {
       const address = validate.email(data.email);
       if (!pilotEmailAllowed(address)) return reply({ error: 'Captain access is currently limited to the invited pilot. Please contact the event team.' }, 403);
