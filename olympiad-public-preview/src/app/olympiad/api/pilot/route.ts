@@ -204,7 +204,7 @@ export async function POST(request: Request) {
       if (!category) throw new validate.PilotInputError('Choose an industry.');
       const { data: registered, error } = await client.rpc('register_team_with_referral', {
         p_team_name: validate.text(data.name,'Team name',120,true), p_company_name: validate.text(data.company,'Company',160,true),
-        p_industry_slug: category.slug, p_captain_name: validate.text(data.captain_name,'Captain name',120,true),
+        p_industry_slug: category.slug, p_captain_name: validate.captainName(data),
         p_phone: validate.phone(data.captain_phone,true), p_is_public: validate.boolean(data.is_public),
         p_referring_team_slug: validate.text(data.invited_by_slug,'Inviting team',160) || null,
         p_member_id: data.referring_club_member_id == null || data.referring_club_member_id === '' ? null : validate.uuid(data.referring_club_member_id),
@@ -225,7 +225,7 @@ export async function POST(request: Request) {
       const { error } = await client.rpc('update_team_profile_with_referral', {
         p_team_id: validate.uuid(data.team_id), p_team_name: validate.text(data.name,'Team name',120,true),
         p_company_name: validate.text(data.company,'Business name',160,true), p_industry_slug: category.slug,
-        p_captain_name: validate.text(data.captain_name,'Captain name',120,true), p_phone: validate.phone(data.captain_phone,true),
+        p_captain_name: validate.captainName(data), p_phone: validate.phone(data.captain_phone,true),
         p_member_id: data.referring_club_member_id == null || data.referring_club_member_id === '' ? null : validate.uuid(data.referring_club_member_id),
         p_description: validate.text(data.description,'Description',500), p_is_public: validate.boolean(data.is_public),
       });

@@ -41,3 +41,15 @@ export function roster(value: unknown) {
     return { ...(row.id ? { id: uuid(row.id) } : {}), name: text(row.name, 'Participant name', 120), email: address, phone: phone(row.phone), shirt_size: size, shirt_fit: fit };
   }).filter(row => row.name || row.email || row.phone || row.shirt_size || row.shirt_fit);
 }
+
+export function captainName(data: Record<string, unknown>): string {
+  if (data.captain_first_name !== undefined || data.captain_last_name !== undefined) {
+    const first = text(data.captain_first_name, 'Captain first name', 120, true);
+    const last = text(data.captain_last_name, 'Captain last name', 120, true);
+    return text(`${first} ${last}`, 'Captain full name', 120, true);
+  }
+  // Accept complete names from a form opened before deployment.
+  const full = text(data.captain_name, 'Captain full name', 120, true);
+  if (full.split(/\s+/).length < 2) throw new PilotInputError('Enter the captain’s first and last name.');
+  return full;
+}
