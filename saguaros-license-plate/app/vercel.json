@@ -1,6 +1,13 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "destination": "https://www.saguaros.com/license-plate",
+      "permanent": true
+    }
+  ],
   "crons": [
     {
       "path": "/api/cron/mailchimp-sync",
