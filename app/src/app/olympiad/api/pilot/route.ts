@@ -72,6 +72,8 @@ export async function GET(request: Request) {
       if (reviewError || memberError || assignmentError || creditError) throw reviewError || memberError || assignmentError || creditError;
       const { data: audienceProfiles, error: audienceError } = await client.from('team_audience_profiles').select('team_id,participation_history');
       if (audienceError) throw audienceError;
+      const { data: logos, error: logoError } = await client.from('team_brand_assets').select('team_id,filename,content_type,size_bytes,updated_at');
+      if (logoError) throw logoError;
       const normalized = (name: string) => name.toLowerCase().replace(/\b(llc|incorporated|inc|corporation|corp|ltd)\b/g,'').replace(/[^a-z0-9]/g,'');
 
       return reply({ teams: (data ?? []).map(team => {
@@ -81,7 +83,7 @@ export async function GET(request: Request) {
         const review = reviews?.find(r => r.team_id === team.id);
         const memberId = assignments?.find(a => a.team_id === team.id)?.member_id ?? null;
         const duplicates = (data ?? []).filter(other => other.id !== team.id && ((normalized(String(team.company_name)).length >= 3 && normalized(String(other.company_name)) === normalized(String(team.company_name))) || normalized(String(other.team_name)) === normalized(String(team.team_name)))).slice(0,5).map(other => ({id:other.id,name:other.team_name,company:other.company_name,reason:'Similar business or team name. Confirm whether this is a separate team.'}));
-        return { ...map(team), participation_history: audienceProfiles?.find(p => p.team_id === team.id)?.participation_history ?? 'unclassified', approval_status: review?.status ?? 'pending', approval_message: review?.message ?? '', approval_version: review?.version ?? 0, referring_club_member_id: memberId, referring_club_member_name: members?.find(m => m.id === memberId)?.name ?? '', duplicate_candidates: duplicates, followup: followups?.find(f => f.team_id === team.id) ?? null, stretch_goal_cents: goals?.find(g => g.team_id === team.id)?.stretch_goal_cents ?? 300000, is_public: team.is_public, captain_name: details?.name ?? '', captain_phone: details?.phone ?? '', missing: { name: roster.filter(p => !p.name).length, email: roster.filter(p => !p.email).length, phone: roster.filter(p => !p.phone).length, shirt: roster.filter(p => !p.shirt_size || !p.shirt_fit).length }, listed: roster.length, complete, needs_follow_up: roster.length < 6 || complete < roster.length };
+        return { ...map(team), logo: logos?.find(l => l.team_id === team.id) ?? null, participation_history: audienceProfiles?.find(p => p.team_id === team.id)?.participation_history ?? 'unclassified', approval_status: review?.status ?? 'pending', approval_message: review?.message ?? '', approval_version: review?.version ?? 0, referring_club_member_id: memberId, referring_club_member_name: members?.find(m => m.id === memberId)?.name ?? '', duplicate_candidates: duplicates, followup: followups?.find(f => f.team_id === team.id) ?? null, stretch_goal_cents: goals?.find(g => g.team_id === team.id)?.stretch_goal_cents ?? 300000, is_public: team.is_public, captain_name: details?.name ?? '', captain_phone: details?.phone ?? '', missing: { name: roster.filter(p => !p.name).length, email: roster.filter(p => !p.email).length, phone: roster.filter(p => !p.phone).length, shirt: roster.filter(p => !p.shirt_size || !p.shirt_fit).length }, listed: roster.length, complete, needs_follow_up: roster.length < 6 || complete < roster.length };
       }), club_members: members ?? [], member_credit: credit ?? [], registration_open: event.registration_open, fundraising_active: event.fundraising_active });
     }
     if (action === 'mine') {
@@ -100,11 +102,13 @@ export async function GET(request: Request) {
         client.from('team_member_attributions').select('team_id,member_id').in('team_id',(data ?? []).map(team => team.id)),
       ]);
       if (memberError || assignmentError) throw memberError || assignmentError;
+      const { data: logos, error: logoError } = await client.from('team_brand_assets').select('team_id,filename,content_type,size_bytes,updated_at');
+      if (logoError) throw logoError;
       const { data: organizer, error: organizerError } = await client.from('organizer_memberships').select('user_id').eq('user_id', user.id).maybeSingle();
       if (organizerError) throw organizerError;
       return reply({ club_members: members ?? [], fundraising_active: event.fundraising_active, registration_allowed: !!cohort && event.registration_open && config.enabled, user: { email: user.email, is_organizer: !!organizer }, teams: (data ?? []).map(team => {
         const details = Array.isArray(team.team_captain_details) ? team.team_captain_details[0] : team.team_captain_details;
-        return { ...map(team), referring_club_member_id: assignments?.find(a => a.team_id === team.id)?.member_id ?? null, approval_status: reviews?.find(r => r.team_id === team.id)?.status ?? 'pending', approval_message: reviews?.find(r => r.team_id === team.id)?.message ?? '', stretch_goal_cents: goals?.find(g => g.team_id === team.id)?.stretch_goal_cents ?? 300000, is_public: team.is_public, roster_version: team.roster_version, captain_name: details?.name ?? '', captain_phone: details?.phone ?? '', roster: (team.roster_participants ?? []).sort((a,b) => a.position - b.position).map(({position: _position, ...row}) => row) };
+        return { ...map(team), logo: logos?.find(l => l.team_id === team.id) ?? null, referring_club_member_id: assignments?.find(a => a.team_id === team.id)?.member_id ?? null, approval_status: reviews?.find(r => r.team_id === team.id)?.status ?? 'pending', approval_message: reviews?.find(r => r.team_id === team.id)?.message ?? '', stretch_goal_cents: goals?.find(g => g.team_id === team.id)?.stretch_goal_cents ?? 300000, is_public: team.is_public, roster_version: team.roster_version, captain_name: details?.name ?? '', captain_phone: details?.phone ?? '', roster: (team.roster_participants ?? []).sort((a,b) => a.position - b.position).map(({position: _position, ...row}) => row) };
       }) });
     }
     return reply({ error: 'Unknown request.' }, 400);
