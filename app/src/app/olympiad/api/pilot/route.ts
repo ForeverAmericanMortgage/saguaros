@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
 import { allowedOrigin, pilotClient, pilotConfiguration, pilotEmailAllowed, SITE_URL } from '../../pilot/server';
+import { chairmanAccess } from '../../auth/chairman-access';
+import { PROOF_COOKIE } from '../../auth/chairman-proof';
+import { cookies } from 'next/headers';
 import * as validate from '../../pilot/validation';
 
 export const dynamic = 'force-dynamic';
@@ -51,6 +54,8 @@ export async function GET(request: Request) {
       return reply({ teams: (data ?? []).map(map), configured: true });
     }
     if (action === 'organizer') {
+      const access = await chairmanAccess(client);
+      if (!access.ok) return reply({ error: 'Invited chairman Google access is required.' }, access.status);
       const { data: { user }, error: authError } = await client.auth.getUser();
       if (authError || !user || !user.email_confirmed_at) return reply({ error: 'Sign in with your organizer email to continue.' }, 401);
       const { data: membership, error: membershipError } = await client.from('organizer_memberships').select('user_id').eq('user_id', user.id).maybeSingle();
@@ -137,7 +142,7 @@ export async function POST(request: Request) {
     try { data = JSON.parse(Buffer.concat(chunks).toString('utf8')); } catch { return reply({ error: 'Invalid request.' }, 400); }
     if (!data || typeof data !== 'object' || Array.isArray(data)) return reply({ error: 'Invalid request.' }, 400);
     const { client, event, industries } = await context();
-    if (data.action === 'sign-out') { const { error } = await client.auth.signOut({scope:'local'}); if (error) throw error; return reply({ ok: true }); }
+    if (data.action === 'sign-out') { (await cookies()).delete(PROOF_COOKIE); const { error } = await client.auth.signOut({scope:'local'}); if (error) throw error; return reply({ ok: true }); }
     if (data.action === 'google-sign-in') {
       if (process.env.OLYMPIAD_GOOGLE_SIGN_IN_ENABLED !== 'true') return reply({ error: 'Google sign-in is not available yet. Please use an email link.' }, 503);
       const { data: oauth, error } = await client.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${SITE_URL}/olympiad/auth/callback`, skipBrowserRedirect: true, queryParams: { prompt: 'select_account' } } });
@@ -154,6 +159,10 @@ export async function POST(request: Request) {
     }
     const { data: { user }, error: userError } = await client.auth.getUser();
     if (userError || !user || !user.email_confirmed_at) return reply({ error: 'Please sign in with your verified email first.' }, 401);
+    if (['review-team', 'save-followup', 'set-goal'].includes(String(data.action))) {
+      const access = await chairmanAccess(client);
+      if (!access.ok) return reply({ error: 'Invited chairman Google access is required.' }, access.status);
+    }
     if (data.action === 'review-team') {
       const { data: membership, error: membershipError } = await client.from('organizer_memberships').select('user_id').eq('user_id',user.id).maybeSingle();
       if (membershipError) throw membershipError;

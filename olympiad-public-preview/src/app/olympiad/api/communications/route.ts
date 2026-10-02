@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { chairmanAccess } from '../../auth/chairman-access';
 import { pilotClient } from '../../pilot/server';
 export const dynamic = 'force-dynamic';
 const reply = (data: unknown, status=200) => NextResponse.json(data,{status,headers:{'Cache-Control':'private, no-store','Vary':'Cookie'}});
@@ -7,6 +8,8 @@ type Recipient = {email_address:string;status:string};
 export async function GET(){
  try {
   const client=await pilotClient();
+  const access=await chairmanAccess(client);
+  if(!access.ok)return reply({error:'Invited chairman Google access is required.'},access.status);
   const {data:{user},error:authError}=await client.auth.getUser();
   if(authError||!user?.email_confirmed_at)return reply({error:'Sign in with your chairman account.'},401);
   const {data:member,error:memberError}=await client.from('organizer_memberships').select('user_id').eq('user_id',user.id).maybeSingle();

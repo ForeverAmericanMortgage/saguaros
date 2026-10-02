@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { allowedOrigin, pilotClient } from '../../pilot/server';
+import { chairmanAccess } from '../../auth/chairman-access';
 import { uuid, PilotInputError } from '../../pilot/validation';
 export const dynamic = 'force-dynamic';
 const BUCKET = 'olympiad-team-logos';
@@ -48,6 +49,12 @@ export async function GET(request: Request) {
   const { data: { user } } = await client.auth.getUser();
   if (!user?.email_confirmed_at) return fail('Sign in to download this logo.',401);
   const teamId = uuid(new URL(request.url).searchParams.get('team_id'));
+  const { data: team, error: teamError } = await client.from('teams').select('captain_user_id').eq('id',teamId).maybeSingle();
+  if (teamError || !team) return fail('Logo not found or access is unavailable.',404);
+  if (team.captain_user_id !== user.id) {
+    const access = await chairmanAccess(client);
+    if (!access.ok) return fail('Invited chairman Google access is required.',access.status);
+  }
   const { data: asset,error } = await client.from('team_brand_assets').select('object_path,filename').eq('team_id',teamId).maybeSingle();
   if (error || !asset) return fail('Logo not found or access is unavailable.',404);
   const { data: file,error: downloadError } = await client.storage.from(BUCKET).download(asset.object_path);

@@ -1,6 +1,7 @@
 import 'server-only';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
+import { chairmanOrigin } from '../auth/chairman-proof';
 
 const INTERNAL_PROJECT = 'qbqnbwknywkfqnblagsa';
 export const SITE_URL = process.env.OLYMPIAD_SITE_URL || 'https://scottsdaleolympiad.com';
@@ -30,7 +31,7 @@ export function allowedOrigin(request: Request) {
   const origin = request.headers.get('origin');
   const origins = new Set([SITE_URL]);
   if (process.env.NODE_ENV !== 'production') { origins.add('http://localhost:3027'); origins.add('http://localhost:3000'); }
-  return origin !== null && origins.has(origin);
+  return origin !== null && (origins.has(origin) || chairmanOrigin(origin, process.env.NODE_ENV !== 'production'));
 }
 
 // Server-only exact addresses; empty configuration fails closed. Keep returning

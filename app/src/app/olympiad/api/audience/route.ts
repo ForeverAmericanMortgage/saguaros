@@ -1,11 +1,12 @@
 import {NextResponse} from 'next/server';
 import {allowedOrigin,pilotClient} from '../../pilot/server';
+import {chairmanAccess} from '../../auth/chairman-access';
 import {desiredTags,syncContact,type Contact} from './sync';
 export const dynamic='force-dynamic';
 export const maxDuration=60;
 const reply=(data:unknown,status=200)=>NextResponse.json(data,{status,headers:{'Cache-Control':'private, no-store','Vary':'Cookie, Origin'}});
 async function context(){
- const client=await pilotClient();const {data:{user},error}=await client.auth.getUser();
+ const client=await pilotClient();const access=await chairmanAccess(client);if(!access.ok)return {error:reply({error:'Invited chairman Google access is required.'},access.status)};const {data:{user},error}=await client.auth.getUser();
  if(error||!user?.email_confirmed_at)return {error:reply({error:'Sign in with your chairman account.'},401)};
  const {data:membership,error:membershipError}=await client.from('organizer_memberships').select('user_id').eq('user_id',user.id).maybeSingle();
  if(membershipError)throw membershipError;
