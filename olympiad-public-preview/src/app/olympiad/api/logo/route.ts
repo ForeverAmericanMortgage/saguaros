@@ -28,7 +28,11 @@ export async function POST(request: Request) {
   const file = form.get('logo');
   if (!(file instanceof File) || !file.size || file.size > MAX) return fail('Choose a PNG, JPG or vector logo up to 4 MB.',400);
   const { data: team, error: teamError } = await client.from('teams').select('id,captain_user_id').eq('id',teamId).maybeSingle();
-  if (teamError || !team || team.captain_user_id !== user.id) return fail('Only the team captain can upload this logo.',403);
+  if (teamError || !team) return fail('Team not found or access is unavailable.',404);
+  if (team.captain_user_id !== user.id) {
+   const access=await chairmanAccess(client);
+   if(!access.ok)return fail('Captain or verified chairman access is required.',access.status);
+  }
   const filename = file.name.split(/[\\/]/).pop()!.replace(/[^a-zA-Z0-9 ._()-]/g,'_').slice(-180);
   const extension = filename.split('.').pop()?.toLowerCase() || '';
   const bytes = Buffer.from(await file.arrayBuffer());

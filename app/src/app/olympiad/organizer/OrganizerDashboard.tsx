@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, type FormEvent } from 'react';
+import TeamLogo, {type TeamLogoAsset} from '../pilot/TeamLogo';
 import styles from './organizer.module.css';
 import Communications from './Communications';
 import AudienceSync from './AudienceSync';
@@ -14,7 +15,7 @@ type TeamHistory = 'unclassified' | 'new' | 'returning';
 const historyLabels: Record<TeamHistory,string> = {unclassified:'Not yet classified',new:'New team',returning:'Returning team'};
 type Review = { participation_history: TeamHistory; referring_club_member_id: string | null; referring_club_member_name: string; status: 'pending' | 'approved' | 'needs_changes' | 'declined'; message: string; version: number };
 const reviewLabels: Record<Review['status'], string> = { pending: 'Pending review', approved: 'Approved', needs_changes: 'Changes requested', declined: 'Declined' };
-type Team = DirectoryTeam & { logo?: {filename: string}; participation_history: TeamHistory; referring_club_member_id: string | null; approval_status: Review['status']; approval_message: string; approval_version: number; referring_club_member_name: string; duplicate_candidates: { id: string; name: string; company: string; reason: string }[]; followup?: Followup | null; id: string; name: string; company: string; industry: string; captain_name: string; captain_phone?: string; missing?: { name: number; email: number; phone: number; shirt: number }; listed: number; complete: number; needs_follow_up: boolean; is_public: boolean; stretch_goal_cents?: number };
+type Team = DirectoryTeam & { logo?: TeamLogoAsset; logo_url?:string; participation_history: TeamHistory; referring_club_member_id: string | null; approval_status: Review['status']; approval_message: string; approval_version: number; referring_club_member_name: string; duplicate_candidates: { id: string; name: string; company: string; reason: string }[]; followup?: Followup | null; id: string; name: string; company: string; industry: string; captain_name: string; captain_phone?: string; missing?: { name: number; email: number; phone: number; shirt: number }; listed: number; complete: number; needs_follow_up: boolean; is_public: boolean; stretch_goal_cents?: number };
 class OrganizerRequestError extends Error { constructor(message: string, public status: number) { super(message); } }
 async function readResponse(response: Response) { const data = await response.json(); if (!response.ok) throw new OrganizerRequestError(data.error || 'Unable to load teams.', response.status); return data; }
 const money = (cents: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: cents % 100 ? 2 : 0 }).format(cents / 100);
@@ -129,6 +130,7 @@ function TeamDisclosure({team,today,clubMembers,expanded,onToggle,onAccessDenied
   </summary>
   <div className={styles.teamDetail}>
    <div className={styles.teamFacts}><p><strong>Logo:</strong> {team.logo ? <a href={`/olympiad/api/logo?team_id=${team.id}`} download>Download {team.logo.filename}</a> : 'Not uploaded yet'}</p><p><strong>Captain:</strong> {team.captain_name || 'Not recorded'}{team.captain_email && <> · <a href={`mailto:${team.captain_email}`}>{team.captain_email}</a></>}{team.captain_phone && <> · <a href={`tel:${team.captain_phone.replace(/[^+0-9]/g,'')}`}>{team.captain_phone}</a></>}</p><p><strong>Roster:</strong> {team.complete} of {team.listed} saved profiles complete.{team.listed<6 && ` Add ${6-team.listed} people to reach six.`}{team.missing && team.complete<team.listed && ` Missing: ${Object.entries(team.missing).filter(([,count])=>count>0).map(([field,count])=>`${count} ${field==='shirt'?'shirt preferences':field}`).join(' · ')}.`}</p><p><strong>Visibility:</strong> {team.is_public ? team.approval_status === 'approved' ? 'Approved · public team page' : 'Public listing requested · hidden until approved' : 'Captain chose a private team page'}</p><p><strong>Referring member:</strong> {team.referring_club_member_name || 'Not assigned'} · private</p></div>
+   <details className={styles.logoManagement}><summary>Manage team logo · upload or use a logo on file</summary><p>Feature this business on its public tile, team page and 2027 leaderboard. Public display still requires team approval and the captain’s public-listing choice.</p><TeamLogo chairman teamId={team.id} initialLogo={team.logo} initialPublicUrl={team.logo_url} onSaved={()=>{}} onPublicSaved={()=>{}} /></details>
    <TeamRoster team={team} />
    <div className={styles.teamControls}><ReviewForm team={team} clubMembers={clubMembers} onAccessDenied={onAccessDenied} onSaved={value=>{clearDraft('review');onReviewSaved(value);}} /><FollowupForm team={team} onAccessDenied={onAccessDenied} onSaved={value=>{clearDraft('followup');onFollowupSaved(value);}} /><GoalForm team={team} onAccessDenied={onAccessDenied} onSaved={value=>{clearDraft('goal');onGoalSaved(value);}} /></div>
   </div>

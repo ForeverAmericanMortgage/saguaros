@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { allowedOrigin, pilotClient } from '../../pilot/server';
+import { chairmanAccess } from '../../auth/chairman-access';
 import { uuid } from '../../pilot/validation';
 export const dynamic = 'force-dynamic';
 const headers = {'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'};
@@ -13,7 +14,8 @@ export async function POST(request:Request) {
   if(!user?.email_confirmed_at)return fail('Sign in to update your team logo.',401);
   const form=await request.formData();const teamId=uuid(form.get('team_id'));
   const {data:team}=await client.from('teams').select('captain_user_id').eq('id',teamId).maybeSingle();
-  if(!team||team.captain_user_id!==user.id)return fail('Only the captain can update this logo.',403);
+  if(!team)return fail('Team not found or access is unavailable.',404);
+  if(team.captain_user_id!==user.id){const access=await chairmanAccess(client);if(!access.ok)return fail('Captain or verified chairman access is required.',access.status);}
   if(form.get('remove')==='true') {
    const {error}=await client.from('team_public_logos').delete().eq('team_id',teamId);
    if(error)return fail('Could not hide your logo. Please try again.',503);
@@ -48,7 +50,8 @@ export async function GET(request:Request) {
    const {data:{user}}=await client.auth.getUser();
    if(!user)return fail('Logo unavailable.',404);
    const {data:team}=await client.from('teams').select('captain_user_id').eq('id',teamId).maybeSingle();
-   if(!team||team.captain_user_id!==user.id)return fail('Logo unavailable.',404);
+   if(!team)return fail('Logo unavailable.',404);
+   if(team.captain_user_id!==user.id){const access=await chairmanAccess(client);if(!access.ok)return fail('Logo unavailable.',404);}
   }
   const {data:logo}=await client.from('team_public_logos').select('object_path,content_type').eq('team_id',teamId).maybeSingle();
   if(!logo||!['image/png','image/jpeg'].includes(logo.content_type))return fail('Logo unavailable.',404);
