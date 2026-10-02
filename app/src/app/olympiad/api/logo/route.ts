@@ -40,7 +40,13 @@ export async function POST(request: Request) {
   const asset = { team_id:teamId, object_path:path, filename, content_type:contentType, size_bytes:file.size, uploaded_by:user.id, updated_at:new Date().toISOString() };
   const { error: metadataError } = await client.from('team_brand_assets').upsert(asset,{onConflict:'team_id'});
   if (metadataError) return fail('Your file uploaded but could not be attached to your team. Please try again.',503);
-  return NextResponse.json({ok:true,logo:{filename,content_type:contentType,size_bytes:file.size,updated_at:asset.updated_at}},{headers});
+  let publicUrl: string | undefined;
+  if (['image/png','image/jpeg'].includes(contentType)) {
+   const {error:publicError}=await client.from('team_public_logos').upsert({team_id:teamId,object_path:path,content_type:contentType,updated_at:asset.updated_at},{onConflict:'team_id'});
+   if(publicError)return fail('Your original is saved, but the website logo could not be updated. Please try again.',503);
+   publicUrl=`/olympiad/api/public-logo?team_id=${teamId}&v=${encodeURIComponent(asset.updated_at)}`;
+  }
+  return NextResponse.json({ok:true,logo_url:publicUrl,logo:{filename,content_type:contentType,size_bytes:file.size,updated_at:asset.updated_at}},{headers});
  } catch (error) { return fail(error instanceof PilotInputError ? error.message : 'We could not upload your logo. Please try again.',400); }
 }
 export async function GET(request: Request) {
