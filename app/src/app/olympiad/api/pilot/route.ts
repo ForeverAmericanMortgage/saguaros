@@ -40,10 +40,17 @@ export async function GET(request: Request) {
     const { client, event, industries, map } = await context();
     if (action === 'status') return reply({ enabled: config.enabled, registration_open: event.registration_open, configured: true, pilot_only: true, google_sign_in_enabled: process.env.OLYMPIAD_GOOGLE_SIGN_IN_ENABLED === 'true', fundraising_active: event.fundraising_active, industries: industries.map(i => i.name) });
     if (action === 'leaderboard') {
-      if (!event.fundraising_active) return reply({ active: false, teams: [], message: 'Fundraising standings open when verified purchase tracking begins.' });
+      if (!event.fundraising_active) {
+        const { data, error } = await client.from('team_directory').select(publicColumns).eq('event_id',event.id).order('team_name').limit(500);
+        if (error) throw error;
+        return reply({ active:false, teams:(data??[]).map(team=>({id:team.id,name:team.team_name,slug:team.slug,
+          category:industries.find(i=>i.id===team.industry_id)?.name??'Other businesses',totalCents:0})),
+          message:'Fundraising opens soon. Participating teams are not ranked yet.' });
+      }
       const { data, error } = await client.from('fundraising_leaderboard').select('*').eq('event_id', event.id).order('total_cents', { ascending: false }).limit(500);
       if (error) throw error;
-      return reply({ active: true, teams: data ?? [] });
+      return reply({ active:true, teams:(data??[]).map(team=>({id:team.team_id,name:team.team_name,slug:team.slug,
+        category:industries.find(i=>i.id===team.industry_id)?.name??'Other businesses',totalCents:Number(team.total_cents)})) });
     }
     if (action === 'directory' || action === 'team') {
       let query = client.from('team_directory').select(publicColumns).eq('event_id', event.id).order('team_name').limit(500);

@@ -1,0 +1,589 @@
+{
+  "year": 2026,
+  "source": "Treasurer’s final Olympiad Team Sales report",
+  "reportPeriod": "December 20, 2025 – June 30, 2026",
+  "basis": "Accrual",
+  "reportGenerated": "October 2, 2026",
+  "reportTotalCents": 69977276,
+  "teamTotalCents": 56527977,
+  "unassignedCents": 11229399,
+  "memberTotalCents": 2219900,
+  "categories": [
+    {
+      "name": "BFK Teams",
+      "totalCents": 30156790
+    },
+    {
+      "name": "ABC Teams",
+      "totalCents": 14253980
+    },
+    {
+      "name": "Services For Kids Teams",
+      "totalCents": 4420047
+    },
+    {
+      "name": "Healthcare for Kids Teams",
+      "totalCents": 3047146
+    },
+    {
+      "name": "Finance For Kids Teams",
+      "totalCents": 2421928
+    },
+    {
+      "name": "Tech For Kids Teams",
+      "totalCents": 1524764
+    },
+    {
+      "name": "CFK Teams",
+      "totalCents": 703322
+    }
+  ],
+  "teams": [
+    {
+      "id": "2026-001",
+      "name": "Tiffany & Bosco P.A.",
+      "category": "BFK Teams",
+      "totalCents": 10502331
+    },
+    {
+      "id": "2026-002",
+      "name": "Matthews 1",
+      "category": "BFK Teams",
+      "totalCents": 1333555
+    },
+    {
+      "id": "2026-003",
+      "name": "Butler Design Group",
+      "category": "BFK Teams",
+      "totalCents": 1220000
+    },
+    {
+      "id": "2026-004",
+      "name": "Ewing Irrigation",
+      "category": "BFK Teams",
+      "totalCents": 1160000
+    },
+    {
+      "id": "2026-005",
+      "name": "Ganem",
+      "category": "BFK Teams",
+      "totalCents": 950000
+    },
+    {
+      "id": "2026-006",
+      "name": "CCIM",
+      "category": "BFK Teams",
+      "totalCents": 837892
+    },
+    {
+      "id": "2026-007",
+      "name": "Rein & Grossoehme",
+      "category": "BFK Teams",
+      "totalCents": 777985
+    },
+    {
+      "id": "2026-008",
+      "name": "Suntec Concrete",
+      "category": "BFK Teams",
+      "totalCents": 750000
+    },
+    {
+      "id": "2026-009",
+      "name": "Willmeng",
+      "category": "BFK Teams",
+      "totalCents": 750000
+    },
+    {
+      "id": "2026-010",
+      "name": "Ryan Companies",
+      "category": "BFK Teams",
+      "totalCents": 660435
+    },
+    {
+      "id": "2026-011",
+      "name": "Evergreen Development",
+      "category": "BFK Teams",
+      "totalCents": 655700
+    },
+    {
+      "id": "2026-012",
+      "name": "CORE Construction",
+      "category": "BFK Teams",
+      "totalCents": 600000
+    },
+    {
+      "id": "2026-013",
+      "name": "Land Advisors",
+      "category": "BFK Teams",
+      "totalCents": 435985
+    },
+    {
+      "id": "2026-014",
+      "name": "CBRE",
+      "category": "BFK Teams",
+      "totalCents": 415000
+    },
+    {
+      "id": "2026-015",
+      "name": "Chasse Building Team",
+      "category": "BFK Teams",
+      "totalCents": 400000
+    },
+    {
+      "id": "2026-016",
+      "name": "Sharp Construction/Enterprise Bank",
+      "category": "BFK Teams",
+      "totalCents": 398700
+    },
+    {
+      "id": "2026-017",
+      "name": "BJERK Builders",
+      "category": "BFK Teams",
+      "totalCents": 385000
+    },
+    {
+      "id": "2026-018",
+      "name": "Colliers International",
+      "category": "BFK Teams",
+      "totalCents": 384685
+    },
+    {
+      "id": "2026-019",
+      "name": "Integral Partners",
+      "category": "BFK Teams",
+      "totalCents": 380985
+    },
+    {
+      "id": "2026-020",
+      "name": "Barclay Group",
+      "category": "BFK Teams",
+      "totalCents": 380000
+    },
+    {
+      "id": "2026-021",
+      "name": "Cam CRE",
+      "category": "BFK Teams",
+      "totalCents": 380000
+    },
+    {
+      "id": "2026-022",
+      "name": "Fundamental Income",
+      "category": "BFK Teams",
+      "totalCents": 369500
+    },
+    {
+      "id": "2026-023",
+      "name": "LPC",
+      "category": "BFK Teams",
+      "totalCents": 350000
+    },
+    {
+      "id": "2026-024",
+      "name": "Western Retail Advisors",
+      "category": "BFK Teams",
+      "totalCents": 350000
+    },
+    {
+      "id": "2026-025",
+      "name": "Lee & Associates",
+      "category": "BFK Teams",
+      "totalCents": 320985
+    },
+    {
+      "id": "2026-026",
+      "name": "ORION Properties",
+      "category": "BFK Teams",
+      "totalCents": 320000
+    },
+    {
+      "id": "2026-027",
+      "name": "Wespac Construction",
+      "category": "BFK Teams",
+      "totalCents": 320000
+    },
+    {
+      "id": "2026-028",
+      "name": "Arizona Commercial Management",
+      "category": "BFK Teams",
+      "totalCents": 310000
+    },
+    {
+      "id": "2026-029",
+      "name": "Encore",
+      "category": "BFK Teams",
+      "totalCents": 310000
+    },
+    {
+      "id": "2026-030",
+      "name": "Resolute Commercial",
+      "category": "BFK Teams",
+      "totalCents": 310000
+    },
+    {
+      "id": "2026-031",
+      "name": "STORE Capital",
+      "category": "BFK Teams",
+      "totalCents": 310000
+    },
+    {
+      "id": "2026-032",
+      "name": "W&W Structural",
+      "category": "BFK Teams",
+      "totalCents": 300000
+    },
+    {
+      "id": "2026-033",
+      "name": "Cushman & Wakefield",
+      "category": "BFK Teams",
+      "totalCents": 297700
+    },
+    {
+      "id": "2026-034",
+      "name": "Marcus & Millichap",
+      "category": "BFK Teams",
+      "totalCents": 275000
+    },
+    {
+      "id": "2026-035",
+      "name": "Mahoney Group",
+      "category": "BFK Teams",
+      "totalCents": 251661
+    },
+    {
+      "id": "2026-036",
+      "name": "LGE",
+      "category": "BFK Teams",
+      "totalCents": 250000
+    },
+    {
+      "id": "2026-037",
+      "name": "Western Building Group",
+      "category": "BFK Teams",
+      "totalCents": 250000
+    },
+    {
+      "id": "2026-038",
+      "name": "Kidder Mathews",
+      "category": "BFK Teams",
+      "totalCents": 225000
+    },
+    {
+      "id": "2026-039",
+      "name": "Fairbanks",
+      "category": "BFK Teams",
+      "totalCents": 220485
+    },
+    {
+      "id": "2026-040",
+      "name": "Associated Sign Company",
+      "category": "BFK Teams",
+      "totalCents": 172646
+    },
+    {
+      "id": "2026-041",
+      "name": "Waltz Construction",
+      "category": "BFK Teams",
+      "totalCents": 170000
+    },
+    {
+      "id": "2026-042",
+      "name": "Newmark",
+      "category": "BFK Teams",
+      "totalCents": 159500
+    },
+    {
+      "id": "2026-043",
+      "name": "NAI Horizon",
+      "category": "BFK Teams",
+      "totalCents": 150000
+    },
+    {
+      "id": "2026-044",
+      "name": "SRS Real Estate Partners",
+      "category": "BFK Teams",
+      "totalCents": 115000
+    },
+    {
+      "id": "2026-045",
+      "name": "Restoration HQ",
+      "category": "BFK Teams",
+      "totalCents": 102500
+    },
+    {
+      "id": "2026-046",
+      "name": "LevRose",
+      "category": "BFK Teams",
+      "totalCents": 100300
+    },
+    {
+      "id": "2026-047",
+      "name": "Stream Realty",
+      "category": "BFK Teams",
+      "totalCents": 65600
+    },
+    {
+      "id": "2026-048",
+      "name": "Matthews 2",
+      "category": "BFK Teams",
+      "totalCents": 22660
+    },
+    {
+      "id": "2026-049",
+      "name": "Tradition Capital",
+      "category": "ABC Teams",
+      "totalCents": 2398996
+    },
+    {
+      "id": "2026-050",
+      "name": "Arizona Home Group - Keller Williams Realty Sonoran Living",
+      "category": "ABC Teams",
+      "totalCents": 2253500
+    },
+    {
+      "id": "2026-051",
+      "name": "Two Brothers Realty (1)",
+      "category": "ABC Teams",
+      "totalCents": 2027290
+    },
+    {
+      "id": "2026-052",
+      "name": "Camelot Homes",
+      "category": "ABC Teams",
+      "totalCents": 1500000
+    },
+    {
+      "id": "2026-053",
+      "name": "Hancock Processing",
+      "category": "ABC Teams",
+      "totalCents": 860000
+    },
+    {
+      "id": "2026-054",
+      "name": "McCormick Ranch Golf Club",
+      "category": "ABC Teams",
+      "totalCents": 760000
+    },
+    {
+      "id": "2026-055",
+      "name": "Premier Title",
+      "category": "ABC Teams",
+      "totalCents": 750000
+    },
+    {
+      "id": "2026-056",
+      "name": "The Brokery - Megan Smith",
+      "category": "ABC Teams",
+      "totalCents": 568961
+    },
+    {
+      "id": "2026-057",
+      "name": "BoomPromo",
+      "category": "ABC Teams",
+      "totalCents": 530000
+    },
+    {
+      "id": "2026-058",
+      "name": "Forever American Mortgage 1",
+      "category": "ABC Teams",
+      "totalCents": 448700
+    },
+    {
+      "id": "2026-059",
+      "name": "REAL Broker- Ty Lusk",
+      "category": "ABC Teams",
+      "totalCents": 420500
+    },
+    {
+      "id": "2026-060",
+      "name": "The Agency (1)",
+      "category": "ABC Teams",
+      "totalCents": 414913
+    },
+    {
+      "id": "2026-061",
+      "name": "The Agency (2)",
+      "category": "ABC Teams",
+      "totalCents": 410000
+    },
+    {
+      "id": "2026-062",
+      "name": "Thrive Real Estate Team (1)",
+      "category": "ABC Teams",
+      "totalCents": 350000
+    },
+    {
+      "id": "2026-063",
+      "name": "Bright Home Energy",
+      "category": "ABC Teams",
+      "totalCents": 170985
+    },
+    {
+      "id": "2026-064",
+      "name": "Thomas Title",
+      "category": "ABC Teams",
+      "totalCents": 146435
+    },
+    {
+      "id": "2026-065",
+      "name": "Compass 1",
+      "category": "ABC Teams",
+      "totalCents": 133700
+    },
+    {
+      "id": "2026-066",
+      "name": "Great American Title (1)",
+      "category": "ABC Teams",
+      "totalCents": 110000
+    },
+    {
+      "id": "2026-067",
+      "name": "Schmooze",
+      "category": "Services For Kids Teams",
+      "totalCents": 1544016
+    },
+    {
+      "id": "2026-068",
+      "name": "FAST Aviation",
+      "category": "Services For Kids Teams",
+      "totalCents": 1050985
+    },
+    {
+      "id": "2026-069",
+      "name": "BCG",
+      "category": "Services For Kids Teams",
+      "totalCents": 635046
+    },
+    {
+      "id": "2026-070",
+      "name": "MJ Insurance",
+      "category": "Services For Kids Teams",
+      "totalCents": 500000
+    },
+    {
+      "id": "2026-071",
+      "name": "NVRLND",
+      "category": "Services For Kids Teams",
+      "totalCents": 300000
+    },
+    {
+      "id": "2026-072",
+      "name": "Scottsdale AC Pros",
+      "category": "Services For Kids Teams",
+      "totalCents": 300000
+    },
+    {
+      "id": "2026-073",
+      "name": "G&A Partners",
+      "category": "Services For Kids Teams",
+      "totalCents": 90000
+    },
+    {
+      "id": "2026-074",
+      "name": "The Tox",
+      "category": "Healthcare for Kids Teams",
+      "totalCents": 1622146
+    },
+    {
+      "id": "2026-075",
+      "name": "PCH",
+      "category": "Healthcare for Kids Teams",
+      "totalCents": 500000
+    },
+    {
+      "id": "2026-076",
+      "name": "MacMedical",
+      "category": "Healthcare for Kids Teams",
+      "totalCents": 315000
+    },
+    {
+      "id": "2026-077",
+      "name": "Banner Health",
+      "category": "Healthcare for Kids Teams",
+      "totalCents": 300000
+    },
+    {
+      "id": "2026-078",
+      "name": "Honor Health",
+      "category": "Healthcare for Kids Teams",
+      "totalCents": 300000
+    },
+    {
+      "id": "2026-079",
+      "name": "Todd Smith Fitness",
+      "category": "Healthcare for Kids Teams",
+      "totalCents": 10000
+    },
+    {
+      "id": "2026-080",
+      "name": "Leyton USA",
+      "category": "Finance For Kids Teams",
+      "totalCents": 1775473
+    },
+    {
+      "id": "2026-081",
+      "name": "NFM Lending",
+      "category": "Finance For Kids Teams",
+      "totalCents": 350000
+    },
+    {
+      "id": "2026-082",
+      "name": "USI Insurance",
+      "category": "Finance For Kids Teams",
+      "totalCents": 212955
+    },
+    {
+      "id": "2026-083",
+      "name": "JP Morgan Chase",
+      "category": "Finance For Kids Teams",
+      "totalCents": 71500
+    },
+    {
+      "id": "2026-084",
+      "name": "Fidelity",
+      "category": "Finance For Kids Teams",
+      "totalCents": 12000
+    },
+    {
+      "id": "2026-094",
+      "name": "Elements Technology",
+      "category": "Tech For Kids Teams",
+      "totalCents": 558620
+    },
+    {
+      "id": "2026-095",
+      "name": "Cribl",
+      "category": "Tech For Kids Teams",
+      "totalCents": 546644
+    },
+    {
+      "id": "2026-096",
+      "name": "Benefit Focus",
+      "category": "Tech For Kids Teams",
+      "totalCents": 250000
+    },
+    {
+      "id": "2026-097",
+      "name": "Drip Digital Media",
+      "category": "Tech For Kids Teams",
+      "totalCents": 169500
+    },
+    {
+      "id": "2026-098",
+      "name": "DiMaggios",
+      "category": "CFK Teams",
+      "totalCents": 300000
+    },
+    {
+      "id": "2026-099",
+      "name": "Chase Bank",
+      "category": "CFK Teams",
+      "totalCents": 203322
+    },
+    {
+      "id": "2026-100",
+      "name": "Ecoshield",
+      "category": "CFK Teams",
+      "totalCents": 200000
+    }
+  ]
+}
