@@ -56,7 +56,7 @@ export async function GET(request: Request) {
       const { data: membership, error: membershipError } = await client.from('organizer_memberships').select('user_id').eq('user_id', user.id).maybeSingle();
       if (membershipError) throw membershipError;
       if (!membership) return reply({ error: 'Organizer access is required.' }, 403);
-      const { data, error } = await client.from('teams').select(`${publicColumns},is_public,team_captain_details(name,phone),roster_participants(name,email,phone,shirt_size,shirt_fit)`).eq('event_id', event.id).order('team_name').limit(501);
+      const { data, error } = await client.from('teams').select(`${publicColumns},captain_user_id,is_public,team_captain_details(name,phone),roster_participants(id,name,email,phone,shirt_size,shirt_fit,position)`).eq('event_id', event.id).order('team_name').limit(501);
       if (error) throw error;
       if ((data?.length ?? 0) > 500) return reply({ error: 'This overview needs pagination before it can show all teams.' }, 503);
       const { data: goals, error: goalsError } = await client.from('team_fundraising_goals').select('team_id,stretch_goal_cents');
@@ -74,16 +74,20 @@ export async function GET(request: Request) {
       if (audienceError) throw audienceError;
       const { data: logos, error: logoError } = await client.from('team_brand_assets').select('team_id,filename,content_type,size_bytes,updated_at');
       if (logoError) throw logoError;
+      const { data: campaignContacts, error: contactError } = await client.rpc('organizer_campaign_contacts');
+      if (contactError) throw contactError;
+      const contacts = (campaignContacts ?? []) as {captain_user_id: string; email: string; last_result: string | null; last_synced_at: string | null}[];
       const normalized = (name: string) => name.toLowerCase().replace(/\b(llc|incorporated|inc|corporation|corp|ltd)\b/g,'').replace(/[^a-z0-9]/g,'');
 
       return reply({ teams: (data ?? []).map(team => {
-        const roster = team.roster_participants ?? [];
+        const roster = [...(team.roster_participants ?? [])].sort((a,b) => a.position - b.position);
+        const captainContact = contacts.find(c => c.captain_user_id === team.captain_user_id);
         const complete = roster.filter(p => p.name && p.email && p.phone && p.shirt_size && p.shirt_fit).length;
         const details = Array.isArray(team.team_captain_details) ? team.team_captain_details[0] : team.team_captain_details;
         const review = reviews?.find(r => r.team_id === team.id);
         const memberId = assignments?.find(a => a.team_id === team.id)?.member_id ?? null;
         const duplicates = (data ?? []).filter(other => other.id !== team.id && ((normalized(String(team.company_name)).length >= 3 && normalized(String(other.company_name)) === normalized(String(team.company_name))) || normalized(String(other.team_name)) === normalized(String(team.team_name)))).slice(0,5).map(other => ({id:other.id,name:other.team_name,company:other.company_name,reason:'Similar business or team name. Confirm whether this is a separate team.'}));
-        return { ...map(team), logo: logos?.find(l => l.team_id === team.id) ?? null, participation_history: audienceProfiles?.find(p => p.team_id === team.id)?.participation_history ?? 'unclassified', approval_status: review?.status ?? 'pending', approval_message: review?.message ?? '', approval_version: review?.version ?? 0, referring_club_member_id: memberId, referring_club_member_name: members?.find(m => m.id === memberId)?.name ?? '', duplicate_candidates: duplicates, followup: followups?.find(f => f.team_id === team.id) ?? null, stretch_goal_cents: goals?.find(g => g.team_id === team.id)?.stretch_goal_cents ?? 300000, is_public: team.is_public, captain_name: details?.name ?? '', captain_phone: details?.phone ?? '', missing: { name: roster.filter(p => !p.name).length, email: roster.filter(p => !p.email).length, phone: roster.filter(p => !p.phone).length, shirt: roster.filter(p => !p.shirt_size || !p.shirt_fit).length }, listed: roster.length, complete, needs_follow_up: roster.length < 6 || complete < roster.length };
+        return { ...map(team), captain_email: captainContact?.email ?? '', campaign_status: captainContact?.last_result ?? null, campaign_checked_at: captainContact?.last_synced_at ?? null, roster: roster.map(({position: _position, ...person}) => person), logo: logos?.find(l => l.team_id === team.id) ?? null, participation_history: audienceProfiles?.find(p => p.team_id === team.id)?.participation_history ?? 'unclassified', approval_status: review?.status ?? 'pending', approval_message: review?.message ?? '', approval_version: review?.version ?? 0, referring_club_member_id: memberId, referring_club_member_name: members?.find(m => m.id === memberId)?.name ?? '', duplicate_candidates: duplicates, followup: followups?.find(f => f.team_id === team.id) ?? null, stretch_goal_cents: goals?.find(g => g.team_id === team.id)?.stretch_goal_cents ?? 300000, is_public: team.is_public, captain_name: details?.name ?? '', captain_phone: details?.phone ?? '', missing: { name: roster.filter(p => !p.name).length, email: roster.filter(p => !p.email).length, phone: roster.filter(p => !p.phone).length, shirt: roster.filter(p => !p.shirt_size || !p.shirt_fit).length }, listed: roster.length, complete, needs_follow_up: roster.length < 6 || complete < roster.length };
       }), club_members: members ?? [], member_credit: credit ?? [], registration_open: event.registration_open, fundraising_active: event.fundraising_active });
     }
     if (action === 'mine') {
