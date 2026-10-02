@@ -10,6 +10,11 @@ const headers = { 'Cache-Control': 'private, no-store', 'Vary': 'Cookie, Origin'
 const reply = (value: unknown, status = 200) => NextResponse.json(value, { status, headers });
 const publicColumns = 'id,slug,team_name,company_name,industry_id,description,event_id';
 
+async function logoUrls(client: Awaited<ReturnType<typeof pilotClient>>, ids: string[]) {
+ if(!ids.length)return new Map<string,string>();
+ const {data}=await client.from('team_public_logos').select('team_id,updated_at').in('team_id',ids);
+ return new Map((data??[]).map(l=>[l.team_id,`/olympiad/api/public-logo?team_id=${l.team_id}&v=${encodeURIComponent(l.updated_at)}`]));
+}
 async function context() {
   const client = await pilotClient();
   const [{ data: event, error }, { data: industries, error: industryError }] = await Promise.all([
@@ -43,22 +48,25 @@ export async function GET(request: Request) {
       if (!event.fundraising_active) {
         const { data, error } = await client.from('team_directory').select(publicColumns).eq('event_id',event.id).order('team_name').limit(500);
         if (error) throw error;
+        const urls=await logoUrls(client,(data??[]).map(t=>t.id));
         return reply({ active:false, teams:(data??[]).map(team=>({id:team.id,name:team.team_name,slug:team.slug,
-          category:industries.find(i=>i.id===team.industry_id)?.name??'Other businesses',totalCents:0})),
+          category:industries.find(i=>i.id===team.industry_id)?.name??'Other businesses',totalCents:0,logo_url:urls.get(team.id)})),
           message:'Fundraising opens soon. Participating teams are not ranked yet.' });
       }
       const { data, error } = await client.from('fundraising_leaderboard').select('*').eq('event_id', event.id).order('total_cents', { ascending: false }).limit(500);
       if (error) throw error;
+      const urls=await logoUrls(client,(data??[]).map(t=>t.team_id));
       return reply({ active:true, teams:(data??[]).map(team=>({id:team.team_id,name:team.team_name,slug:team.slug,
-        category:industries.find(i=>i.id===team.industry_id)?.name??'Other businesses',totalCents:Number(team.total_cents)})) });
+        category:industries.find(i=>i.id===team.industry_id)?.name??'Other businesses',totalCents:Number(team.total_cents),logo_url:urls.get(team.team_id)})) });
     }
     if (action === 'directory' || action === 'team') {
       let query = client.from('team_directory').select(publicColumns).eq('event_id', event.id).order('team_name').limit(500);
       if (action === 'team') query = query.eq('slug', validate.text(params.get('slug'), 'Team', 160, true));
       const { data, error } = await query;
       if (error) throw error;
-      if (action === 'team') return data?.[0] ? reply({ team: map(data[0]) }) : reply({ error: 'This team page is not public or could not be found.' }, 404);
-      return reply({ teams: (data ?? []).map(map), configured: true });
+      const urls = await logoUrls(client,(data??[]).map(t=>t.id));
+      if (action === 'team') return data?.[0] ? reply({ team: {...map(data[0]),logo_url:urls.get(data[0].id)} }) : reply({ error: 'This team page is not public or could not be found.' }, 404);
+      return reply({ teams: (data ?? []).map(t=>({...map(t),logo_url:urls.get(t.id)})), configured: true });
     }
     if (action === 'organizer') {
       const access = await chairmanAccess(client);
@@ -84,6 +92,7 @@ export async function GET(request: Request) {
       if (reviewError || memberError || assignmentError || creditError) throw reviewError || memberError || assignmentError || creditError;
       const { data: audienceProfiles, error: audienceError } = await client.from('team_audience_profiles').select('team_id,participation_history');
       if (audienceError) throw audienceError;
+      const webLogoUrls = await logoUrls(client,(data??[]).map(t=>t.id));
       const { data: logos, error: logoError } = await client.from('team_brand_assets').select('team_id,filename,content_type,size_bytes,updated_at');
       if (logoError) throw logoError;
       const { data: campaignContacts, error: contactError } = await client.rpc('organizer_campaign_contacts');
@@ -118,13 +127,14 @@ export async function GET(request: Request) {
         client.from('team_member_attributions').select('team_id,member_id').in('team_id',(data ?? []).map(team => team.id)),
       ]);
       if (memberError || assignmentError) throw memberError || assignmentError;
+      const webLogoUrls = await logoUrls(client,(data??[]).map(t=>t.id));
       const { data: logos, error: logoError } = await client.from('team_brand_assets').select('team_id,filename,content_type,size_bytes,updated_at');
       if (logoError) throw logoError;
       const { data: organizer, error: organizerError } = await client.from('organizer_memberships').select('user_id').eq('user_id', user.id).maybeSingle();
       if (organizerError) throw organizerError;
       return reply({ club_members: members ?? [], fundraising_active: event.fundraising_active, registration_allowed: !!cohort && event.registration_open && config.enabled, user: { email: user.email, is_organizer: !!organizer }, teams: (data ?? []).map(team => {
         const details = Array.isArray(team.team_captain_details) ? team.team_captain_details[0] : team.team_captain_details;
-        return { ...map(team), logo: logos?.find(l => l.team_id === team.id) ?? null, referring_club_member_id: assignments?.find(a => a.team_id === team.id)?.member_id ?? null, approval_status: reviews?.find(r => r.team_id === team.id)?.status ?? 'pending', approval_message: reviews?.find(r => r.team_id === team.id)?.message ?? '', stretch_goal_cents: goals?.find(g => g.team_id === team.id)?.stretch_goal_cents ?? 300000, is_public: team.is_public, roster_version: team.roster_version, captain_name: details?.name ?? '', captain_phone: details?.phone ?? '', roster: (team.roster_participants ?? []).sort((a,b) => a.position - b.position).map(({position: _position, ...row}) => row) };
+        return { ...map(team), logo_url: webLogoUrls.get(team.id), logo: logos?.find(l => l.team_id === team.id) ?? null, referring_club_member_id: assignments?.find(a => a.team_id === team.id)?.member_id ?? null, approval_status: reviews?.find(r => r.team_id === team.id)?.status ?? 'pending', approval_message: reviews?.find(r => r.team_id === team.id)?.message ?? '', stretch_goal_cents: goals?.find(g => g.team_id === team.id)?.stretch_goal_cents ?? 300000, is_public: team.is_public, roster_version: team.roster_version, captain_name: details?.name ?? '', captain_phone: details?.phone ?? '', roster: (team.roster_participants ?? []).sort((a,b) => a.position - b.position).map(({position: _position, ...row}) => row) };
       }) });
     }
     return reply({ error: 'Unknown request.' }, 400);

@@ -1,9 +1,10 @@
 "use client";
 import { useEffect, useState } from 'react';
+import PublicTeamLogo from './pilot/PublicTeamLogo';
 import results from './data/results-2026.json';
 import styles from './Leaderboard.module.css';
 
-type Entry = { id: string; name: string; category: string; totalCents: number; slug?: string };
+type Entry = { id: string; name: string; category: string; totalCents: number; slug?: string; logo_url?:string };
 const dollars = (cents: number) => new Intl.NumberFormat('en-US', {style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2}).format(cents/100);
 export default function Leaderboard() {
   const [year,setYear]=useState<2026|2027>(2026);
@@ -64,7 +65,7 @@ export default function Leaderboard() {
       <div className={styles.listIntro}><h2>{year===2026?'The 2026 standings':active?'The 2027 race':'Who’s on the starting line?'}</h2><p>{year===2026?'Explore the overall results or find your category.':active?'Compete for the fundraising cup in your industry.':'Your business could be next.'}</p></div>
       <div className={styles.filters}><label>{year===2026?'2026 category':'Industry'}<select value={category} onChange={e=>selectCategory(e.target.value)}><option>All categories</option>{categories.map(c=><option key={c}>{c}</option>)}</select></label><label>Find a team<input type="search" placeholder="Business or team name" value={search} onChange={e=>{setSearch(e.target.value);setLimit(15);}}/></label></div>
       <p className={styles.resultCount}>{filtered.length} {filtered.length===1?'team':'teams'}{category!=='All categories'?` · ${category}`:''}{ranked?` · ${category==='All categories'?'Overall':'Category'} rankings`:''}</p>
-      <ol className={styles.rows}>{filtered.slice(0,limit).map(team=>{const rank=1+division.filter(t=>t.totalCents>team.totalCents).length;return<li key={team.id}><span className={styles.rank} aria-label={ranked?`Rank ${rank}`:'Registered team'}>{ranked?String(rank).padStart(2,'0'):'—'}</span><div className={styles.team}><strong>{team.name}</strong><span>{team.category}</span>{team.slug&&<a href={`#team/${team.slug}`}>View team →</a>}</div><div className={styles.amount}><strong>{ranked?dollars(team.totalCents):'Getting ready'}</strong><span>{year===2026?'Final 2026 total':active?'Verified fundraising':'Fundraising opens soon'}</span></div></li>;})}</ol>
+      <ol className={styles.rows}>{filtered.slice(0,limit).map(team=>{const rank=1+division.filter(t=>t.totalCents>team.totalCents).length;return<li key={team.id}><span className={styles.rank} aria-label={ranked?`Rank ${rank}`:'Registered team'}>{ranked?String(rank).padStart(2,'0'):'—'}</span><div className={styles.team}>{year===2027&&<PublicTeamLogo url={team.logo_url} name={team.name}/>}<strong>{team.name}</strong><span>{team.category}</span>{team.slug&&<a href={`#team/${team.slug}`}>View team →</a>}</div><div className={styles.amount}><strong>{ranked?dollars(team.totalCents):'Getting ready'}</strong><span>{year===2026?'Final 2026 total':active?'Verified fundraising':'Fundraising opens soon'}</span></div></li>;})}</ol>
       {!filtered.length&&!loading&&<p className={styles.empty}>{search?'No matching teams. Try another name.':year===2026?'No teams in this category.':'Participating teams will appear as their public listings are approved.'}</p>}
       {filtered.length>limit&&<button className={styles.more} onClick={()=>setLimit(n=>n+25)}>Show more teams ({filtered.length-limit} remaining)</button>}
     </section>
