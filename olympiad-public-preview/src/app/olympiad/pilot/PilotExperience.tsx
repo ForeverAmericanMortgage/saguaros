@@ -40,6 +40,7 @@ export default function PilotExperience({ mode, slug, accessIntent = 'new', onNa
   const [registrationOpen, setRegistrationOpen] = useState(false);
   const [pilotOnly, setPilotOnly] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [settledRequest, setSettledRequest] = useState('');
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const [teams, setTeams] = useState<Team[]>([]);
@@ -56,6 +57,9 @@ export default function PilotExperience({ mode, slug, accessIntent = 'new', onNa
   const [industryFilter, setIndustryFilter] = useState('');
   const [revision, setRevision] = useState(0);
   const [inviter, setInviter] = useState('');
+  const requestKey = JSON.stringify([mode, slug, revision]);
+  // Route changes render before their effect runs; never show the previous route's data.
+  const isLoading = loading || settledRequest !== requestKey;
   useEffect(() => {
     try {
       const incoming = new URLSearchParams(window.location.search).get('from');
@@ -66,11 +70,12 @@ export default function PilotExperience({ mode, slug, accessIntent = 'new', onNa
   useEffect(() => {
     let active = true;
     setLoading(true); setError(''); setNotice('');
+    if (mode === 'team') setTeams([]);
     api('action=status').then(async status => [status, mode === 'captain' && !status.enabled ? {} : await api(mode === 'captain' ? 'action=mine' : mode === 'team' ? `action=team&slug=${encodeURIComponent(slug || '')}` : 'action=directory')])
       .then(([status, data]) => { if (active) { setEnabled(status.enabled); setGoogleEnabled(status.google_sign_in_enabled === true); setPilotOnly(status.pilot_only === true); setRegistrationOpen(mode === 'captain' && data.user ? data.registration_allowed ?? status.registration_open === true : status.registration_open === true); setIndustries(status.industries || fallbackIndustries); setClubMembers(mode === 'captain' && data.user ? data.club_members || [] : []); setTeams(data.team ? [data.team] : data.teams || []); setUser(data.user || null); setRefreshRequired(false); if (new URLSearchParams(window.location.search).get('auth_error') === 'link_expired') setError('This sign-in link could not be completed. Request a fresh sign-in link below.'); const authError = new URLSearchParams(window.location.search).get('auth_error'); if (authError === 'google_not_invited') setError('That Google account isn’t on the early-access list. Choose Continue with Google again and select the email we invited, or use that address for an email link. Your existing team stays with its original account.'); if (authError === 'google_failed') setError('Google sign-in wasn’t completed. Try Continue with Google again, choose your invited account, or request an email link below.'); } })
-      .catch(e => { if (active) setError(e.message); }).finally(() => { if (active) setLoading(false); });
+      .catch(e => { if (active) setError(e.message); }).finally(() => { if (active) { setSettledRequest(requestKey); setLoading(false); } });
     return () => { active = false; };
-  }, [mode, slug, revision]);
+  }, [mode, slug, revision, requestKey]);
   async function share(team?: Team) {
     const url = `${window.location.origin}/?${team && team.is_public !== false && (team.approval_status === 'approved' || mode === 'team') ? `from=${encodeURIComponent(team.slug)}` : ''}#invite`;
     const title = team ? `${team.company} invites you to Olympiad` : 'Bring your business to Scottsdale Olympiad';
@@ -156,12 +161,12 @@ export default function PilotExperience({ mode, slug, accessIntent = 'new', onNa
     finally { setBusy(false); }
   }
   const visibleTeams = teams.filter(t => (!industryFilter || t.industry === industryFilter) && `${t.name} ${t.company} ${t.industry}`.toLowerCase().includes(filter.toLowerCase()));
-  const heading = mode === 'captain' ? user && teams.length ? 'Your team hub.' : accessMode === 'returning' ? 'Welcome back to your team.' : 'Your team starts here.' : mode === 'invite' ? 'A little friendly competition. A lasting local impact.' : mode === 'team' ? teams[0]?.name || 'Meet the team.' : 'Meet the businesses taking the field.';
+  const heading = mode === 'captain' ? user && teams.length ? 'Your team hub.' : accessMode === 'returning' ? 'Welcome back to your team.' : 'Your team starts here.' : mode === 'invite' ? 'A little friendly competition. A lasting local impact.' : mode === 'team' ? (!isLoading && teams[0]?.slug === slug ? teams[0].name : 'Meet the team.') : 'Meet the businesses taking the field.';
   return <section ref={region} onChange={event => { if (mode === 'captain') { const form = (event.target as HTMLElement).closest('form'); dirtyForms.current.add(form?.dataset.draft || 'draft'); markDirty(true); } }} className={`${s.page} ${mode === 'captain' && !user ? s.captainAccess : ''}`} aria-labelledby="pilot-heading">
     <header className={s.hero}><span className={s.eyebrow}>SCOTTSDALE OLYMPIAD · 2027</span><h1 id="pilot-heading">{heading}</h1>{mode !== 'captain' && <p>Local businesses come together for spirited games and support for Arizona children’s charities.</p>}</header>
     {(mode !== 'captain' || user) && <nav className={s.hubNav} aria-label="Team hub">{user?.is_organizer && <a className={s.primary} href="/olympiad/organizer">Chairman dashboard →</a>}<button className={mode === 'teams' ? s.primary : s.secondary} onClick={() => navigate('#teams')}>Teams</button><button className={mode === 'captain' ? s.primary : s.secondary} onClick={() => navigate('#signin')}>{user ? 'My team hub' : 'Manage my team'}</button><button className={s.secondary} onClick={() => share()}>Invite business ↗</button></nav>}
     {mode === 'captain' && inviter && <p className={s.notice}>An invitation is attached to your registration. <button className={s.secondary} onClick={clearInvitation}>Remove invitation</button></p>}{notice && <p className={s.notice} role="status">{notice}</p>}{error && <div className={s.error} role="alert">{error} {sessionExpired ? <><a href="/#signin" target="_blank" rel="noopener noreferrer">Sign in again in a new tab</a> <button disabled={busy} onClick={resumeSession}>I’ve signed in · continue here</button></> : refreshRequired ? <button disabled={busy} onClick={retrySavedRefresh}>Refresh saved details</button> : <button onClick={() => { if (!dirty.current || window.confirm('Reload and discard unsaved changes?')) { markDirty(false); setRevision(v => v + 1); } }}>Try again</button>}</div>}
-    {loading ? <p className={s.empty} role="status">Loading team information…</p> : <>
+    {isLoading ? <p className={s.empty} role="status">Loading team information…</p> : <>
       {!enabled && <p className={s.notice}>Registration is not open yet. Explore the event and share an invitation now; captain registration will be available when the pilot opens.</p>}
       {enabled && pilotOnly && <p className={s.notice}>{user ? registrationOpen ? 'Invited pilot · Team setup is enabled for your account.' : 'Invited pilot · You’re signed in. New team setup is not enabled for this account.' : 'Early access · Use your invited email address.'}</p>}
       {enabled && !registrationOpen && !pilotOnly && <p className={s.notice}>New team registration is closed; registered captains can still manage their team.</p>}
