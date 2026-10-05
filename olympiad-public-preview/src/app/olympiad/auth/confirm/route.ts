@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { allowedOrigin, pilotClient, pilotConfiguration, pilotEmailAllowed, SITE_URL } from '../../pilot/server';
+import { allowedOrigin, pilotClient, pilotConfiguration, pilotAccessAllowed, SITE_URL } from '../../pilot/server';
 import { magicHeaders, validMagicPayload } from '../magic-link';
 
 export const dynamic = 'force-dynamic';
@@ -41,7 +41,7 @@ export async function POST(request: Request) {
     const client=await pilotClient();
     const {data,error}=await client.auth.verifyOtp({token_hash:payload.token_hash,type:'email'});
     if(error || !data.session || !data.user?.email_confirmed_at) return fail('This sign-in link has expired or was already used. Request a new link below.',400);
-    if(!data.user.email || !pilotEmailAllowed(data.user.email)) {
+    if(!data.user.email || !(await pilotAccessAllowed(client,data.user.email))) {
       await client.auth.signOut({scope:'local'});
       return fail('Captain access is currently limited to the invited pilot.',403);
     }

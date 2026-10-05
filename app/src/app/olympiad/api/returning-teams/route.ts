@@ -15,7 +15,10 @@ export async function GET(request:Request){
    if(error)throw error;return reply({activities:data});
   }
   const {data,error}=await client.from('returning_team_accounts').select('*').order('business_name').limit(2500);
-  if(error)throw error;return reply({accounts:data});
+  if(error)throw error;
+  const [{data:invites,error:inviteError},{data:progress,error:progressError}]=await Promise.all([client.from('recruitment_invitations').select('account_id,email,issued_at,invited_at,send_state,campaign_id'),client.rpc('organizer_invitation_progress')]);
+  if(inviteError||progressError)throw Error('Unable to load recruitment progress');
+  return reply({accounts:data,invites,progress});
  }catch{return reply({error:'Unable to load returning teams. Please retry.'},503);}
 }
 export async function POST(request:Request){
@@ -25,6 +28,11 @@ export async function POST(request:Request){
   if(!access.ok)return reply({error:'Sign in with your chairman Google account.'},access.status);
   const body=await request.json();
   if(!uuid.test(body.id||'')||!Number.isSafeInteger(body.version)||body.version<1)return reply({error:'Invalid record. Refresh and retry.'},400);
+  if(body.action==='priority'){
+   if(!['hot','warm','later'].includes(body.priority))return reply({error:'Choose Hot, Warm or Later.'},400);
+   const {data,error}=await client.from('returning_team_accounts').update({priority:body.priority,version:body.version+1,updated_at:new Date().toISOString()}).eq('id',body.id).eq('version',body.version).select('*').maybeSingle();
+   if(error||!data)return reply({error:'Reload this business before changing priority.'},409);return reply({account:data});
+  }
   const fields={contact_name:250,contact_email:320,contact_phone:60,assigned_to:250,notes:10000};
   for(const [key,max] of Object.entries(fields))if(typeof body[key]!=='string'||body[key].length>max)return reply({error:'Check the contact details and note length.'},400);
   if(body.contact_email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.contact_email.trim()))return reply({error:'Enter a valid email address or leave it blank.'},400);

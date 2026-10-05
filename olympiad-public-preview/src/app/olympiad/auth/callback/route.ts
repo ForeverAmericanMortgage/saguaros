@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { pilotClient, pilotConfiguration, pilotEmailAllowed, SITE_URL } from '../../pilot/server';
+import { pilotClient, pilotConfiguration, pilotAccessAllowed, SITE_URL } from '../../pilot/server';
 import { magicHeaders } from '../magic-link';
 export const dynamic = 'force-dynamic';
 export async function GET(request: Request) {
@@ -10,10 +10,10 @@ export async function GET(request: Request) {
     if (code && pilotConfiguration().enabled) {
       const client = await pilotClient();
       const { data,error } = await client.auth.exchangeCodeForSession(code);
-      if (!error && data.user?.email_confirmed_at && data.user.email && pilotEmailAllowed(data.user.email)) return redirect('/#captain');
+      if (!error && data.user?.email_confirmed_at && data.user.email && (await pilotAccessAllowed(client,data.user.email))) return redirect('/#captain');
       if(data.session) {
         await client.auth.signOut({scope:'local'});
-        if (data.user?.email && !pilotEmailAllowed(data.user.email)) return redirect('/?auth_error=google_not_invited#signin');
+        if (data.user?.email && !(await pilotAccessAllowed(client,data.user.email))) return redirect('/?auth_error=google_not_invited#signin');
       }
     }
   } catch { /* Never log credentials or provider payloads. */ }

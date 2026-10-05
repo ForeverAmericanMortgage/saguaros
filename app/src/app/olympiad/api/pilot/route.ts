@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { allowedOrigin, pilotClient, pilotConfiguration, pilotEmailAllowed, SITE_URL } from '../../pilot/server';
+import { allowedOrigin, pilotClient, pilotConfiguration, pilotAccessAllowed, SITE_URL } from '../../pilot/server';
 import { chairmanAccess } from '../../auth/chairman-access';
 import { PROOF_COOKIE } from '../../auth/chairman-proof';
 import { cookies } from 'next/headers';
@@ -168,7 +168,7 @@ export async function POST(request: Request) {
     }
     if (data.action === 'sign-in') {
       const address = validate.email(data.email);
-      if (!pilotEmailAllowed(address)) return reply({ error: 'Captain access is currently limited to the invited pilot. Please contact the event team.' }, 403);
+      if (!(await pilotAccessAllowed(client,address))) return reply({ error: 'Captain access is currently limited to the invited pilot. Please contact the event team.' }, 403);
       // Only allowlisted inboxes reach this point. Identity setup can precede team registration.
       const { error } = await client.auth.signInWithOtp({ email: address, options: { shouldCreateUser: true, emailRedirectTo: `${SITE_URL}/olympiad/auth/callback` } });
       if (error) return reply({ error: error.status === 429 ? 'Please wait before requesting another sign-in email.' : 'Sign-in email could not be sent. Please try again later.' }, error.status === 429 ? 429 : 503);
