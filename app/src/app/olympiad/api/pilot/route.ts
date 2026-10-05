@@ -76,7 +76,7 @@ export async function GET(request: Request) {
       const { data: membership, error: membershipError } = await client.from('organizer_memberships').select('user_id').eq('user_id', user.id).maybeSingle();
       if (membershipError) throw membershipError;
       if (!membership) return reply({ error: 'Organizer access is required.' }, 403);
-      const { data, error } = await client.from('teams').select(`${publicColumns},captain_user_id,is_public,team_captain_details(name,phone),roster_participants(id,name,email,phone,shirt_size,shirt_fit,position)`).eq('event_id', event.id).order('team_name').limit(501);
+      const { data, error } = await client.from('teams').select(`${publicColumns},captain_user_id,is_public,team_captain_details(name,phone),roster_participants(id,name,email,phone,shirt_size,shirt_fit,position,roster_contact_preferences(submitted_email,source,email_updates_requested,sms_updates_requested,submitted_at,email_verified))`).eq('event_id', event.id).order('team_name').limit(501);
       if (error) throw error;
       if ((data?.length ?? 0) > 500) return reply({ error: 'This overview needs pagination before it can show all teams.' }, 503);
       const { data: goals, error: goalsError } = await client.from('team_fundraising_goals').select('team_id,stretch_goal_cents');
