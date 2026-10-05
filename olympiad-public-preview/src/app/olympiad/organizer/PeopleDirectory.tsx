@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import styles from './organizer.module.css';
 
-export type RosterPerson = { id: string; name: string; email: string; phone: string; shirt_size: string; shirt_fit: string };
+export type RosterPerson = { id: string; name: string; email: string; phone: string; shirt_size: string; shirt_fit: string; roster_contact_preferences?: {submitted_email?: string; email_updates_requested: boolean; sms_updates_requested: boolean; submitted_at: string; email_verified: boolean} | {submitted_email?: string; email_updates_requested: boolean; sms_updates_requested: boolean; submitted_at: string; email_verified: boolean}[] | null };
 export type DirectoryTeam = { id: string; name: string; company: string; industry: string; captain_name: string; captain_email: string; captain_phone?: string; approval_status: string; participation_history: string; roster: RosterPerson[]; campaign_status?: string | null; campaign_checked_at?: string | null };
 type PersonRow = RosterPerson & { team: DirectoryTeam; role: 'Captain' | 'Participant'; emailStatus: string; smsStatus: string };
 const filled = (value?: string) => !!value?.trim();
@@ -16,8 +16,14 @@ function captainEmailStatus(team: DirectoryTeam) {
   if (team.campaign_status === 'missing_contact') return 'Not in Mailchimp';
   return 'Subscription not confirmed';
 }
+function participantPreferences(person: RosterPerson) {
+ const raw=person.roster_contact_preferences;
+ const preference=Array.isArray(raw)?raw[0]:raw;
+ const current=preference?.submitted_email?.trim().toLowerCase()===person.email?.trim().toLowerCase();
+ return {emailStatus:current&&preference?.email_updates_requested?'Email updates requested · not yet synced':'Email updates not requested',smsStatus:current&&preference?.sms_updates_requested?'SMS updates requested · sending not active':'SMS updates not requested'};
+}
 function rowsFor(team: DirectoryTeam): PersonRow[] {
-  return [{ id:`captain-${team.id}`, name:team.captain_name, email:team.captain_email, phone:team.captain_phone || '', shirt_size:'', shirt_fit:'', team, role:'Captain', emailStatus:captainEmailStatus(team), smsStatus:'Permission not collected' }, ...(team.roster || []).map(person => ({ ...person, team, role:'Participant' as const, emailStatus:'Permission not collected', smsStatus:'Permission not collected' }))];
+  return [{ id:`captain-${team.id}`, name:team.captain_name, email:team.captain_email, phone:team.captain_phone || '', shirt_size:'', shirt_fit:'', team, role:'Captain', emailStatus:captainEmailStatus(team), smsStatus:'Permission not collected' }, ...(team.roster || []).map(person => ({ ...person, team, role:'Participant' as const, ...participantPreferences(person) }))];
 }
 function csvCell(value: unknown) {
   const text = String(value ?? '');
@@ -36,7 +42,7 @@ export function TeamRoster({team}: {team: DirectoryTeam}) {
   return <div className={styles.privateRoster}>
     <div className={styles.directoryHead}><div><h3>Saved participant roster</h3><p>{roster.length} people listed · {shirts.length} shirt sizes ready · {roster.filter(p=>!missing(p).length).length} complete profiles</p></div>{team.captain_email ? <a href={`mailto:${team.captain_email}?subject=${encodeURIComponent(`Olympiad 2027 · Finish ${team.name} roster`)}`}>Contact captain →</a> : <span>Captain email unavailable</span>}</div>
     {roster.length ? <div className={styles.peopleRows}>{roster.map((p,index)=><article key={p.id}><header><strong>{p.name || `Participant ${index+1} · name needed`}</strong><span className={styles.statusBadge}>{missing(p).length ? 'Details missing' : 'Profile complete'}</span></header><dl><div><dt>Email</dt><dd>{p.email ? <a href={`mailto:${p.email}`}>{p.email}</a> : 'Missing'}</dd></div><div><dt>Phone</dt><dd>{p.phone ? <a href={`tel:${p.phone.replace(/[^+0-9]/g,'')}`}>{p.phone}</a> : 'Missing'}</dd></div><div><dt>Shirt</dt><dd>{p.shirt_size && p.shirt_fit ? `${p.shirt_fit} fit · ${p.shirt_size}` : 'Size / fit needed'}</dd></div></dl>{missing(p).length>0 && <p className={styles.missingDetails}>Needs: {missing(p).join(', ')}</p>}</article>)}</div> : <p>No participants saved yet. Ask the captain to add at least six people, including themselves.</p>}
-    <p className={styles.caption}>Roster entries are private. Email and SMS campaign permission has not been collected from participants.</p>
+    <p className={styles.caption}>Roster entries are private. Teammates using the shared link can choose email and SMS preferences. A preference is not a confirmed subscription.</p>
   </div>;
 }
 export default function PeopleDirectory({teams}: {teams: DirectoryTeam[]}) {
@@ -55,6 +61,6 @@ export default function PeopleDirectory({teams}: {teams: DirectoryTeam[]}) {
     <div className={styles.directoryStatus}><span role="status">{visible.length} records shown</span><button type="button" disabled={!visible.length} onClick={()=>exportRows(visible)}>Export shown records (CSV)</button></div>
     <p className={styles.caption}>A captain may also appear in their team’s roster. Records are shown by role; the email total above deduplicates addresses. Export includes current filters and permission status.</p>
     <details className={styles.peopleDisclosure}><summary>View {visible.length} matching contact records</summary><div className={styles.peopleRows}>{visible.map(row=><article key={`${row.team.id}-${row.role}-${row.id}`}><header><strong>{row.name || 'Name missing'}</strong><span className={styles.statusBadge}>{row.role}</span></header><p><strong>{row.team.company}</strong>{row.team.company!==row.team.name && ` · ${row.team.name}`} · {row.team.industry}</p><p className={styles.caption}>{review(row.team.approval_status)} · {history(row.team.participation_history)}</p><dl><div><dt>Email</dt><dd>{row.email ? <a href={`mailto:${row.email}`}>{row.email}</a> : 'Missing'}</dd></div><div><dt>Phone</dt><dd>{row.phone ? <a href={`tel:${row.phone.replace(/[^+0-9]/g,'')}`}>{row.phone}</a> : 'Missing'}</dd></div>{row.role==='Participant' && <div><dt>Shirt</dt><dd>{row.shirt_size&&row.shirt_fit?`${row.shirt_fit} fit · ${row.shirt_size}`:'Size / fit needed'}</dd></div>}</dl><p className={styles.caption}>Email: {row.emailStatus}{row.role==='Captain'&&row.team.campaign_checked_at?` · checked ${new Date(row.team.campaign_checked_at).toLocaleString()}`:''}<br/>SMS: {row.smsStatus}</p>{row.role==='Participant'&&missing(row).length>0&&<p className={styles.missingDetails}>Needs: {missing(row).join(', ')}</p>}</article>)}</div>{!visible.length&&<p>No records match these filters.</p>}</details>
-    <p className={styles.caption}>Next communication step: let participants confirm their own email and SMS preferences. Capturing roster details does not subscribe them or send messages. Recheck Mailchimp status before any campaign; the status here reflects the last saved captain sync.</p>
+    <p className={styles.caption}>Participants can choose their own email and SMS preferences using the shared roster link. Capturing roster details does not subscribe them or send messages. Recheck Mailchimp status before any campaign; the status here reflects the last saved captain sync.</p>
   </section>;
 }

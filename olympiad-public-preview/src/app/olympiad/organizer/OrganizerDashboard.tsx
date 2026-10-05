@@ -6,6 +6,7 @@ import styles from './organizer.module.css';
 import Communications from './Communications';
 import AudienceSync from './AudienceSync';
 import SeasonOverview from './SeasonOverview';
+import ReturningTeams from './ReturningTeams';
 import PeopleDirectory, { TeamRoster, type DirectoryTeam } from './PeopleDirectory';
 
 type Followup = { status: string; assigned_to: string; notes: string; next_follow_up: string | null; updated_at: string };
@@ -68,12 +69,13 @@ export default function OrganizerPage() {
     {error && <section role="alert"><h2>We couldn’t refresh this overview</h2><p>{error}</p><a href="/">Sign in with Google again →</a></section>}
     {loadedAt && <>
 
-      <nav className={styles.overviewNav} aria-label="Chairman views"><a href="#team-actions">Team priorities</a><a href="#team-directory">Businesses & teams</a><a href="#people-directory">Captains & participants</a><a href="#season-plan">Season plan</a><a href="#communication-overview">Invitations</a></nav><div className={styles.stats}>
+      <nav className={styles.overviewNav} aria-label="Chairman views"><a href="#returning-teams">Recruitment hot list</a><a href="#team-actions">Team priorities</a><a href="#team-directory">Businesses & teams</a><a href="#people-directory">Captains & participants</a><a href="#season-plan">Season plan</a><a href="#communication-overview">Invitations</a></nav><div className={styles.stats}>
         <section><strong>{activeTeams.length}</strong><span>Active teams signed up</span><small>{teams.filter(t => t.approval_status === 'declined').length} declined · excluded</small></section>
         <section><strong>{activeTeams.filter(t => t.approval_status === 'approved').length}</strong><span>Approved teams</span><small>Public listing also needs captain opt-in</small></section>
         <section><strong>{readyCount}/{activeTeams.length}</strong><span>Rosters ready</span><small>At least six people; every saved profile complete</small></section>
         <section><strong>{activeTeams.reduce((sum,t) => sum+t.listed,0)}</strong><span>Participants listed</span><small>{activeTeams.reduce((sum,t) => sum+t.complete,0)} profiles complete</small></section>
       </div>
+      <ReturningTeams teams={teams} />
       <PeopleDirectory teams={teams} />
       <section id="team-actions"><h2>Action items</h2><p>Choose a priority to filter the teams below.</p><div className={styles.actionGrid}>
         <button onClick={() => selectQueue('pending')}>{activeTeams.filter(t => t.approval_status === 'pending').length} awaiting approval →</button>

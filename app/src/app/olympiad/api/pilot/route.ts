@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { allowedOrigin, pilotClient, pilotConfiguration, pilotEmailAllowed, SITE_URL } from '../../pilot/server';
+import { allowedOrigin, pilotClient, pilotConfiguration, pilotAccessAllowed, SITE_URL } from '../../pilot/server';
 import { chairmanAccess } from '../../auth/chairman-access';
 import { PROOF_COOKIE } from '../../auth/chairman-proof';
 import { cookies } from 'next/headers';
@@ -76,7 +76,7 @@ export async function GET(request: Request) {
       const { data: membership, error: membershipError } = await client.from('organizer_memberships').select('user_id').eq('user_id', user.id).maybeSingle();
       if (membershipError) throw membershipError;
       if (!membership) return reply({ error: 'Organizer access is required.' }, 403);
-      const { data, error } = await client.from('teams').select(`${publicColumns},captain_user_id,is_public,team_captain_details(name,phone),roster_participants(id,name,email,phone,shirt_size,shirt_fit,position)`).eq('event_id', event.id).order('team_name').limit(501);
+      const { data, error } = await client.from('teams').select(`${publicColumns},captain_user_id,is_public,team_captain_details(name,phone),roster_participants(id,name,email,phone,shirt_size,shirt_fit,position,roster_contact_preferences(submitted_email,source,email_updates_requested,sms_updates_requested,submitted_at,email_verified))`).eq('event_id', event.id).order('team_name').limit(501);
       if (error) throw error;
       if ((data?.length ?? 0) > 500) return reply({ error: 'This overview needs pagination before it can show all teams.' }, 503);
       const { data: goals, error: goalsError } = await client.from('team_fundraising_goals').select('team_id,stretch_goal_cents');
@@ -168,7 +168,7 @@ export async function POST(request: Request) {
     }
     if (data.action === 'sign-in') {
       const address = validate.email(data.email);
-      if (!pilotEmailAllowed(address)) return reply({ error: 'Captain access is currently limited to the invited pilot. Please contact the event team.' }, 403);
+      if (!(await pilotAccessAllowed(client,address))) return reply({ error: 'Captain access is currently limited to the invited pilot. Please contact the event team.' }, 403);
       // Only allowlisted inboxes reach this point. Identity setup can precede team registration.
       const { error } = await client.auth.signInWithOtp({ email: address, options: { shouldCreateUser: true, emailRedirectTo: `${SITE_URL}/olympiad/auth/callback` } });
       if (error) return reply({ error: error.status === 429 ? 'Please wait before requesting another sign-in email.' : 'Sign-in email could not be sent. Please try again later.' }, error.status === 429 ? 429 : 503);
