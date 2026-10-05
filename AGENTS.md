@@ -11,7 +11,8 @@ Keep it short and current. If you learn something the other agent needs, add it 
 
 ## Roles
 - **Claude: chief of staff.** Plans, splits work into tasks on `.agents/BOARD.md`, hands tasks to Codex, reviews every diff, verifies (build + screenshots), and merges.
-- **Codex: executor.** Takes one task at a time from the board, works only inside that task's files, reports back in the task's log.
+- **Codex: executor.** Takes one task at a time from the board, works only inside that task's files, and reports back in its final message.
+  Codex runs sandboxed (`codex exec -s workspace-write`), which blocks writes to `.agents/` and `.git`. So Claude copies Codex's report into the task log and does every commit, push and PR.
 - **Sean (owner)** approves anything that goes live or changes data, outreach or permissions.
 
 ## Working rules
