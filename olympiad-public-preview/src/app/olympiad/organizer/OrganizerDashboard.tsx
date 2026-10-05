@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, type FormEvent } from 'react';
+import ChairmanRosterLink from './ChairmanRosterLink';
 import TeamLogo, {type TeamLogoAsset} from '../pilot/TeamLogo';
 import styles from './organizer.module.css';
 import Communications from './Communications';
@@ -133,6 +134,7 @@ function TeamDisclosure({team,today,clubMembers,expanded,onToggle,onAccessDenied
   <div className={styles.teamDetail}>
    <div className={styles.teamFacts}><p><strong>Logo:</strong> {team.logo ? <a href={`/olympiad/api/logo?team_id=${team.id}`} download>Download {team.logo.filename}</a> : 'Not uploaded yet'}</p><p><strong>Captain:</strong> {team.captain_name || 'Not recorded'}{team.captain_email && <> · <a href={`mailto:${team.captain_email}`}>{team.captain_email}</a></>}{team.captain_phone && <> · <a href={`tel:${team.captain_phone.replace(/[^+0-9]/g,'')}`}>{team.captain_phone}</a></>}</p><p><strong>Roster:</strong> {team.complete} of {team.listed} saved profiles complete.{team.listed<6 && ` Add ${6-team.listed} people to reach six.`}{team.missing && team.complete<team.listed && ` Missing: ${Object.entries(team.missing).filter(([,count])=>count>0).map(([field,count])=>`${count} ${field==='shirt'?'shirt preferences':field}`).join(' · ')}.`}</p><p><strong>Visibility:</strong> {team.is_public ? team.approval_status === 'approved' ? 'Approved · public team page' : 'Public listing requested · hidden until approved' : 'Captain chose a private team page'}</p><p><strong>Referring member:</strong> {team.referring_club_member_name || 'Not assigned'} · private</p></div>
    <details className={styles.logoManagement}><summary>Manage team logo · upload or use a logo on file</summary><p>Feature this business on its public tile, team page and 2027 leaderboard. Public display still requires team approval and the captain’s public-listing choice.</p><TeamLogo chairman teamId={team.id} initialLogo={team.logo} initialPublicUrl={team.logo_url} onSaved={()=>{}} onPublicSaved={()=>{}} /></details>
+   {team.approval_status!=='declined' && <ChairmanRosterLink teamId={team.id} teamName={team.name} captainName={team.captain_name} captainEmail={team.captain_email} onAccessDenied={onAccessDenied}/> }
    <TeamRoster team={team} />
    <div className={styles.teamControls}><ReviewForm team={team} clubMembers={clubMembers} onAccessDenied={onAccessDenied} onSaved={value=>{clearDraft('review');onReviewSaved(value);}} /><FollowupForm team={team} onAccessDenied={onAccessDenied} onSaved={value=>{clearDraft('followup');onFollowupSaved(value);}} /><GoalForm team={team} onAccessDenied={onAccessDenied} onSaved={value=>{clearDraft('goal');onGoalSaved(value);}} /></div>
   </div>
