@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { allowedOrigin, pilotClient, pilotConfiguration, SITE_URL } from '../../pilot/server';
 import * as validate from '../../pilot/validation';
+import { chairmanAccess } from '../../auth/chairman-access';
 export const dynamic = 'force-dynamic';
 const reply=(value:unknown,status=200)=>NextResponse.json(value,{status,headers:{'Cache-Control':'private, no-store','Vary':'Cookie, Origin','Referrer-Policy':'no-referrer'}});
 export async function POST(request:Request){
@@ -13,6 +14,13 @@ export async function POST(request:Request){
   let body:Record<string,unknown>;try{body=JSON.parse(raw);}catch{return reply({error:'Check your form and try again.'},400);}
   if(!body||typeof body!=='object'||Array.isArray(body))return reply({error:'Invalid submission.'},400);
   const client=await pilotClient();
+  if(body.action==='chairman-get'){
+   const access=await chairmanAccess(client);if(!access.ok)return reply({error:'Chairman Google access required.'},access.status);
+   const {data,error}=await client.rpc('chairman_roster_link',{p_team_id:validate.uuid(body.team_id)});
+   if(error)return reply({error:'Unable to retrieve a roster link for this active team. Refresh and try again.'},409);
+   if(data.unavailable)return reply({error:`This roster link is ${data.reason}. Ask the captain to renew it from their team hub.`},409);
+   return reply({...data,url:`${SITE_URL}/olympiad/join#${data.token}`});
+  }
   if(['get','rotate','revoke'].includes(String(body.action))){
    const {data,error}=await client.rpc('manage_roster_link',{p_team_id:validate.uuid(body.team_id),p_action:body.action});
    if(error)return reply({error:'Sign in as this team’s captain to manage its roster link.'},403);
