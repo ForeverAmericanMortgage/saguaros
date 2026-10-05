@@ -40,3 +40,15 @@ Each agent updates its own task's status and appends to its log. Claude owns cre
   - Codex: Fresh-main integration passes TypeScript and production build; Olympiad mirrors match. New component/API lint clean; dashboard retains exactly its baseline two errors and one warning. Anonymous RPC execution denied, and authenticated requests without chairman identity rejected in a rolled-back database check.
   - Codex: UI source reviewed for team disclosure placement, read-only URL, copy fallback, email draft and full-width mobile actions. Authenticated browser/UI smoke remains for Claude review: preview environment lacks production auth configuration; no live UI deployment performed.
   - Sean approved this feature on October 5. PR #5 is ready for review; Claude review/merge and authenticated chairman smoke remain before live publication under AGENTS.md.
+
+## T-002 · Simplify chairman navigation and team details
+- **Owner:** Codex · **Status:** review · **Branch:** `codex/chairman-simpler-teams`
+- **Goal:** Clear workspaces, compact team rows, one expanded team, and collapsible details without losing form drafts.
+- **Files:** `olympiad-public-preview/src/app/olympiad/organizer/OrganizerDashboard.tsx`, `olympiad-public-preview/src/app/olympiad/organizer/organizer.module.css`, their mirrored `app/` files, `.agents/BOARD.md`.
+- **Do:** Overview, Teams, Outreach, People and Planning navigation; concise readiness counts; team/captain, roster, communication and administration sections. Preserve current permissions and actions.
+- **Done when:** TypeScript/build, baseline lint comparison and mirror checks pass; review PR includes UI verification notes.
+- **Log:**
+  - Codex: Sean directly requested this iteration. Starting from fresh main in isolated worktree; no schema changes or outbound messages.
+  - Codex: Implemented five isolated workspaces, overview action queues, compact rows with captain/status/roster/next action, one expanded team, four detail sections and optional filters/help. Forms stay mounted so drafts survive navigation.
+  - Codex: TypeScript and Next build pass, mirrors match, whitespace check clean. Lint matches existing baseline (2 errors, 1 warning). Playwright with synthetic/local data verified workspace isolation, queue counts, reset/search, single-team expansion, draft preservation and no horizontal overflow at 320/390px. Screenshot evidence: `/tmp/olympiad-chairman-ui-review/output/playwright/{desktop-overview,desktop-teams,mobile-roster}.png`.
+  - Codex: Local interactive preview opened at http://127.0.0.1:3048/#overview (sample data, writes blocked). No production UI deployment, permissions/data changes or messages sent. Authenticated live save checks remain for release review; this iteration changes presentation only.
