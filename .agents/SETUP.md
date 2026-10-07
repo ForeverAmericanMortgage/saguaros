@@ -49,7 +49,7 @@ If step 4 gives you trouble, skip it. Claude can still call Codex from the termi
 
 ```bash
 git worktree add ../saguaros-t000 -b codex/t-000-pilot origin/main
-cd ../saguaros-t000 && codex exec --full-auto "Do task T-000 from .agents/BOARD.md, following AGENTS.md."
+cd ../saguaros-t000 && codex exec -s workspace-write "Do task T-000 from .agents/BOARD.md, following AGENTS.md."
 ```
 Claude runs these commands for you; you just approve them when asked.
 
