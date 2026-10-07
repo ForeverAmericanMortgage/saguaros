@@ -94,3 +94,4 @@
 .expandedCatalog .productImage{aspect-ratio:16/9;margin-top:0;border-bottom:1px solid #e8e9e1}
 .expandedCatalog .productImage img{object-fit:cover!important}
 }
+.footerLegal{display:flex;gap:16px;font-size:12px}.footerLegal a{color:#4f5b53}

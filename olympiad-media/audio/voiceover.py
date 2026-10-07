@@ -4,7 +4,7 @@ k = Kokoro(sys.argv[1]+"/models/kokoro-v1.0.onnx", sys.argv[1]+"/models/voices-v
 lines = [
  "Every spring, Arizona businesses trade the office... for the field.",
  "This is the Olympiad. A corporate field day at Scottsdale Stadium, hosted by the Suh-WAHR-ohs.",
- "Every team raises at least three thousand dollars for Arizona's kids. Last year? Nearly seven hundred thousand.",
+ "Every team raises at least three thousand dollars for Arizona's kids. Last year? Over seven hundred thousand.",
  "Getting in is simple. Register your team. Bring six or more coworkers. And fundraise your way.",
  "Cups for top fundraisers. Medals for game winners. Register today, at Scottsdale Olympiad dot com.",
 ]

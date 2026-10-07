@@ -73,4 +73,14 @@ Each agent updates its own task's status and appends to its log. Claude owns cre
 - **Done when:** Both MP4s render at -16 LUFS with on-screen cues matched to the voice; Sean reviews.
 - **Log:**
   - Claude: task created and built (Sean, 2026-10-07). Voice: Kokoro af_heart (transcribes word-for-word, incl. "Saguaros"). Music: original, code-composed. Rendered 33s MP4s; -15.9 LUFS, -1.4 dBFS peak. Not yet placed on the website.
+  - Claude: Sean asked for "over $700K" (2026-10-07). Supported by the Frontdoors 2026 recap (over $720,000); the treasurer's team-sales report alone is $699,773. Re-recorded the impact line ("Over seven hundred thousand"), re-timed the counter, re-rendered.
+
+## T-005 · Privacy Policy and Terms of Use
+- **Owner:** Claude · **Status:** review · **Branch:** `claude/busy-ritchie-6xzxsv`
+- **Goal:** Plain-English privacy policy and terms that match what the site actually collects, linked wherever people give us information.
+- **Files:** `olympiad-public-preview/src/app/olympiad/{legal/**,privacy/page.tsx,terms/page.tsx,OlympiadHub.tsx,olympiad.module.css,pilot/PilotExperience.tsx,join/JoinRoster.tsx}` and `app/` mirrors; `olympiad-public-preview/src/app/{privacy,terms}/page.tsx`; `.agents/BOARD.md`.
+- **Do:** /privacy and /terms pages; footer links; agreement line on team registration; Privacy Policy link on the teammate join consent. Home total → "Over $700K".
+- **Done when:** Build and typecheck pass, mirror in sync, lint unchanged; Sean and the Saguaros' attorney review the wording before it goes live.
+- **Log:**
+  - Claude: drafted from the site's real data flows (Supabase, Vercel, Google sign-in, Mailchimp opt-in, SMS opt-in, roster links, logos, organizer notes). Includes SMS no-sharing language. Participant waiver and photo release not drafted: needs the Saguaros' attorney and insurer.
 

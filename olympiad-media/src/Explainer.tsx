@@ -111,13 +111,13 @@ const What: React.FC = () => {
   );
 };
 
-/** 11.1–18.5s · "Every team raises at least $3,000 for Arizona's kids. Last year? Nearly $700,000." */
+/** 11.1–18.5s · "Every team raises at least $3,000 for Arizona's kids. Last year? Over $700,000." */
 const Impact: React.FC = () => {
   const { u, vertical } = useLayout();
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const minimum = useCount(3000, cue('impact', 12.6), cue('impact', 13.4));
-  const raised = useCount(700, cue('impact', 16.5), cue('impact', 17.6));
+  const raised = useCount(700, cue('impact', 16.4), cue('impact', 17.5));
   const swap = spring({ frame: frame - cue('impact', 15.4), fps, config: { damping: 200 } });
   const money = (n: number) => '$' + n.toLocaleString('en-US');
   return (
@@ -134,7 +134,7 @@ const Impact: React.FC = () => {
         <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', opacity: swap, transform: `translateY(${(1 - swap) * 80 * u}px)` }}>
           <Eyebrow color="#cadfc2" size={22}>Last year, together</Eyebrow>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 26 * u, flexWrap: 'wrap', marginTop: 10 * u }}>
-            <span style={{ fontFamily: serif, fontStyle: 'italic', fontSize: 96 * u }}>nearly</span>
+            <span style={{ fontFamily: serif, fontStyle: 'italic', fontSize: 96 * u }}>over</span>
             <span style={{ fontWeight: 800, fontSize: (vertical ? 230 : 260) * u, letterSpacing: -9 * u, lineHeight: 1, color: C.gold }}>${raised}K</span>
           </div>
           <Reveal at={cue('impact', 17.6)} y={20}>

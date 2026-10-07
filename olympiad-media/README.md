@@ -12,7 +12,7 @@ Same colors, fonts and photos as the website, so the video *is* the Olympiad bra
 Script, about 30 seconds:
 1. **Open (0–5s):** Every spring, Arizona businesses trade the office… for the field.
 2. **What (5–11s):** This is the Olympiad. A corporate field day at Scottsdale Stadium, hosted by the Saguaros.
-3. **Impact (11–18.5s):** Every team raises at least $3,000 for Arizona's kids. Last year? Nearly $700K.
+3. **Impact (11–18.5s):** Every team raises at least $3,000 for Arizona's kids. Last year? Over $700K.
 4. **How (18.5–24.5s):** Getting in is simple. Register your team. Bring six or more coworkers. And fundraise your way.
 5. **Close (24.5–33s):** Cups for top fundraisers. Medals for game winners. Register today at scottsdaleolympiad.com.
 
