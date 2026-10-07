@@ -64,3 +64,13 @@ Each agent updates its own task's status and appends to its log. Claude owns cre
 - **Log:**
   - Claude: task created and executed (Sean approved all 11 items, 2026-10-07). Codex not available in the cloud session, so Claude built it.
   - Claude: tsc and next build pass; mirror in sync; app lint 19 → 19 (no new issues). Verified desktop 1440 and mobile 390 screenshots of home, fundraising, guide and teams. Chairman portal untouched.
+
+## T-004 · 30-second "What is the Olympiad?" explainer video
+- **Owner:** Claude · **Status:** review · **Branch:** `claude/busy-ritchie-6xzxsv`
+- **Goal:** A polished 30-second explainer with voiceover and music that tells a first-timer what the Olympiad is and how to get involved, in the Olympiad's own look.
+- **Files:** `olympiad-media/**` (new), `.agents/BOARD.md`.
+- **Do:** Remotion project with 16:9 and 9:16 cuts; neural voiceover; original music bed; bundled fonts; render script; README with change and upgrade steps.
+- **Done when:** Both MP4s render at -16 LUFS with on-screen cues matched to the voice; Sean reviews.
+- **Log:**
+  - Claude: task created and built (Sean, 2026-10-07). Voice: Kokoro af_heart (transcribes word-for-word, incl. "Saguaros"). Music: original, code-composed. Rendered 33s MP4s; -15.9 LUFS, -1.4 dBFS peak. Not yet placed on the website.
+
