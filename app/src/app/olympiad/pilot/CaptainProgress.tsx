@@ -27,26 +27,26 @@ export function CaptainProgress({ steps, approval }: { steps: ProgressStep[]; ap
    <ProgressRing steps={steps} />
    <div>
     <span className={s.eyebrow}>YOUR CAPTAIN CHECKLIST</span>
-    <h3 id="captain-progress-heading">{next ? `Next up: ${next.title.toLowerCase()}.` : 'Your team is ready for the field.'}</h3>
-    <p className={s.fine}>{next ? 'Here’s everything we ask of a captain before game day. Work at your own pace; your progress saves as you go.' : 'Every setup step is done. Share your team page and we’ll keep you posted as the season takes shape.'}</p>
+    <h3 id="captain-progress-heading">{next ? `Next up: ${next.title.toLowerCase()}.` : 'Your team setup is complete.'}</h3>
+    <p className={s.fine}>{next ? 'Start with this step. You can finish the rest later.' : 'Every setup step is done. Share your team page and we’ll keep you posted as the season takes shape.'}</p>
     {next && <button type="button" className={s.primary} onClick={next.onAction}>{next.action}</button>}
    </div>
   </div>
-  <ol className={s.setupTasks}>
+  <details className={s.setupDetails}><summary>View all setup steps</summary><ol className={s.setupTasks}>
    {steps.map(step => <li key={step.key} className={step === next ? s.taskCurrent : undefined} aria-current={step === next ? 'step' : undefined}>
     <span className={step.done ? s.taskDone : s.taskOpen} aria-hidden="true">{step.done ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 4 4L19 6" /></svg> : null}</span>
     <div><strong>{step.title}<span className={s.visuallyHidden}>{step.done ? ' (complete)' : ' (to do)'}</span></strong><span>{step.detail}</span></div>
     <button type="button" className={s.secondary} onClick={step.onAction}>{step.done ? 'Review' : step.action}</button>
    </li>)}
-  </ol>
-  <div className={s.comingUp}>
+  </ol></details>
+  <details className={s.comingUp}><summary>Approval & what happens next</summary>
    <span className={s.eyebrow}>WHAT’S AHEAD</span>
    <ul>
     <li><strong>Chairman review</strong><span>{approvalCopy}</span></li>
     <li><strong>Fundraising</strong><span>$3,000 team minimum. Opens later in the season; nothing to collect yet.</span></li>
     <li><strong>Game day</strong><span>Scottsdale Stadium. 2027 date to be announced.</span></li>
    </ul>
-  </div>
+  </details>
  </section>;
 }
 
