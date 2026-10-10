@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
 import { allowedOrigin, pilotClient } from '../../pilot/server';
 import { chairmanAccess } from '../../auth/chairman-access';
-import { uuid, PilotInputError } from '../../pilot/validation';
+import { uuid, text as inputText, PilotInputError } from '../../pilot/validation';
 export const dynamic = 'force-dynamic';
 const BUCKET = 'olympiad-team-logos';
-const MAX = 4 * 1024 * 1024;
+const MAX = 20 * 1024 * 1024;
+const WEB_MAX = 4 * 1024 * 1024;
 const headers = { 'Cache-Control': 'private, no-store', Vary: 'Cookie, Origin' };
 const fail = (error: string, status: number) => NextResponse.json({ error }, { status, headers });
 function fileType(bytes: Buffer, extension: string) {
@@ -18,29 +19,50 @@ function fileType(bytes: Buffer, extension: string) {
 }
 export async function POST(request: Request) {
  if (!allowedOrigin(request)) return fail('Request not allowed.',403);
- if (Number(request.headers.get('content-length') || 0) > MAX + 65536) return fail('Choose a logo smaller than 4 MB.',413);
+ const direct = request.headers.get('content-type')?.includes('application/json');
+ if (Number(request.headers.get('content-length') || 0) > (direct ? 8192 : WEB_MAX + 65536)) return fail('Upload larger originals using the current logo form. Refresh the page and try again.',413);
  try {
   const client = await pilotClient();
   const { data: { user } } = await client.auth.getUser();
   if (!user?.email_confirmed_at) return fail('Sign in again before uploading your logo.',401);
-  const form = await request.formData();
-  const teamId = uuid(form.get('team_id'));
-  const file = form.get('logo');
-  if (!(file instanceof File) || !file.size || file.size > MAX) return fail('Choose a PNG, JPG or vector logo up to 4 MB.',400);
+  const payload = direct ? await request.json() : null;
+  const form = direct ? null : await request.formData();
+  const teamId = uuid(direct ? payload.team_id : form?.get('team_id'));
+  let file: File | Blob | null = form?.get('logo') instanceof File ? form.get('logo') as File : null;
+  const filename = inputText(direct ? payload.filename : (file as File | null)?.name, 'Filename', 180, true).split(/[\\/]/).pop()!.replace(/[^a-zA-Z0-9 ._()-]/g,'_');
+  const extension = filename.split('.').pop()?.toLowerCase() || '';
+  const vector = ['svg','pdf','eps','ai'].includes(extension);
+  const limit = vector ? MAX : WEB_MAX;
+  if (!vector && !['png','jpg','jpeg'].includes(extension)) return fail('Choose PNG, JPG, SVG, PDF, EPS or AI.',400);
+
   const { data: team, error: teamError } = await client.from('teams').select('id,captain_user_id').eq('id',teamId).maybeSingle();
   if (teamError || !team) return fail('Team not found or access is unavailable.',404);
   if (team.captain_user_id !== user.id) {
    const access=await chairmanAccess(client);
    if(!access.ok)return fail('Captain or verified chairman access is required.',access.status);
   }
-  const filename = file.name.split(/[\\/]/).pop()!.replace(/[^a-zA-Z0-9 ._()-]/g,'_').slice(-180);
-  const extension = filename.split('.').pop()?.toLowerCase() || '';
+  let path = `${teamId}/${crypto.randomUUID()}.${extension}`;
+  if (direct) {
+   if (payload.action === 'prepare') {
+    if (!Number.isSafeInteger(payload.size) || payload.size < 1 || payload.size > limit) return fail(vector ? 'Choose a vector original up to 20 MB.' : 'Choose a PNG or JPG up to 4 MB.',400);
+    const { data, error } = await client.storage.from(BUCKET).createSignedUploadUrl(path, { upsert: false });
+    if (error || !data) return fail('We could not prepare the upload. Please try again.',503);
+    return NextResponse.json({ path, url: data.signedUrl }, { headers });
+   }
+   if (payload.action !== 'complete' || typeof payload.path !== 'string' || !new RegExp(`^${teamId}/[0-9a-f-]{36}\\.${extension}$`).test(payload.path)) return fail('Invalid upload. Choose your logo again.',400);
+   path = payload.path;
+   const { data, error } = await client.storage.from(BUCKET).download(path);
+   if (error || !data) return fail('The upload is not available yet. Please try again.',503);
+   file = data;
+  }
+  if (!file?.size || file.size > limit) return fail(vector ? 'Choose a vector original up to 20 MB.' : 'Choose a PNG or JPG up to 4 MB.',400);
   const bytes = Buffer.from(await file.arrayBuffer());
   const contentType = fileType(bytes,extension);
   if (!contentType) return fail('This file does not match a supported logo format. Choose PNG, JPG, SVG, PDF, EPS or AI.',400);
-  const path = `${teamId}/${crypto.randomUUID()}.${extension}`;
-  const { error: uploadError } = await client.storage.from(BUCKET).upload(path,bytes,{contentType,upsert:false});
-  if (uploadError) return fail('Your logo could not be uploaded. Please try again.',503);
+  if (!direct) {
+   const { error: uploadError } = await client.storage.from(BUCKET).upload(path,bytes,{contentType,upsert:false});
+   if (uploadError) return fail('Your logo could not be uploaded. Please try again.',503);
+  }
   const asset = { team_id:teamId, object_path:path, filename, content_type:contentType, size_bytes:file.size, uploaded_by:user.id, updated_at:new Date().toISOString() };
   const { error: metadataError } = await client.from('team_brand_assets').upsert(asset,{onConflict:'team_id'});
   if (metadataError) return fail('Your file uploaded but could not be attached to your team. Please try again.',503);
@@ -67,8 +89,9 @@ export async function GET(request: Request) {
   }
   const { data: asset,error } = await client.from('team_brand_assets').select('object_path,filename').eq('team_id',teamId).maybeSingle();
   if (error || !asset) return fail('Logo not found or access is unavailable.',404);
-  const { data: file,error: downloadError } = await client.storage.from(BUCKET).download(asset.object_path);
-  if (downloadError || !file) return fail('Your logo could not be downloaded.',503);
-  return new Response(await file.arrayBuffer(),{headers:{...headers,'Content-Type':'application/octet-stream','Content-Disposition':`attachment; filename="${asset.filename.replace(/["\\\r\n]/g,'_')}"`,'X-Content-Type-Options':'nosniff','Content-Security-Policy':"sandbox; default-src 'none'"}});
+  // Redirect the authorized download so large originals do not pass through the host's response limit.
+  const { data, error: downloadError } = await client.storage.from(BUCKET).createSignedUrl(asset.object_path, 60, { download: asset.filename });
+  if (downloadError || !data) return fail('Your logo could not be downloaded.',503);
+  return new Response(null, { status: 302, headers: { ...headers, Location: data.signedUrl, 'Referrer-Policy': 'no-referrer' } });
  } catch { return fail('Logo not found or access is unavailable.',404); }
 }
