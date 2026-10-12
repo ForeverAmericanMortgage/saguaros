@@ -79,7 +79,16 @@ Each agent updates its own task's status and appends to its log. Claude owns cre
   - Sean explicitly approved proceeding on October 10 and waived the Claude/AGENTS approval requirement for this release. Codex owns packaging, merge and verification for this task. Applied only larger_team_logo_originals via Supabase migration API (version 20261010172604); verified private bucket remains private with 20971520-byte limit and PNG/JPG metadata remains capped at 4194304 bytes. Historical migration timestamp drift is unchanged.
 
 ## T-005 · One-click teammate signup link
-- **Owner:** Codex · **Status:** implementation · **Branch:** `codex/teammate-copy-link`
+- **Owner:** Codex · **Status:** done · **Branch:** `codex/teammate-copy-link`
 - **Files:** both `pilot/RosterLink.tsx` mirrors and `.agents/BOARD.md`.
 - **Request:** Sean asked for an easy copy link captains can paste into a team chat for participant self-entry. Existing Claude approval waiver continues for this captain UX work.
 - **Change:** Prominent Copy teammate signup link gets the existing authorized link and copies it in one action; a selectable fallback and separate invitation-message copy remain available. No change to link permissions or participant consent.
+- Validation: TypeScript/build, changed-file ESLint, mirror and whitespace checks passed. Synthetic browser checks passed first-click link copy, invitation text and blocked-clipboard fallback. PR #10 merged as f242e84; Vercel production deployment dpl_5vGiVz7gT5bgEaRm2trhkhznr494 is Ready and aliased to scottsdaleolympiad.com. Browser behavior was verified with synthetic data; live participant submission was not repeated.
+
+## T-006 · Captain autosave, approval clarity and automatic roster refresh
+- **Owner:** Codex · **Status:** ready for release · **Branch:** `codex/captain-autosave-refresh`
+- **Files:** both mirrors of `pilot/PilotExperience.tsx`, `pilot/RosterLink.tsx`, and `.agents/BOARD.md`.
+- **Request:** Sean explicitly requested autosave, pending-approval clarity, and automatic roster refresh; continuing the authorized captain UX release workflow.
+- **Implementation:** Profile/introduction changes save after 1.2 seconds with validation, status and manual retry. Roster polling every 15 seconds and on tab return skips dirty/focused forms and invalidates stale responses. Pending approval explicitly confirms registration submission and invites continued teammate signup.
+- **Validation:** TypeScript and production build pass. ESLint matches the existing two link errors and one hook warning. Synthetic browser tests verified profile autosave/reload, failure draft retention, no retry loop, manual retry and automatic teammate refresh on focus.
+- Additional browser checks passed dirty-roster protection across focus and polling, save retry, and 15-second periodic refresh. No schema, permission or outreach changes.
