@@ -1,0 +1,13 @@
+const {test}=require('node:test');
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const vm=require('node:vm');
+const ts=require('typescript');
+const moduleBox={exports:{}};
+vm.runInNewContext(ts.transpileModule(fs.readFileSync('src/app/olympiad/organizer/prospect-model.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText,{exports:moduleBox.exports,module:moduleBox,URL,Date});
+const {validDate,validateProspectEdit,prospectDue,gmailThreadUrl}=moduleBox.exports;
+const base={id:'11111111-1111-4111-8111-111111111111',version:1,status:'sent',assigned_to:'Sean',notes:'',fit_reason:'',evidence_url:'',draft_subject:'',draft_body:'',next_follow_up:null,linked_team_id:null};
+test('calendar date validation rejects rollover dates',()=>{assert.equal(validDate('2027-02-29'),false);assert.equal(validDate('2028-02-29'),true);assert.equal(validDate('2027-13-01'),false);});
+test('registration needs a real team link and research links reject executable URLs',()=>{assert.equal(validateProspectEdit(base),null);assert.match(validateProspectEdit({...base,status:'registered'}),/registered team/);assert.match(validateProspectEdit({...base,evidence_url:'javascript:alert(1)'}),/https/);assert.match(validateProspectEdit({...base,version:0}),/Refresh/);});
+test('due queue suppresses opt-outs, declined, bounced and linked registrations',()=>{const p={status:'sent',opted_out:false,linked_team_id:null,next_follow_up:'2026-10-13'};assert.equal(prospectDue(p,'2026-10-13'),true);for(const change of [{opted_out:true},{status:'declined'},{status:'bounced'},{linked_team_id:base.id}])assert.equal(prospectDue({...p,...change},'2026-10-13'),false);assert.equal(prospectDue(p,'2026-10-12'),false);});
+test('Gmail link selects Saguaros account and encodes thread identifier',()=>{assert.equal(gmailThreadUrl('a/b').endsWith('a%2Fb'),true);assert.match(gmailThreadUrl('abc'),/scaldwell%40saguaros.com/);});

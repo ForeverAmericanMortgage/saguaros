@@ -8,14 +8,15 @@ import Communications from './Communications';
 import AudienceSync from './AudienceSync';
 import SeasonOverview from './SeasonOverview';
 import ReturningTeams from './ReturningTeams';
+import ProspectTracker from './ProspectTracker';
 import PeopleDirectory, { TeamRoster, type DirectoryTeam } from './PeopleDirectory';
 
 type Followup = { status: string; assigned_to: string; notes: string; next_follow_up: string | null; updated_at: string };
 type ClubMember = { id: string; name: string };
 type MemberCredit = { member_id: string; member_name: string; team_count: number; total_cents: number };
 type ChairmanView = 'overview' | 'teams' | 'outreach' | 'people' | 'planning';
-const chairmanViews: {id:ChairmanView;label:string;description:string}[] = [{id:'overview',label:'Overview',description:'Start with the teams that need your attention.'},{id:'teams',label:'Teams',description:'Review registrations, complete rosters and support captains.'},{id:'outreach',label:'Outreach',description:'Recruit returning businesses and manage invitations.'},{id:'people',label:'People',description:'Find captains, participants and missing contact or shirt details.'},{id:'planning',label:'Planning',description:'Review the season timeline, industry mix and fundraising targets.'}];
-const viewForHash:Record<string,ChairmanView> = {'#overview':'overview','#team-directory':'teams','#team-actions':'overview','#returning-teams':'outreach','#communication-overview':'outreach','#people-directory':'people','#season-plan':'planning'};
+const chairmanViews: {id:ChairmanView;label:string;description:string}[] = [{id:'overview',label:'Overview',description:'Start with the teams that need your attention.'},{id:'teams',label:'Teams',description:'Review registrations, complete rosters and support captains.'},{id:'outreach',label:'Outreach',description:'Track new prospects, follow up with interested companies and recruit returning teams.'},{id:'people',label:'People',description:'Find captains, participants and missing contact or shirt details.'},{id:'planning',label:'Planning',description:'Review the season timeline, industry mix and fundraising targets.'}];
+const viewForHash:Record<string,ChairmanView> = {'#overview':'overview','#team-directory':'teams','#team-actions':'overview','#prospect-tracker':'outreach','#returning-teams':'outreach','#communication-overview':'outreach','#people-directory':'people','#season-plan':'planning'};
 type TeamHistory = 'unclassified' | 'new' | 'returning';
 const historyLabels: Record<TeamHistory,string> = {unclassified:'Not yet classified',new:'New team',returning:'Returning team'};
 type Review = { participation_history: TeamHistory; referring_club_member_id: string | null; referring_club_member_name: string; status: 'pending' | 'approved' | 'needs_changes' | 'declined'; message: string; version: number };
@@ -27,7 +28,7 @@ const money = (cents: number) => new Intl.NumberFormat('en-US', { style: 'curren
 export default function OrganizerPage() {
   const [view,setView] = useState<ChairmanView>('overview');
   useEffect(()=>{const sync=()=>setView(viewForHash[window.location.hash] || 'overview');sync();window.addEventListener('hashchange',sync);return()=>window.removeEventListener('hashchange',sync);},[]);
-  function chooseView(next:ChairmanView){setView(next);window.history.replaceState(null,'',next==='overview'?'#overview':next==='teams'?'#team-directory':next==='outreach'?'#returning-teams':next==='people'?'#people-directory':'#season-plan');}
+  function chooseView(next:ChairmanView){setView(next);window.history.replaceState(null,'',next==='overview'?'#overview':next==='teams'?'#team-directory':next==='outreach'?'#prospect-tracker':next==='people'?'#people-directory':'#season-plan');}
   const [teams, setTeams] = useState<Team[]>([]);
   const [clubMembers, setClubMembers] = useState<ClubMember[]>([]);
   const [memberCredit, setMemberCredit] = useState<MemberCredit[]>([]);
@@ -84,7 +85,7 @@ export default function OrganizerPage() {
         <section><strong>{activeTeams.filter(t=>t.needs_follow_up).length}</strong><span>Incomplete rosters</span><small>{readyCount} {readyCount===1?'team':'teams'} roster-ready</small></section>
         <section><strong>{activeTeams.reduce((sum,t)=>sum+t.complete,0)}</strong><span>Complete participant profiles</span><small>Communication permission tracked separately</small></section>
       </div>
-      <div hidden={view!=='outreach'}><ReturningTeams teams={teams} /></div>
+      <div hidden={view!=='outreach'}><ProspectTracker active={view==='outreach'} teams={teams} onAccessDenied={clearPrivateOverview}/><ReturningTeams teams={teams} /></div>
       <div hidden={view!=='people'}><PeopleDirectory teams={teams} /></div>
       <section id="team-actions" hidden={view!=='overview'}><h2>Action items</h2><p>Choose an action to open the matching teams.</p><div className={styles.actionGrid}>
         <button onClick={() => selectQueue('pending')}>{activeTeams.filter(t => t.approval_status === 'pending').length} awaiting approval →</button>
