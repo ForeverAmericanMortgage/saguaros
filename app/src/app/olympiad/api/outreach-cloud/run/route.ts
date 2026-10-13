@@ -4,6 +4,7 @@ import {simpleParser} from 'mailparser';
 import {pilotConfiguration} from '../../../pilot/server';
 import {workerAuthorized,workerKey,unseal} from '../../../cloud-outreach/secret';
 import {mailbox,transport} from '../../../cloud-outreach/mailbox';
+import {deliverNotification} from '../../../cloud-outreach/notifications';
 import {classifyReply,gmailHex,replyText,sender} from '../../../cloud-outreach/model';
 export const runtime='nodejs';export const dynamic='force-dynamic';export const maxDuration=180;
 type Prospect={id:string;company:string;email:string;thread:string|null;first_sent:string};
@@ -13,6 +14,7 @@ export async function GET(request:Request){
  const cfg=pilotConfiguration();if(!cfg.configured)return reply({error:'Worker not configured'},503);
  const db=createClient(cfg.url,cfg.key,{auth:{persistSession:false,autoRefreshToken:false}});
  const call=async(action:string,data:Record<string,unknown>={})=>{const r=await db.rpc('organizer_cloud_worker',{p_key:workerKey(),p_action:action,p_data:data});if(r.error)throw Error('Cloud ledger operation failed');return r.data;};
+ await deliverNotification(db).catch(()=>{});
  let claimed=false,notificationStarted=false,client:ReturnType<typeof mailbox>|undefined;
  try{
   const state=await call('claim');if(state.skip)return reply({skipped:true});claimed=true;

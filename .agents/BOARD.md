@@ -131,3 +131,12 @@ Each agent updates its own task's status and appends to its log. Claude owns cre
 - Request: Sean authorized weekday cloud outreach. Clay duplicate and 21st-company reservation tests exposed missing atomic research controls. Add scoped company/domain reservation before enrichment, persistent exclusions and 20 reservations per Arizona weekday. Existing sender and reply authorization unchanged; direct review/release waiver applies. No extra prospect sends today.
 
 - T-010 validation: nine focused copy/mail/research tests, TypeScript, production build and changed-file ESLint pass. Rollback-only live SQL denies missing/wrong worker keys and private table access, rejects duplicate snapshot and mismatched reservation, caps twenty-one requests at twenty, and verifies persistent exclusions. Private migration applied; advisors report only existing unrelated warnings. Mirrors match. Preparing authorized direct release; no SMTP sends or paid upgrades.
+
+
+## T011: Cloud daily progress recap and first-batch review
+Status: verified, release pending
+Owner: Codex, Sean approved direct review/release
+Files: cloud-outreach/notifications.ts, api/outreach-cloud/run and daily routes, organizer/DailyCloudOutreach.tsx (both mirrors), migration 20261013231055, focused notification tests.
+Log: Daily self-only recap, tomorrow morning queued-copy preview, persistent notification deduplication and a chairman release gate for the first smoke batch. Existing cloud polling drives notifications while the computer is off. No prospect sends today.
+
+T011 validation: TypeScript and production build passed; 8 focused tests passed; rollback-only live SQL verified invalid-key denial, snapshot draft identities, notification deduplication, private permissions and sender review hold. Mirror and changed-file ESLint clean. No new advisor findings.
