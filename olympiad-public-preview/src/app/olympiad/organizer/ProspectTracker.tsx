@@ -2,6 +2,7 @@
 import {useCallback,useEffect,useState,type FormEvent} from 'react';
 import {gmailThreadUrl,prospectDue,prospectStatuses,type Prospect,type ProspectStatus} from './prospect-model';
 import styles from './prospects.module.css';
+import OutreachCloudSetup from './OutreachCloudSetup';
 type Team={id:string;company:string;name:string;approval_status:string};
 class RequestError extends Error{constructor(message:string,public status:number){super(message);}}
 async function response(r:Response){const d=await r.json();if(!r.ok)throw new RequestError(d.error||'Please retry.',r.status);return d;}
@@ -20,6 +21,7 @@ export default function ProspectTracker({active,teams,onAccessDenied}:{active:bo
   <div className={styles.heading}><div><p className={styles.eyebrow}>NEW COMPANY OUTREACH</p><h2 id="prospect-title">Prospect tracker</h2><p>Who we contacted, what happened, and the next step.</p></div><button type="button" disabled={busy||dirty.size>0} onClick={()=>void load()}>{busy?'Refreshing…':'Refresh prospects'}</button></div>
   <p className={styles.caption}>Daily plan: 20 new companies at 9 a.m. Arizona time. One follow-up after 7 days without a reply. Replies, declines and opt-outs pause follow-ups.</p>
   <div className={styles.stats}><button type="button" aria-pressed={filter==='all'} onClick={()=>setFilter('all')}><strong>{rows.length}</strong>Companies tracked</button><button type="button" aria-pressed={filter==='interest'} onClick={()=>setFilter('interest')}><strong>{interested.length}</strong>Interested / talking</button><button type="button" aria-pressed={filter==='due'} onClick={()=>setFilter('due')}><strong>{due.length}</strong>Follow-ups due</button></div>
+  <OutreachCloudSetup/>
   <div className={styles.filters}><label>Find a company<input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Company, contact or owner"/></label><label>Outreach status<select value={filter} onChange={e=>setFilter(e.target.value)}><option value="all">All companies</option><option value="interest">Interested / talking</option><option value="due">Follow-ups due</option>{Object.entries(prospectStatuses).map(([id,label])=><option key={id} value={id}>{label}</option>)}</select></label></div>
   <p className={styles.caption}>{checked?`Checked at ${checked} Arizona time. `:''}Sent means a sender record, not confirmed delivery. Replies are recorded separately. No emails send from this tracker.</p>
   {dirty.size>0&&<p role="status">Save or discard your changes before refreshing.</p>}{error&&<p role="alert">{error}</p>}{!loaded&&busy&&<p role="status">Loading company outreach…</p>}

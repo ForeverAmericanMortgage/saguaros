@@ -106,3 +106,13 @@ Each agent updates its own task's status and appends to its log. Claude owns cre
 - T-007 release continuation, October 13: Sean explicitly authorized getting the tracker live, importing all 50 contacted companies, exact sent history, replies and follow-up dates. Scope adds both 20261013171852 message-history migrations. TypeScript/build and four model tests pass; new-file lint clean. Rollback import verifies 51 outbound receipts and 3 inbound summaries. Claude owns review, commit, PR and merge under AGENTS; Codex owns authorized database import, production deployment and live verification. Private queue and recipient data stay outside repo.
 
 - T-007: Sean explicitly waived Claude packaging/review hold and authorized Codex direct release on October 13 after Claude OAuth failed. Both migrations applied with targeted history entries; private import verified 50 contacted companies, 51 outbound messages and 3 response summaries. Self-CC removed. Daily outreach remains 20 new companies plus one seven-day follow-up; portal decisions reconcile into private queue. Live authenticated browser verification pending production build.
+
+## T-008 · Cloud outreach and mailbox reply synchronization
+- Owner: Codex. Status: in progress. Branch: codex/olympiad-cloud-outreach.
+- Request: Sean authorized cloud outreach and reply tracking while his computer is off. Clay SMTP/IMAP sender connected, warmup off, owner-only. No cloud campaign launched yet.
+- Files: both mirrors of organizer/{OutreachCloudSetup.tsx,ProspectTracker.tsx}, api/outreach-cloud/** and cloud-outreach/**; targeted cloud mailbox migration in both app trees; deployed package.json/package-lock.json; tests/cloud-outreach.test.cjs; .agents/BOARD.md.
+- Scope: Secure cloud mailbox monitor covering prior Gmail threads, strict chairman setup UI, provider history and suppression. No paid upgrades/topups, no credentials exposed, no automatic interested-reply sends. Existing daily sender remains owner until cloud cutover is verified.
+
+- T-008 scope adds app/package.json and app/package-lock.json so the required source mirror also resolves the new server mailbox libraries. Build, TypeScript, four cloud model/security tests and rollback privilege checks pass. No cloud credential collected or cloud mail sent.
+
+- T-008 verification: TypeScript/build, four cloud tests, changed-file lint and mirror checks pass. Rollback SQL verifies denied worker credentials, private secret denial, chairman-only management, reply dedup and sticky opt-outs. Applied targeted cloud migration; provisioned encrypted worker secret and a five-minute cloud cron, currently paused pending deployment. Cloud mailbox credential remains absent. Existing local sender is not disabled before verified cloud cutover.
