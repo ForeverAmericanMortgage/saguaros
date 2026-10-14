@@ -202,3 +202,11 @@ T018 validation: five notification tests, rollback SQL checks for two-receipt ga
 - Branch: codex/outreach-usage-recap. Sean authorized actual credit reporting; all new copy remains held. No paid research today.
 - Files: mirrored cloud-outreach/usage*.ts, notifications.ts, api/outreach-cloud/run/route.ts, api/outreach-cloud/usage/route.ts, organizer/OutreachUsageSetup.tsx, organizer/OutreachCloudSetup.tsx; mirrored outreach_provider_usage migration; usage tests.
 - Implemented in PR #24. Build, types, lint, offline ratios/provider mocks and transactional access checks pass; private production schema applied. Cloud provider verification awaits owner-entered reporting credentials. No paid research or approval changes.
+
+
+## Reporting connection diagnostics (Codex)
+- Branch codex/usage-connection-diagnostics. User attempted key entry but neither saved.
+- Files: mirrored cloud-outreach/usage.ts and api/outreach-cloud/usage/route.ts.
+- Return only provider, documented endpoint path and HTTP status for rejected reporting reads; never key, response body or arbitrary exception. Preserve all holds and zero paid research.
+
+- Scope includes mirrored organizer/OutreachUsageSetup.tsx: retain encrypted submitted keys on reporting failure; distinguish saved from verified; independently check both providers.
