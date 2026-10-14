@@ -9,7 +9,7 @@ async function request(url:string,key:string,provider:'clay'|'apollo',body?:unkn
  if(!r.ok)throw new UsageAccessError(`${provider==='clay'?'Clay':'Apollo'} reporting check ${new URL(url).pathname} returned HTTP ${r.status}. The encrypted key is retained. Check its reporting scope.`);return r.json();
 }
 function number(v:unknown){if(typeof v!=='number'||!Number.isFinite(v)||v<0)throw new UsageAccessError('Provider usage response has an invalid or missing number.');return v;}
-export async function apolloUsage(key:string){const d=await request('https://api.apollo.io/api/v1/usage_stats/credit_usage_stats',key,'apollo',{});const a=d.credit_usage_stats?.lead_credit;const cycle=d.current_credit_cycle?.start;if(typeof cycle!=='string')throw new UsageAccessError('Apollo usage response is missing billing-cycle dates.');return {consumed:number(a?.consumed),remaining:number(a?.left_over),cycle_start:cycle};}
+export async function apolloUsage(key:string){const d=await request('https://api.apollo.io/api/v1/usage_stats/credit_usage_stats',key,'apollo',{});const a=d.credit_usage_stats?.lead_credit;const cycle=d.current_credit_cycle?.start_date;if(typeof cycle!=='string'||!Number.isFinite(Date.parse(cycle)))throw new UsageAccessError('Apollo usage response is missing billing-cycle dates.');return {consumed:number(a?.consumed),remaining:number(a?.left_over),cycle_start:cycle};}
 export async function clayUsage(key:string,day:string){
  const me=await request('https://api.clay.com/public/v0/me',key,'clay');if(String(me.workspace?.id)!=='1426410')throw new UsageAccessError('Clay key belongs to another workspace. Use workspace 1426410.');
  const balance=await request('https://api.clay.com/public/v0/credits/balance',key,'clay');
