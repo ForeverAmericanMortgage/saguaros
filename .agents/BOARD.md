@@ -210,3 +210,7 @@ T018 validation: five notification tests, rollback SQL checks for two-receipt ga
 - Return only provider, documented endpoint path and HTTP status for rejected reporting reads; never key, response body or arbitrary exception. Preserve all holds and zero paid research.
 
 - Scope includes mirrored organizer/OutreachUsageSetup.tsx: retain encrypted submitted keys on reporting failure; distinguish saved from verified; independently check both providers.
+
+## Apollo reporting cycle parser (Codex)
+- Branch codex/apollo-reporting-cycle. Files: mirrored cloud-outreach/usage.ts and private reporting regression test.
+- Saved Apollo key returns HTTP200; actual cycle field is start_date. Match verified response and reject invalid dates. No paid research, sends, or approval changes.
