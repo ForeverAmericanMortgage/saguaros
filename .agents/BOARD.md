@@ -158,3 +158,12 @@ Files: cloud-outreach/copy.ts in both mirrors; tests/cloud-daily.test.cjs; .agen
 Scope: improve future intake copy, update private unsent drafts separately, audit Clay supply and evidence mapping. No sent-history changes or release of review gate.
 
 T013 validation: TypeScript, production build, focused copy/qualification tests, changed-file ESLint and mirror checks passed. Existing two private ready drafts updated and read back under the unreleased review gate; no sent records modified.
+
+
+## T014: Qualified draft target and five-minute invitation
+Owner: Codex. Status: in progress. Branch: codex/olympiad-qualified-review.
+Sean approved fixing the supplier before expanding to40 weekday research attempts, stop at20 qualified ready drafts, existingcredits only; all sends held for review. Prior direct release waiver persists.
+Files: both mirrors cloud-outreach/copy.ts, api/outreach-cloud/intake/route.ts; migration20261014162629; focused copy and qualified-review SQL tests; this board.
+Scope: real social proof and five-minute call CTA; authoritative40research and20ready guards, no change to20send cap or review release. Private unsent drafts updated separately.
+
+T014 validation: build, TypeScript, copy/qualification tests, changed-file ESLint and mirrors pass. Rollback-only SQL verifies40research ceiling,20ready carryover stop for reservation and intake, persistent review hold and private access. Migration activation waits for a corrected supplier acceptance.
