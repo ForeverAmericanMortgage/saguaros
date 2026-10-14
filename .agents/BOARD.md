@@ -197,3 +197,8 @@ Sean authorizes one confirmation email to his Saguaros inbox after both remainin
 Files: both mirrors cloud-outreach/notifications.ts, cloud_send_confirmation migration, focused notification tests, this board. Candidate identities configured privately after deployment, never committed.
 
 T018 validation: five notification tests, rollback SQL checks for two-receipt gating/dedup/preflight retry/unchanged approvals,TypeScript,Nextbuild,ESLint andmirrorchecks passed. No paid research or prospect send triggered. Cloud activation follows production deployment.
+
+## Cloud research usage recap (Codex, in progress)
+- Branch: codex/outreach-usage-recap. Sean authorized actual credit reporting; all new copy remains held. No paid research today.
+- Files: mirrored cloud-outreach/usage*.ts, notifications.ts, api/outreach-cloud/run/route.ts, api/outreach-cloud/usage/route.ts, organizer/OutreachUsageSetup.tsx, organizer/OutreachCloudSetup.tsx; mirrored outreach_provider_usage migration; usage tests.
+- Read provider reporting only. Credential handoff required before live provider verification. Never infer actual charges from contacts.
