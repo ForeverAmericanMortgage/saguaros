@@ -140,3 +140,12 @@ Files: cloud-outreach/notifications.ts, api/outreach-cloud/run and daily routes,
 Log: Daily self-only recap, tomorrow morning queued-copy preview, persistent notification deduplication and a chairman release gate for the first smoke batch. Existing cloud polling drives notifications while the computer is off. No prospect sends today.
 
 T011 validation: TypeScript and production build passed; 8 focused tests passed; rollback-only live SQL verified invalid-key denial, snapshot draft identities, notification deduplication, private permissions and sender review hold. Mirror and changed-file ESLint clean. No new advisor findings.
+
+
+## T012: Atomic company-refill cursor
+Status: verified, release pending
+Owner: Codex, direct release authorized by Sean
+Files: cloud-outreach/refill.ts and api/outreach-cloud/intake/route.ts in both mirrors; migration20261014040021_outreach_company_refill.sql; focused refill tests.
+Log: Put metadata-only refill claims/cursor in the existing private cloud feed. Fifty-company active buffer, below40 threshold, one weekday claim, preserve known companies and uncertain writes. No new Gmail access or prospect sends. Apollo Company Search-only key requires owner confirmation.
+
+T012 validation: TypeScript, production build, 12 focused tests, changed-file ESLint and mirror checks pass. Rollback SQL validates exclusive daily claims, capacity limits, cursor receipts, duplicate completion and private access denial. Private controller remains disabled until Apollo scope approval and real Clay source/save verification.
