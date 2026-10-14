@@ -175,3 +175,11 @@ Files: bothmirrors cloud-outreach/copy.ts; tests/cloud-daily.test.cjs; thisboard
 The live360SOC recovery proved email-style punctuation checks incorrectly rejected an emdash inside a research quote. Permit source punctuation in evidence/role fields only, retain HTML/newline bounds and all outgoingcopy checks. No send/review release. Existing directrelease waiver applies.
 
 T015 validation: actual held360SOCpayload nowpasses with sourcepunctuation preserved and outgoingcopy dash-free. Fourfocusedtests,TypeScript,build,ESLint andmirrorchecks pass. No privatepayloads committed.
+
+## T016: Gmail drafts with explicit chairman batch approval
+Owner: Codex. Status: in progress. Branch: codex/olympiad-gmail-review.
+Sean requests automatic Gmail Drafts for qualified outreach, edits in Gmail, then batch approval in chairman portal before cloud sending. Existing direct release waiver applies. No new prospect sends or paid research during implementation.
+Files: both mirrors cloud-outreach/{drafts.ts,draft-model.ts}, api/outreach-cloud/{run,send,daily}/route.ts, organizer/DailyCloudOutreach.tsx; targeted gmail_draft_review migration in both trees, focused tests, this board.
+Controls: exact draft content approval, edits invalidate approval, new drafts never inherit prior batch approval, preserve suppression/receipts/caps. Private mail stays outside repo.
+
+T016 scope extension authorized by Sean: cloud-outreach/copy.ts and focused draft/copy tests, simplified Clay qualification, and cached-only unsent Gmail examples. No paid research today; all sending held.
