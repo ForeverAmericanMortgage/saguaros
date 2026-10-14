@@ -214,3 +214,7 @@ T018 validation: five notification tests, rollback SQL checks for two-receipt ga
 ## Apollo reporting cycle parser (Codex)
 - Branch codex/apollo-reporting-cycle. Files: mirrored cloud-outreach/usage.ts and private reporting regression test.
 - Saved Apollo key returns HTTP200; actual cycle field is start_date. Match verified response and reject invalid dates. No paid research, sends, or approval changes.
+
+## Interested reply preparation
+- Codex, branch codex/interested-reply-drafts. Sean authorizes automatic company briefs, manual next steps and unsent personal Gmail replies; no automatic reply sending or paid research.
+- Files: mirrored cloud-outreach/interest.ts, api/outreach-cloud/run/route.ts, interested_reply_drafts migration. Preserve notes and existing draft edits, one preparation per prospect, private authenticated worker ledger.

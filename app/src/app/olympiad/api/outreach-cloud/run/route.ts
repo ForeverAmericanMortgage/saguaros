@@ -5,6 +5,7 @@ import {pilotConfiguration} from '../../../pilot/server';
 import {workerAuthorized,workerKey,unseal} from '../../../cloud-outreach/secret';
 import {mailbox,transport} from '../../../cloud-outreach/mailbox';
 import {syncGmailDrafts} from '../../../cloud-outreach/drafts';
+import {prepareInterestedReply} from '../../../cloud-outreach/interest';
 import {refreshUsage} from '../../../cloud-outreach/usage';
 import {deliverNotification} from '../../../cloud-outreach/notifications';
 import {classifyReply,gmailHex,replyText,sender} from '../../../cloud-outreach/model';
@@ -52,7 +53,8 @@ export async function GET(request:Request){
   await call('complete',complete?{checked_at:checked}:{error:'Mailbox backlog needs review'});
   client.close();client=undefined;
   const drafts=await syncGmailDrafts(db,5).then(x=>({...x,error:false})).catch(()=>({error:true}));
-  return reply({checked:true,recorded:inserted,interest_alerts:alerts.length,drafts});
+  const interested=await prepareInterestedReply(db).catch(()=>({error:true}));
+  return reply({checked:true,recorded:inserted,interest_alerts:alerts.length,drafts,interested});
  }catch{
   if(claimed)await call('complete',{error:notificationStarted?'Notification delivery uncertain. Review new interested replies in the tracker before resending an alert.':'Cloud reply check failed. Verify mailbox access and retry.'}).catch(()=>{});
   return reply({error:'Cloud reply check failed. Review the chairman monitor status.'},503);
