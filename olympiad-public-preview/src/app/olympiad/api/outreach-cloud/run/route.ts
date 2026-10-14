@@ -4,6 +4,7 @@ import {simpleParser} from 'mailparser';
 import {pilotConfiguration} from '../../../pilot/server';
 import {workerAuthorized,workerKey,unseal} from '../../../cloud-outreach/secret';
 import {mailbox,transport} from '../../../cloud-outreach/mailbox';
+import {syncGmailDrafts} from '../../../cloud-outreach/drafts';
 import {deliverNotification} from '../../../cloud-outreach/notifications';
 import {classifyReply,gmailHex,replyText,sender} from '../../../cloud-outreach/model';
 export const runtime='nodejs';export const dynamic='force-dynamic';export const maxDuration=180;
@@ -46,7 +47,10 @@ export async function GET(request:Request){
    }
   }finally{lock.release();}}
   if(alerts.length){notificationStarted=true;await transport(pass).sendMail({from:`Sean Caldwell <${sender}>`,to:sender,subject:`Olympiad outreach: ${alerts.length} new interested repl${alerts.length===1?'y':'ies'}`,text:alerts.join('\n\n')+'\n\nChairman tracker: https://chairman.scottsdaleolympiad.com/#prospect-tracker'});}
-  await call('complete',complete?{checked_at:checked}:{error:'Mailbox backlog needs review'});return reply({checked:true,recorded:inserted,interest_alerts:alerts.length});
+  await call('complete',complete?{checked_at:checked}:{error:'Mailbox backlog needs review'});
+  client.close();client=undefined;
+  const drafts=await syncGmailDrafts(db,5).then(x=>({...x,error:false})).catch(()=>({error:true}));
+  return reply({checked:true,recorded:inserted,interest_alerts:alerts.length,drafts});
  }catch{
   if(claimed)await call('complete',{error:notificationStarted?'Notification delivery uncertain. Review new interested replies in the tracker before resending an alert.':'Cloud reply check failed. Verify mailbox access and retry.'}).catch(()=>{});
   return reply({error:'Cloud reply check failed. Review the chairman monitor status.'},503);
