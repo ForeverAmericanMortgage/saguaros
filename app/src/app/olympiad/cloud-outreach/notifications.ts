@@ -1,11 +1,13 @@
 import 'server-only';
 import type {SupabaseClient} from '@supabase/supabase-js';
 import {workerKey,unseal} from './secret';
-import {transport} from './mailbox';
-import {sender} from './model';
-export type Notice={kind:'review'|'recap';day:string;message_id:string;enabled:boolean;review_pending:boolean;monitor_error:string;monitor_checked_at:string|null;send_error:string;new_sent:number;followups_sent:number;contacted:number;ready:number;gmail_ready?:number;research_reserved?:number;new_qualified?:number;carryover_ready?:number;draft_errors?:number;due:number;uncertain:number;replies:{company:string;name:string;kind:string;body:string;thread:string}[];drafts:{company:string;name:string;subject:string;body:string}[]};
+import {mailbox,transport} from './mailbox';
+import {sender,gmailHex} from './model';
+export type SentConfirmation={company:string;name:string;email:string;message_id:string;thread_id:string;sent_at:string};
+export type Notice={kind:'review'|'recap'|'send_confirmation';confirmations?:SentConfirmation[];day:string;message_id:string;enabled:boolean;review_pending:boolean;monitor_error:string;monitor_checked_at:string|null;send_error:string;new_sent:number;followups_sent:number;contacted:number;ready:number;gmail_ready?:number;research_reserved?:number;new_qualified?:number;carryover_ready?:number;draft_errors?:number;due:number;uncertain:number;replies:{company:string;name:string;kind:string;body:string;thread:string}[];drafts:{company:string;name:string;subject:string;body:string}[]};
 export function notificationCopy(n:Notice){
  const tracker='https://chairman.scottsdaleolympiad.com/#prospect-tracker';
+ if(n.kind==='send_confirmation')return {subject:'Olympiad: both approved emails are sent and in the tracker',text:`Sean,\n\nBoth approved introductions are confirmed in Gmail Sent and recorded in the chairman tracker:\n\n${(n.confirmations||[]).map(x=>`${x.company} / ${x.name}\nSent ${new Date(x.sent_at).toLocaleString('en-US',{timeZone:'America/Phoenix'})} Arizona time\nhttps://mail.google.com/mail/u/?authuser=scaldwell%40saguaros.com#all/${x.thread_id}`).join('\n\n')}\n\nThis confirms sending, not inbox delivery or a reply. Tomorrow's new drafts still require their own approval in the chairman portal.\n\nChairman tracker: ${tracker}`};
  const replies=n.replies.map(r=>`${r.company} / ${r.name}: ${r.kind}\n${r.body}\nhttps://mail.google.com/mail/u/?authuser=scaldwell%40saguaros.com#all/${r.thread}`).join('\n\n');
  const status=`${n.new_sent} new introductions sent; ${n.followups_sent} follow-ups sent.\n${n.contacted} companies contacted overall; ${n.ready} qualified drafts queued.\n${n.replies.length} inbound messages today, including automatic replies and delivery failures.\n${n.due} follow-ups due by tomorrow; ${n.uncertain} unresolved send receipts.\nSending: ${n.review_pending?'held for portal approval':n.enabled?'enabled':'paused'}.\nLast reply check: ${n.monitor_checked_at||'not yet recorded'}.\n${n.monitor_error?`Monitor needs attention: ${n.monitor_error}\n`:''}${n.send_error?`Sender needs attention: ${n.send_error}\n`:''}`;
  if(n.kind==='review'){
@@ -15,10 +17,27 @@ export function notificationCopy(n:Notice){
  }
  return {subject:`Olympiad outreach daily recap: ${n.day}`,text:`Sean,\n\n${status}\n${n.new_sent===0?'No new introductions were sent today. Check the queue, review hold and provider supply before assuming the 20-company cap was filled.\n':''}\n${replies||'No inbound replies recorded today.'}\n\nGauge the smoke test by relevant conversations, requests for an overview, calls and eventual team registrations. An automatic reply or email open is not a conversion.\n\nChairman tracker: ${tracker}`};
 }
+export async function verifyConfirmationSent(client:ReturnType<typeof mailbox>,items:SentConfirmation[]){
+ if(items.length!==2||new Set(items.map(x=>x.message_id)).size!==2)throw Error('Two distinct sent receipts required');
+ const folder=(await client.list()).find(f=>f.specialUse==='\\Sent');if(!folder)throw Error('Gmail Sent folder unavailable');
+ const lock=await client.getMailboxLock(folder.path,{readOnly:true});
+ try{for(const item of items){
+  if(!/^[a-f0-9]{1,40}$/.test(item.thread_id)||!/^[a-f0-9]{1,40}$/.test(item.message_id))throw Error('Invalid receipt');
+  const found=await client.search({threadId:BigInt('0x'+item.thread_id).toString()},{uid:true});
+  if(!Array.isArray(found)||!found.length||found.length>50)throw Error('Sent receipt unavailable');
+  const rows=await client.fetchAll(found,{emailId:true,envelope:true},{uid:true});
+  if(!rows.some(m=>m.emailId&&gmailHex(m.emailId)===item.message_id&&m.envelope?.from?.some(a=>a.address?.toLowerCase()===sender)&&m.envelope?.to?.some(a=>a.address?.toLowerCase()===item.email.toLowerCase())))throw Error('Exact Gmail sent receipt not confirmed');
+ }}finally{lock.release();}
+}
 export async function deliverNotification(db:SupabaseClient){
  const call=async(action:string,data:Record<string,unknown>={})=>{const r=await db.rpc('organizer_notification_worker',{p_key:workerKey(),p_action:action,p_data:data});if(r.error)throw Error('Notification ledger unavailable');return r.data;};
  const state=await call('claim');if(state.skip)return;
  const n=state as Notice&{credential:string};
- try{const copy=notificationCopy(n);const receipt=await transport(unseal(n.credential)).sendMail({from:`Sean Caldwell <${sender}>`,to:sender,messageId:n.message_id,...copy});if(!receipt.accepted?.some((a:unknown)=>String(a).toLowerCase()===sender))throw Error('No accepted notification recipient');await call('complete',{kind:n.kind,day:n.day,state:'sent',detail:'SMTP accepted the notification for Sean. Message ID: '+n.message_id});}
- catch{await call('complete',{kind:n.kind,day:n.day,state:'uncertain',detail:'Notification delivery uncertain. Check Sean Sent mail for the stored message ID before retrying.'}).catch(()=>{});throw Error('Notification needs review');}
+ let smtpStarted=false;
+ try{
+  if(n.kind==='send_confirmation'){
+   const client=mailbox(unseal(n.credential));try{await client.connect();await verifyConfirmationSent(client,n.confirmations||[]);}finally{client.close();}
+  }
+  const copy=notificationCopy(n);smtpStarted=true;const receipt=await transport(unseal(n.credential)).sendMail({from:`Sean Caldwell <${sender}>`,to:sender,messageId:n.message_id,...copy});if(!receipt.accepted?.some((a:unknown)=>String(a).toLowerCase()===sender))throw Error('No accepted notification recipient');await call('complete',{kind:n.kind,day:n.day,state:'sent',detail:'SMTP accepted the notification for Sean. Message ID: '+n.message_id});}
+ catch{await call('complete',{kind:n.kind,day:n.day,state:n.kind==='send_confirmation'&&!smtpStarted?'waiting':'uncertain',detail:!smtpStarted?'Waiting for exact Gmail Sent verification; no confirmation email attempted.':'Notification delivery uncertain. Check Sean Sent mail for the stored message ID before retrying.'}).catch(()=>{});throw Error('Notification needs review');}
 }

@@ -190,3 +190,10 @@ Sean authorizes a cloud email to his Saguaros inbox when October 15 drafts reach
 Files: both mirrors cloud-outreach/notifications.ts; targeted cloud_draft_ready_recap migration; focused notification tests; this board. Reuse existing five-minute cloud monitor and idempotent notification ledger. Actual provider charges unavailable must be labeled, never inferred from reservations.
 
 T017 validation: three notification-copy tests, no-send rollback SQL checks (timing,20target,partial cutoff,dedup,authentication,actual counts,approval preservation),TypeScript,Nextbuild,changed-fileESLint andmirrorchecks pass. No research or prospect sends. Production release pending.
+
+## T018: Cloud confirmation for two approved sends
+Owner: Codex. Status: in progress. Branch: codex/cloud-send-confirmation.
+Sean authorizes one confirmation email to his Saguaros inbox after both remaining approved introductions have exact Gmail Sent and tracker receipts. Reuse cloud monitor; preserve tomorrow approval gates. Existing direct-release waiver applies.
+Files: both mirrors cloud-outreach/notifications.ts, cloud_send_confirmation migration, focused notification tests, this board. Candidate identities configured privately after deployment, never committed.
+
+T018 validation: five notification tests, rollback SQL checks for two-receipt gating/dedup/preflight retry/unchanged approvals,TypeScript,Nextbuild,ESLint andmirrorchecks passed. No paid research or prospect send triggered. Cloud activation follows production deployment.
