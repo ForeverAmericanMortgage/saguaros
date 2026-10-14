@@ -183,3 +183,10 @@ Files: both mirrors cloud-outreach/{drafts.ts,draft-model.ts}, api/outreach-clou
 Controls: exact draft content approval, edits invalidate approval, new drafts never inherit prior batch approval, preserve suppression/receipts/caps. Private mail stays outside repo.
 
 T016 scope extension authorized by Sean: cloud-outreach/copy.ts and focused draft/copy tests, simplified Clay qualification, and cached-only unsent Gmail examples. No paid research today; all sending held.
+
+## T017: Cloud draft readiness email
+Owner: Codex. Status: in progress. Branch: codex/cloud-draft-recap.
+Sean authorizes a cloud email to his Saguaros inbox when October 15 drafts reach20 or a17:00 partial recap. Keep all exact-copy approvals held; no research/credits/prospect sends. Existing direct-release waiver applies.
+Files: both mirrors cloud-outreach/notifications.ts; targeted cloud_draft_ready_recap migration; focused notification tests; this board. Reuse existing five-minute cloud monitor and idempotent notification ledger. Actual provider charges unavailable must be labeled, never inferred from reservations.
+
+T017 validation: three notification-copy tests, no-send rollback SQL checks (timing,20target,partial cutoff,dedup,authentication,actual counts,approval preservation),TypeScript,Nextbuild,changed-fileESLint andmirrorchecks pass. No research or prospect sends. Production release pending.
