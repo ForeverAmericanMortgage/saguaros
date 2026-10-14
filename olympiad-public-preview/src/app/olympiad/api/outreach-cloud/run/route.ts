@@ -45,15 +45,16 @@ export async function GET(request:Request){
      const text=replyText(parsed.text||String(parsed.html||'').replace(/<[^>]*>/g,' '));const subject=parsed.subject||'';const auto=String(parsed.headers.get('auto-submitted')||'no')!=='no';
      const kind=classifyReply(subject,text,auto);const occurred=new Date(m.internalDate||parsed.date||Date.now()).toISOString();
      const result=await call('message',{message_id:mid,thread_id:tid,prospect_id:p.id,outbound,kind,occurred_at:occurred,subject,body:text});seen.add(mid);
-     if(result.inserted)inserted++;if(result.alert)alerts.push(`${p.company}\n${text.slice(0,1000)}\nhttps://mail.google.com/mail/u/?authuser=scaldwell%40saguaros.com#all/${tid}`);
+     if(result.inserted)inserted++;if(result.alert)alerts.push(`${p.company}\n${text.slice(0,1000)}\nReview draft / conversation: https://mail.google.com/mail/u/?authuser=scaldwell%40saguaros.com#all/${tid}\nNext step: review the unsent response, then arrange a short call if appropriate. No call is booked.\nCompany brief and next step: https://chairman.scottsdaleolympiad.com/#prospect-tracker\nFind: ${p.company}`);
     }
    }
   }finally{lock.release();}}
-  if(alerts.length){notificationStarted=true;await transport(pass).sendMail({from:`Sean Caldwell <${sender}>`,to:sender,subject:`Olympiad outreach: ${alerts.length} new interested repl${alerts.length===1?'y':'ies'}`,text:alerts.join('\n\n')+'\n\nChairman tracker: https://chairman.scottsdaleolympiad.com/#prospect-tracker'});}
+
   await call('complete',complete?{checked_at:checked}:{error:'Mailbox backlog needs review'});
   client.close();client=undefined;
   const drafts=await syncGmailDrafts(db,5).then(x=>({...x,error:false})).catch(()=>({error:true}));
-  const interested=await prepareInterestedReply(db).catch(()=>({error:true}));
+  let interested:unknown;for(let i=0;i<Math.max(1,Math.min(alerts.length,5));i++)interested=await prepareInterestedReply(db).catch(()=>({error:true}));
+  if(alerts.length){notificationStarted=true;await transport(pass).sendMail({from:`Sean Caldwell <${sender}>`,to:sender,subject:`Olympiad outreach: ${alerts.length} new interested repl${alerts.length===1?'y':'ies'}`,text:'Replies remain unsent for your review. Open the Gmail conversation to find its draft. If a draft is missing, check the company notes before creating another.\n\n'+alerts.join('\n\n')+'\n\nChairman tracker: https://chairman.scottsdaleolympiad.com/#prospect-tracker'});}
   return reply({checked:true,recorded:inserted,interest_alerts:alerts.length,drafts,interested});
  }catch{
   if(claimed)await call('complete',{error:notificationStarted?'Notification delivery uncertain. Review new interested replies in the tracker before resending an alert.':'Cloud reply check failed. Verify mailbox access and retry.'}).catch(()=>{});
