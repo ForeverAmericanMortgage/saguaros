@@ -218,3 +218,6 @@ T018 validation: five notification tests, rollback SQL checks for two-receipt ga
 ## Interested reply preparation
 - Codex, branch codex/interested-reply-drafts. Sean authorizes automatic company briefs, manual next steps and unsent personal Gmail replies; no automatic reply sending or paid research.
 - Files: mirrored cloud-outreach/interest.ts, api/outreach-cloud/run/route.ts, interested_reply_drafts migration. Preserve notes and existing draft edits, one preparation per prospect, private authenticated worker ledger.
+
+## Interested reply review alerts
+- Codex, codex/interest-draft-alerts. Files: mirrored api/outreach-cloud/run/route.ts. Email Sean draft/conversation link and portal next step after draft preparation. Sending approvals unchanged.
