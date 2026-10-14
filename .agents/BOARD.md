@@ -167,3 +167,11 @@ Files: both mirrors cloud-outreach/copy.ts, api/outreach-cloud/intake/route.ts; 
 Scope: real social proof and five-minute call CTA; authoritative40research and20ready guards, no change to20send cap or review release. Private unsent drafts updated separately.
 
 T014 validation: build, TypeScript, copy/qualification tests, changed-file ESLint and mirrors pass. Rollback-only SQL verifies40research ceiling,20ready carryover stop for reservation and intake, persistent review hold and private access. Migration activation waits for a corrected supplier acceptance.
+
+
+## T015: Preserve sourced evidence punctuation
+Owner: Codex. Status: in progress. Branch: codex/olympiad-research-evidence.
+Files: bothmirrors cloud-outreach/copy.ts; tests/cloud-daily.test.cjs; thisboard.
+The live360SOC recovery proved email-style punctuation checks incorrectly rejected an emdash inside a research quote. Permit source punctuation in evidence/role fields only, retain HTML/newline bounds and all outgoingcopy checks. No send/review release. Existing directrelease waiver applies.
+
+T015 validation: actual held360SOCpayload nowpasses with sourcepunctuation preserved and outgoingcopy dash-free. Fourfocusedtests,TypeScript,build,ESLint andmirrorchecks pass. No privatepayloads committed.
