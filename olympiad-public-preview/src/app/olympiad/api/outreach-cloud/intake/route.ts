@@ -5,6 +5,7 @@ import {pilotConfiguration,pilotClient} from '../../../pilot/server';
 import {chairmanAccess} from '../../../auth/chairman-access';
 import {workerKey} from '../../../cloud-outreach/secret';
 import {personalCopy,qualifiedLead} from '../../../cloud-outreach/copy';
+import {refillPayload,refillQuery} from '../../../cloud-outreach/refill';
 import {researchCompany,researchReservation} from '../../../cloud-outreach/research';
 export const runtime='nodejs';export const dynamic='force-dynamic';
 const reply=(d:unknown,s=200)=>NextResponse.json(d,{status:s,headers:{'Cache-Control':'private, no-store'}});
@@ -13,11 +14,19 @@ const intakeKey=()=>createHmac('sha256',workerKey()).update('olympiad-clay-quali
 export async function GET(r:Request){try{const got=Buffer.from(r.headers.get('authorization')?.replace(/^Bearer /,'')||''),expected=Buffer.from(intakeKey());if(got.length===expected.length&&timingSafeEqual(got,expected)){const cfg=pilotConfiguration();const c=createClient(cfg.url,cfg.key,{auth:{persistSession:false,autoRefreshToken:false}});const result=await c.rpc('organizer_daily_worker',{p_key:workerKey(),p_action:'context'});if(result.error)throw Error('Context unavailable');const research=await c.rpc('organizer_research_worker',{p_key:workerKey(),p_action:'context'});if(research.error)throw Error('Research context unavailable');return reply({...result.data,research_today:research.data.research_today,research_limit:20,excluded_domains:[...new Set([...result.data.excluded_domains,...research.data.excluded_domains])],excluded_companies:[...new Set([...result.data.excluded_companies,...research.data.excluded_companies])]});}const c=await pilotClient();const a=await chairmanAccess(c);if(!a.ok)return reply({error:'Chairman sign-in required'},a.status);return reply({url:'https://chairman.scottsdaleolympiad.com/olympiad/api/outreach-cloud/intake',token:intakeKey()});}catch{return reply({error:'Integration unavailable'},503);}}
 export async function POST(r:Request){
  try{const got=Buffer.from(r.headers.get('authorization')?.replace(/^Bearer /,'')||''),expected=Buffer.from(intakeKey());if(got.length!==expected.length||!timingSafeEqual(got,expected))return reply({error:'Unauthorized'},401);}catch{return reply({error:'Integration unavailable'},503);}
+ let isRefill=false;
  try {
   if(Number(r.headers.get('content-length')||0)>20000)return reply({error:'Payload too large'},413);
   const raw=await r.text();if(raw.length>20000)return reply({error:'Payload too large'},413);
-  const input=JSON.parse(raw);const cfg=pilotConfiguration();
+  const input=JSON.parse(raw);isRefill=typeof input?.operation==='string'&&input.operation.startsWith('refill_');const cfg=pilotConfiguration();
   const c=createClient(cfg.url,cfg.key,{auth:{persistSession:false,autoRefreshToken:false}});
+  if(isRefill) {
+   const request=refillPayload(input);
+   const refill=await c.rpc('organizer_refill_worker',{p_key:workerKey(),p_action:request.action,p_data:request.data});
+   if(refill.error)throw Error('Refill unavailable');
+   const result=refill.data;
+   return reply(result.claimed===true?{...result,query:refillQuery(result.partition,result.page)}:result);
+  }
   if(input?.operation==='reserve') {
    const company=researchCompany(input);
    const reservation=await c.rpc('organizer_research_worker',{p_key:workerKey(),p_action:'reserve',p_data:company});
@@ -31,6 +40,6 @@ export async function POST(r:Request){
   const copy=personalCopy(lead);
   const {data,error}=await c.rpc('organizer_daily_worker',{p_key:workerKey(),p_action:'intake',p_data:{...lead,...copy}});
   if(error)throw Error('Ledger failed');return reply(data);
- }catch{return reply({error:'Candidate held. Need a research reservation, matching work domain, fresh official research, local and role fit, and a personal opener without dashes.'},422);}
+ }catch{if(isRefill)return reply({error:'Company refill held. Need a complete snapshot, a cloud claim, and verified saved-record receipts.'},422);return reply({error:'Candidate held. Need a research reservation, matching work domain, fresh official research, local and role fit, and a personal opener without dashes.'},422);}
 
 }

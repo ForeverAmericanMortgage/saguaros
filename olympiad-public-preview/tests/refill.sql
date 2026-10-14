@@ -1,0 +1,23 @@
+begin;
+do $$declare k text;r jsonb;job uuid;snapshot jsonb;saved_rows jsonb;begin
+ select decrypted_secret into k from vault.decrypted_secrets where name='olympiad_cloud_reply_worker';
+ begin perform public.organizer_refill_worker(null,'context');raise exception 'Null key accepted';exception when insufficient_privilege then null;end;
+ begin perform public.organizer_refill_worker(repeat('x',40),'context');raise exception 'Wrong key accepted';exception when insufficient_privilege then null;end;
+ begin perform public.organizer_refill_worker(k,'claim','{}');raise exception 'Missing snapshot accepted';exception when check_violation then null;end;
+ update olympiad_private.outreach_refill_control set enabled=true,start_on=(now()at time zone 'America/Phoenix')::date;
+ update olympiad_private.outreach_daily_config set enabled=true;
+ select jsonb_agg(jsonb_build_object('company','Refill QA '||n,'domain','qa'||n||'.refill.test'))into snapshot from generate_series(1,40)n;
+ r=public.organizer_refill_worker(k,'claim',jsonb_build_object('snapshot',snapshot,'total_records',40,'total_matched',40));if (r->>'claimed')::boolean or r->>'reason'<>'Buffer sufficient' then raise exception 'Threshold40 failed';end if;
+ select jsonb_agg(jsonb_build_object('company','Refill QA '||n,'domain','qa'||n||'.refill.test'))into snapshot from generate_series(1,39)n;
+ r=public.organizer_refill_worker(k,'claim',jsonb_build_object('snapshot',snapshot,'total_records',39,'total_matched',39));if not (r->>'claimed')::boolean or (r->>'capacity')::int<>11 then raise exception 'Below40 claim failed';end if;job=(r->>'refill_id')::uuid;
+ r=public.organizer_refill_worker(k,'claim',jsonb_build_object('snapshot',snapshot,'total_records',39,'total_matched',39));if (r->>'claimed')::boolean then raise exception 'Duplicate claim accepted';end if;
+ select jsonb_agg(jsonb_build_object('company','Saved QA '||n,'domain','saved'||n||'.refill.test','account_id',n::text))into saved_rows from generate_series(1,12)n;
+ begin perform public.organizer_refill_worker(k,'complete',jsonb_build_object('refill_id',job,'saved',saved_rows,'returned_count',50,'scanned_count',12));raise exception 'Buffer overflow accepted';exception when check_violation then null;end;
+ select jsonb_agg(jsonb_build_object('company','Saved QA '||n,'domain','saved'||n||'.refill.test','account_id',n::text))into saved_rows from generate_series(1,11)n;
+ r=public.organizer_refill_worker(k,'complete',jsonb_build_object('refill_id',job,'saved',saved_rows,'returned_count',50,'scanned_count',11));if (r->>'pending')::int<>50 then raise exception 'Completed buffer count failed';end if;
+ if not exists(select 1 from olympiad_private.outreach_refill_control where page=1 and offset_in_page=11 and partition=0)then raise exception 'Partial page cursor lost';end if;
+ r=public.organizer_refill_worker(k,'complete',jsonb_build_object('refill_id',job,'saved',saved_rows,'returned_count',50,'scanned_count',11));if not (r->>'completed')::boolean then raise exception 'Completion not idempotent';end if;
+ r=public.organizer_refill_worker(k,'claim',jsonb_build_object('snapshot',snapshot,'total_records',39,'total_matched',39));if (r->>'claimed')::boolean or r->>'reason'<>'Already attempted today' then raise exception 'Second daily search accepted';end if;
+ if has_table_privilege('anon','olympiad_private.outreach_refill_control','SELECT')or has_table_privilege('authenticated','olympiad_private.outreach_refill_runs','SELECT')then raise exception 'Private refill data exposed';end if;
+end $$;
+rollback;
