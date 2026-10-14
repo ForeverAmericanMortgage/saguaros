@@ -149,3 +149,12 @@ Files: cloud-outreach/refill.ts and api/outreach-cloud/intake/route.ts in both m
 Log: Put metadata-only refill claims/cursor in the existing private cloud feed. Fifty-company active buffer, below40 threshold, one weekday claim, preserve known companies and uncertain writes. No new Gmail access or prospect sends. Apollo Company Search-only key requires owner confirmation.
 
 T012 validation: TypeScript, production build, 12 focused tests, changed-file ESLint and mirror checks pass. Rollback SQL validates exclusive daily claims, capacity limits, cursor receipts, duplicate completion and private access denial. Private controller remains disabled until Apollo scope approval and real Clay source/save verification.
+
+
+## T013: Personal invitation copy and daily research audit
+Owner: Codex. Status: in progress. Branch: codex/olympiad-personal-invitations.
+Request: Sean authorized tighter personal outreach, reason/fit before identity, last-year $1m grants, and researching today toward20 reviewable drafts. Sending stays held. Prior direct-release waiver applies.
+Files: cloud-outreach/copy.ts in both mirrors; tests/cloud-daily.test.cjs; .agents/BOARD.md.
+Scope: improve future intake copy, update private unsent drafts separately, audit Clay supply and evidence mapping. No sent-history changes or release of review gate.
+
+T013 validation: TypeScript, production build, focused copy/qualification tests, changed-file ESLint and mirror checks passed. Existing two private ready drafts updated and read back under the unreleased review gate; no sent records modified.
