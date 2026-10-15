@@ -85,7 +85,7 @@ export default function OrganizerPage() {
         <section><strong>{activeTeams.filter(t=>t.needs_follow_up).length}</strong><span>Incomplete rosters</span><small>{readyCount} {readyCount===1?'team':'teams'} roster-ready</small></section>
         <section><strong>{activeTeams.reduce((sum,t)=>sum+t.complete,0)}</strong><span>Complete participant profiles</span><small>Communication permission tracked separately</small></section>
       </div>
-      <div hidden={view!=='outreach'}><ProspectTracker active={view==='outreach'} teams={teams} onAccessDenied={clearPrivateOverview}/><ReturningTeams teams={teams} /></div>
+      <div hidden={view!=='outreach'}><details id="new-company-outreach" className={styles.sectionDisclosure}><summary><strong>New company outreach</strong><span>Who we contacted, what happened, and the next step.</span></summary><ProspectTracker active={view==='outreach'} teams={teams} onAccessDenied={clearPrivateOverview}/></details><ReturningTeams teams={teams} /></div>
       <div hidden={view!=='people'}><PeopleDirectory teams={teams} /></div>
       <section id="team-actions" hidden={view!=='overview'}><h2>Action items</h2><p>Choose an action to open the matching teams.</p><div className={styles.actionGrid}>
         <button onClick={() => selectQueue('pending')}>{activeTeams.filter(t => t.approval_status === 'pending').length} awaiting approval →</button>
