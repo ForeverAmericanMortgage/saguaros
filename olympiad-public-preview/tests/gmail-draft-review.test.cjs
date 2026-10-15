@@ -9,6 +9,6 @@ test('recipient, subject and body edits each invalidate approval; newline normal
  assert.equal(h,draftHash('PERSON@example.com','Invitation','Hello\r\nSean\n'));
 });
 test('edited copies reject empty content, header injection, excessive length and em dashes',()=>{
- for(const [s,b] of [['','Hi'],['Invite\nBcc: x@example.com','Hi'],['Invite',''],['Invite','word '.repeat(201)],['Invite','Hello — Sean']])assert.throws(()=>reviewedCopy('person@example.com',s,b));
+ for(const [s,b] of [['','Hi'],['Invite\nBcc: x@example.com','Hi'],['Invite',''],['Invite','word '.repeat(221)],['Invite','Hello — Sean']])assert.throws(()=>reviewedCopy('person@example.com',s,b));
  assert.equal(reviewedCopy('person@example.com','Invite','Hello Sean').body,'Hello Sean');
 });

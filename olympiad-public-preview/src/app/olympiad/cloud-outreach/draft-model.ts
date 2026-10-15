@@ -3,6 +3,6 @@ export type ReviewDraft={id:string;candidate_id:string|null;prospect_id:string|n
 export function draftHash(email:string,subject:string,body:string){return createHash('sha256').update(JSON.stringify([email.toLowerCase(),subject,body.replace(/\r\n/g,'\n').trim()])).digest('hex');}
 export function reviewedCopy(email:string,subject:string,body:string){
  const text=body.replace(/\r\n/g,'\n').trim();
- if(!email||!subject.trim()||subject.length>250||/[\r\n]/.test(subject)||!text||text.length>5000||text.split(/\s+/).length>200||/[\u2013\u2014]/.test(subject+text))throw Error('Keep the draft under 200 words, with a subject and no em dashes.');
+ if(!email||!subject.trim()||subject.length>250||/[\r\n]/.test(subject)||!text||text.length>5000||text.split(/\s+/).length>220||/[\u2013\u2014]/.test(subject+text))throw Error('Keep the draft under 220 words, with a subject and no em dashes.');
  return {subject:subject.trim(),body:text,content_hash:draftHash(email,subject.trim(),text)};
 }

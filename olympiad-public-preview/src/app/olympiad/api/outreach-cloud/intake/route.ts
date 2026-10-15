@@ -4,7 +4,7 @@ import {createClient} from '@supabase/supabase-js';
 import {pilotConfiguration,pilotClient} from '../../../pilot/server';
 import {chairmanAccess} from '../../../auth/chairman-access';
 import {workerKey} from '../../../cloud-outreach/secret';
-import {personalCopy,qualifiedLead} from '../../../cloud-outreach/copy';
+import {personalCopy,postalAddress,qualifiedLead} from '../../../cloud-outreach/copy';
 import {refillPayload,refillQuery} from '../../../cloud-outreach/refill';
 import {researchCompany,researchReservation} from '../../../cloud-outreach/research';
 export const runtime='nodejs';export const dynamic='force-dynamic';
@@ -37,7 +37,8 @@ export async function POST(r:Request){
   const reservation=await c.rpc('organizer_research_worker',{p_key:workerKey(),p_action:'check',p_data:{company:lead.company,domain:lead.domain,email:lead.email,reservation_id}});
   if(reservation.error)throw Error('Reservation unavailable');
   if(!reservation.data?.allowed)return reply({queued:false,error:'Matching research reservation required for today'},409);
-  const copy=personalCopy(lead);
+  let address:string;try{address=postalAddress(process.env.OUTREACH_POSTAL_ADDRESS);}catch{console.error('OUTREACH: OUTREACH_POSTAL_ADDRESS is missing or invalid. New outreach drafts are blocked until it is set in Vercel.');return reply({queued:false,error:'Outreach held: OUTREACH_POSTAL_ADDRESS is not configured.'},503);}
+  const copy=personalCopy(lead,address);
   const {data,error}=await c.rpc('organizer_daily_worker',{p_key:workerKey(),p_action:'intake',p_data:{...lead,...copy}});
   if(error)throw Error('Ledger failed');return reply(data);
  }catch{if(isRefill)return reply({error:'Company refill held. Need a complete snapshot, a cloud claim, and verified saved-record receipts.'},422);return reply({error:'Candidate held. Need a research reservation, matching work domain, fresh official research, local and role fit, and a personal opener without dashes.'},422);}
