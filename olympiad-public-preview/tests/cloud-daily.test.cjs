@@ -9,3 +9,15 @@ test('missing or stale research cannot enter the queue',()=>{assert.throws(()=>q
 test('source punctuation stays in evidence without leaking into outgoing copy',()=>{const v=qualifiedLead({...lead,fact:'A sourced quote — preserved as written.',local_fit:'Phoenix team – provider evidence.',role:'People leader — global',role_fit:'Current leader — official profile.'});assert.match(v.fact,/—/);assert.doesNotMatch(personalCopy(v,ADDR).body,/[\u2013\u2014]/);assert.throws(()=>qualifiedLead({...lead,opener:'A personalized opener — with a dash'}));assert.throws(()=>qualifiedLead({...lead,fact:'<script>untrusted</script>'}));});
 test('footer carries real site, opt-out line and configured postal address',()=>{const c=personalCopy(qualifiedLead(lead),ADDR);for(const b of [c.body,c.followup_body]){assert.match(b,/Reply 'no thanks' and I'll take you off my list\./);assert.ok(b.includes(ADDR));assert.doesNotMatch(b,/thescasolympiad/);}assert.match(c.body,/scottsdaleolympiad\.com/);assert.throws(()=>personalCopy(qualifiedLead(lead),undefined));assert.throws(()=>postalAddress(''));});
 test('legacy approved bodies are normalized once at send time',()=>{const old='Hi\n\nSean\nsaguaros.com | thescasolympiad.com';const out=withFooter(old,ADDR);assert.doesNotMatch(out,/thescasolympiad/);assert.ok(out.includes(optOutLine)&&out.includes(ADDR));assert.equal(withFooter(out,ADDR),out);});
+
+test('long valid opener and postal address pass personal copy and draft review',()=>{
+ const draftSource=ts.transpileModule(fs.readFileSync('src/app/olympiad/cloud-outreach/draft-model.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
+ const draftModule={exports:{}};new Function('module','exports','require',draftSource)(draftModule,draftModule.exports,require);
+ const opener='I saw your Scottsdale office on your website and thought your local team might enjoy a spring day together supporting children here while meeting other Valley businesses and spending time outside the office with colleagues.';
+ const address='12345 '+ 'Scottsdale '.repeat(16)+'AZ 85250';
+ assert.equal(opener.split(/\s+/).length,35);assert.ok(address.length>=190&&address.length<=200);
+ const copy=personalCopy(qualifiedLead({...lead,opener}),address);
+ assert.ok(copy.body.split(/\s+/).length>200);assert.ok(copy.body.split(/\s+/).length<=220);
+ assert.equal(draftModule.exports.reviewedCopy(lead.email,copy.subject,copy.body).body,copy.body);
+ assert.throws(()=>draftModule.exports.reviewedCopy(lead.email,copy.subject,Array(221).fill('word').join(' ')),/220 words/);
+});
