@@ -16,7 +16,7 @@ type ClubMember = { id: string; name: string };
 type MemberCredit = { member_id: string; member_name: string; team_count: number; total_cents: number };
 type ChairmanView = 'overview' | 'teams' | 'outreach' | 'people' | 'planning';
 const chairmanViews: {id:ChairmanView;label:string;description:string}[] = [{id:'overview',label:'Overview',description:'Start with the teams that need your attention.'},{id:'teams',label:'Teams',description:'Review registrations, complete rosters and support captains.'},{id:'outreach',label:'Outreach',description:'Track new prospects, follow up with interested companies and recruit returning teams.'},{id:'people',label:'People',description:'Find captains, participants and missing contact or shirt details.'},{id:'planning',label:'Planning',description:'Review the season timeline, industry mix and fundraising targets.'}];
-const viewForHash:Record<string,ChairmanView> = {'#overview':'overview','#team-directory':'teams','#team-actions':'overview','#prospect-tracker':'outreach','#returning-teams':'outreach','#communication-overview':'outreach','#people-directory':'people','#season-plan':'planning'};
+const viewForHash:Record<string,ChairmanView> = {'#overview':'overview','#team-directory':'teams','#team-actions':'overview','#prospect-tracker':'outreach','#new-company-outreach':'outreach','#returning-teams':'outreach','#communication-overview':'outreach','#people-directory':'people','#season-plan':'planning'};
 type TeamHistory = 'unclassified' | 'new' | 'returning';
 const historyLabels: Record<TeamHistory,string> = {unclassified:'Not yet classified',new:'New team',returning:'Returning team'};
 type Review = { participation_history: TeamHistory; referring_club_member_id: string | null; referring_club_member_name: string; status: 'pending' | 'approved' | 'needs_changes' | 'declined'; message: string; version: number };
@@ -27,8 +27,7 @@ async function readResponse(response: Response) { const data = await response.js
 const money = (cents: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: cents % 100 ? 2 : 0 }).format(cents / 100);
 export default function OrganizerPage() {
   const [view,setView] = useState<ChairmanView>('overview');
-  useEffect(()=>{const sync=()=>setView(viewForHash[window.location.hash] || 'overview');sync();window.addEventListener('hashchange',sync);return()=>window.removeEventListener('hashchange',sync);},[]);
-  function chooseView(next:ChairmanView){setView(next);window.history.replaceState(null,'',next==='overview'?'#overview':next==='teams'?'#team-directory':next==='outreach'?'#prospect-tracker':next==='people'?'#people-directory':'#season-plan');}
+  function chooseView(next:ChairmanView){setView(next);window.history.replaceState(null,'',next==='overview'?'#overview':next==='teams'?'#team-directory':next==='outreach'?'#new-company-outreach':next==='people'?'#people-directory':'#season-plan');}
   const [teams, setTeams] = useState<Team[]>([]);
   const [clubMembers, setClubMembers] = useState<ClubMember[]>([]);
   const [memberCredit, setMemberCredit] = useState<MemberCredit[]>([]);
@@ -36,6 +35,19 @@ export default function OrganizerPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [loadedAt, setLoadedAt] = useState('');
+  useEffect(()=>{
+    const sync=()=>{
+      const hash=window.location.hash;
+      setView(viewForHash[hash] || 'overview');
+      if(hash==='#prospect-tracker'){
+        const outreach=document.getElementById('new-company-outreach') as HTMLDetailsElement | null;
+        if(outreach) outreach.open=true;
+      }
+    };
+    sync();
+    window.addEventListener('hashchange',sync);
+    return()=>window.removeEventListener('hashchange',sync);
+  },[loadedAt]);
   const [fundraisingActive, setFundraisingActive] = useState(false);
   const [revision, setRevision] = useState(0);
   const [followUpOnly, setFollowUpOnly] = useState(false);
