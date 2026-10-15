@@ -26,3 +26,16 @@ test('quoted fit sentences are ignored but genuine declines remain',()=>{
  for(const line of ["If it's not a fit, let me know and I won't follow up.","If this isn't a fit, let me know and I won't follow up."])assert.equal(m.classifyReply('','please send an overview\n'+line),'interested');
  assert.equal(m.classifyReply('','Not a fit this year'),'declined');
 });
+
+test('decimal curly-quote entities in HTML-only invitations preserve interest',()=>{
+ const text=m.htmlText('<p>Yes, interested</p><p>Reply &#8216;no thanks&#8217; and I&#8217;ll take you off my list.</p>');
+ assert.ok(text.includes('Reply ‘no thanks’ and I’ll take you off my list.'));
+ assert.equal(m.classifyReply('',text),'interested');
+ assert.equal(m.htmlText('&#x2018;test&#X2019;'),'‘test’');
+});
+test('quoted fun-day invitation does not manufacture an out-of-office reply',()=>{
+ for(const line of ["It's a fun day out of the office for a great cause.",'It’s a fun day out of the office for a great cause.']){
+ assert.equal(m.classifyReply('','please send details\n'+line),'interested');
+ }
+ assert.equal(m.classifyReply('','I am out of the office until Monday'),'out_of_office');
+});
