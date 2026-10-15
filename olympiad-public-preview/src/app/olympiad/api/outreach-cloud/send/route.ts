@@ -4,7 +4,8 @@ import {pilotConfiguration} from '../../../pilot/server';
 import {workerAuthorized,workerKey,unseal} from '../../../cloud-outreach/secret';
 import {mailbox,transport} from '../../../cloud-outreach/mailbox';
 import {readGmailDraft,retireGmailDraft,draftCall} from '../../../cloud-outreach/drafts';
-import {gmailHex,sender} from '../../../cloud-outreach/model';
+import {arizonaWeekend,gmailHex,sender} from '../../../cloud-outreach/model';
+import {postalAddress,withFooter} from '../../../cloud-outreach/copy';
 export const runtime='nodejs';export const dynamic='force-dynamic';export const maxDuration=180;
 const reply=(data:unknown,status=200)=>NextResponse.json(data,{status,headers:{'Cache-Control':'private, no-store'}});
 export async function GET(request:Request){
@@ -18,9 +19,11 @@ export async function GET(request:Request){
   if(!recovery.skip){
    const a=recovery.attempt;client=mailbox(unseal(recovery.credential));await client.connect();const folders=await client.list();const all=folders.find(f=>f.specialUse==='\\Sent');if(!all)throw Error('Sent Mail unavailable');const lock=await client.getMailboxLock(all.path,{readOnly:true});try{const found=await client.search({header:{'message-id':a.rfc_message_id}},{uid:true});if(!Array.isArray(found)||found.length!==1)return reply({held:true,reason:'Uncertain Gmail sender receipt needs review'});const meta=await client.fetchAll(found,{emailId:true,threadId:true,envelope:true},{uid:true});const m=meta[0];if(!m?.emailId||!m.threadId||!(m.envelope?.from||[]).some(x=>x.address?.toLowerCase()===sender)||!(m.envelope?.to||[]).some(x=>x.address?.toLowerCase()===a.email))throw Error('Receipt identity mismatch');await call('receipt',{id:a.id,message_id:gmailHex(m.emailId),thread_id:gmailHex(m.threadId)});return reply({reconciled:true});}finally{lock.release();}
   }
+  if(arizonaWeekend())return reply({skipped:true,reason:'Weekend in Arizona. Sending resumes Monday.'});
+  let address:string;try{address=postalAddress(process.env.OUTREACH_POSTAL_ADDRESS);}catch{console.error('OUTREACH: OUTREACH_POSTAL_ADDRESS is missing or invalid. Cloud sending is blocked until it is set in Vercel.');return reply({skipped:true,reason:'OUTREACH_POSTAL_ADDRESS not configured'});}
   const state=await call('claim');if(state.skip)return reply({skipped:true,reason:state.reason||'Outside sending window or daily limit'});
   const a=state.attempt;aid=a.id;reviewId=state.review?.id;
-  if(!a.email||!a.subject||!a.body||/[\u2013\u2014]/.test(a.subject+a.body)||a.body.split(/\s+/).length>200){await call('stop',{id:aid,detail:'Message needs personal copy review'});return reply({held:true});}
+  if(!a.email||!a.subject||!a.body||/[\u2013\u2014]/.test(a.subject+a.body)||a.body.split(/\s+/).length>220){await call('stop',{id:aid,detail:'Message needs personal copy review'});return reply({held:true});}
   const pass=unseal(state.credential);client=mailbox(pass);await client.connect();const folders=await client.list();const all=folders.find(f=>f.specialUse==='\\All');if(!all)throw Error('Gmail All Mail unavailable');
   let reference:string|undefined;
   const lock=await client.getMailboxLock(all.path,{readOnly:true});try{
@@ -39,7 +42,7 @@ export async function GET(request:Request){
   const permitted=await call('before_send',{id:aid,content_hash:copy.content_hash});
   if(!permitted.allowed){await call('cancel_review',{id:aid});return reply({held:true,reason:'Draft changed or chairman hold. Review again.'});}
   sending=true;
-  const sent=await transport(pass).sendMail({from:`Sean Caldwell <${sender}>`,to:a.email,subject:a.subject,text:a.body,messageId:a.rfc_message_id,...(a.step==='followup'&&reference?{inReplyTo:reference,references:reference}:{})});
+  const sent=await transport(pass).sendMail({from:`Sean Caldwell <${sender}>`,to:a.email,subject:a.subject,text:withFooter(a.body,address),messageId:a.rfc_message_id,...(a.step==='followup'&&reference?{inReplyTo:reference,references:reference}:{})});
   if(!sent.accepted?.some((v:unknown)=>String(v).toLowerCase()===a.email.toLowerCase()))throw Error('Sender receipt unavailable');
   // SMTP acceptance alone is not the tracker receipt. Resolve the exact generated Message-ID in Gmail.
   const sentFolder=folders.find(f=>f.specialUse==='\\Sent');if(!sentFolder)throw Error('Sent folder unavailable');
