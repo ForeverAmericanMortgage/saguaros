@@ -260,3 +260,7 @@ T018 validation: five notification tests, rollback SQL checks for two-receipt ga
 - Scope: notification worker migration, mirrored notifications.ts, focused tests.
 - Goal: Email Sean when weekday Apollo drafts are ready or research/export fails; preserve all approval holds. No paid tests.
 - Validation: hosted rollback checks cover target readiness, missing start, explicit failures, duplicate alert prevention and unchanged approval state. Copy tests, TypeScript/build and changed-file lint passed. No paid research or prospect sends.
+
+## T014: Raise weekday outreach target to 25
+- Authorized by Sean. Apollo target, initial send cap, alert threshold and portal copy move to 25. Lookup cap 40, existing-credit cap 80 and exact-copy approval remain unchanged.
+- Validation: 17 tests, typecheck, build, mirrored files, transactional SQL rollback check. No paid provider calls or extra sends.
