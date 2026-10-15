@@ -8,9 +8,21 @@ import {workerKey,unseal} from './secret';
 import {mailbox,transport} from './mailbox';
 import {sender,gmailHex} from './model';
 export type SentConfirmation={company:string;name:string;email:string;message_id:string;thread_id:string;sent_at:string};
-export type Notice={apollo?:ApolloSummary;usage?:UsageReport;kind:'review'|'recap'|'send_confirmation';confirmations?:SentConfirmation[];day:string;message_id:string;enabled:boolean;review_pending:boolean;monitor_error:string;monitor_checked_at:string|null;send_error:string;new_sent:number;followups_sent:number;contacted:number;ready:number;gmail_ready?:number;research_reserved?:number;new_qualified?:number;carryover_ready?:number;draft_errors?:number;due:number;uncertain:number;replies:{company:string;name:string;kind:string;body:string;thread:string}[];drafts:{company:string;name:string;subject:string;body:string}[]};
+export type Notice={apollo?:ApolloSummary;usage?:UsageReport;kind:'review'|'recap'|'send_confirmation'|'research_ready'|'research_failure';apollo_ready?:number;apollo_issue?:string;confirmations?:SentConfirmation[];day:string;message_id:string;enabled:boolean;review_pending:boolean;monitor_error:string;monitor_checked_at:string|null;send_error:string;new_sent:number;followups_sent:number;contacted:number;ready:number;gmail_ready?:number;research_reserved?:number;new_qualified?:number;carryover_ready?:number;draft_errors?:number;due:number;uncertain:number;replies:{company:string;name:string;kind:string;body:string;thread:string}[];drafts:{company:string;name:string;subject:string;body:string}[]};
 export function notificationCopy(n:Notice){
  const tracker='https://chairman.scottsdaleolympiad.com/#prospect-tracker';
+ if(n.kind==='research_ready'||n.kind==='research_failure')return {subject:n.kind==='research_ready'?`Olympiad: ${n.apollo_ready??0} new drafts ready for your review`:'Olympiad research needs attention',text:`Sean,
+
+${n.kind==='research_ready'?'Your new Apollo batch is ready to review in Gmail Drafts.':n.apollo_issue||'The cloud research run needs review.'}
+
+${n.apollo_ready??0} new drafts confirmed in Gmail.
+${apolloRecap(n.apollo)}
+
+All unapproved emails remain held. Review in Gmail, refresh the copies in the chairman portal, and approve only when ready.
+
+Gmail Drafts: https://mail.google.com/mail/u/?authuser=scaldwell%40saguaros.com#drafts
+Chairman portal: ${tracker}`};
+
  if(n.kind==='send_confirmation')return {subject:'Olympiad: both approved emails are sent and in the tracker',text:`Sean,\n\nBoth approved introductions are confirmed in Gmail Sent and recorded in the chairman tracker:\n\n${(n.confirmations||[]).map(x=>`${x.company} / ${x.name}\nSent ${new Date(x.sent_at).toLocaleString('en-US',{timeZone:'America/Phoenix'})} Arizona time\nhttps://mail.google.com/mail/u/?authuser=scaldwell%40saguaros.com#all/${x.thread_id}`).join('\n\n')}\n\nThis confirms sending, not inbox delivery or a reply. Tomorrow's new drafts still require their own approval in the chairman portal.\n\nChairman tracker: ${tracker}`};
  const replies=n.replies.map(r=>`${r.company} / ${r.name}: ${r.kind}\n${r.body}\nhttps://mail.google.com/mail/u/?authuser=scaldwell%40saguaros.com#all/${r.thread}`).join('\n\n');
  const status=`${n.new_sent} new introductions sent; ${n.followups_sent} follow-ups sent.\n${n.contacted} companies contacted overall; ${n.ready} qualified drafts queued.\n${n.replies.length} inbound messages today, including automatic replies and delivery failures.\n${n.due} follow-ups due by tomorrow; ${n.uncertain} unresolved send receipts.\nSending: ${n.review_pending?'held for portal approval':n.enabled?'enabled':'paused'}.\nLast reply check: ${n.monitor_checked_at||'not yet recorded'}.\n${n.monitor_error?`Monitor needs attention: ${n.monitor_error}\n`:''}${n.send_error?`Sender needs attention: ${n.send_error}\n`:''}`;

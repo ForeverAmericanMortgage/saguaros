@@ -254,3 +254,9 @@ T018 validation: five notification tests, rollback SQL checks for two-receipt ga
 - **Log:** User authorized cloud setup and direct release. Persistent credential entry remains user-controlled.
 
 - T-012: 12 qualification/cost tests, TypeScript/build and hosted rollback tests pass. New rows remain unapproved; no paid calls or sends used for validation. Cloud supply waits for its dedicated scoped Apollo credential.
+
+## T-013 · Cloud research readiness and failure alerts
+- Owner: Codex. Status: doing. Branch: codex/apollo-first-run-alerts.
+- Scope: notification worker migration, mirrored notifications.ts, focused tests.
+- Goal: Email Sean when weekday Apollo drafts are ready or research/export fails; preserve all approval holds. No paid tests.
+- Validation: hosted rollback checks cover target readiness, missing start, explicit failures, duplicate alert prevention and unchanged approval state. Copy tests, TypeScript/build and changed-file lint passed. No paid research or prospect sends.

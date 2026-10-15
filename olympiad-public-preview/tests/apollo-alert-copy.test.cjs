@@ -1,0 +1,6 @@
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),ts=require('typescript');
+function load(file){const m={exports:{}};new Function('module','exports','require',ts.transpileModule(fs.readFileSync('src/app/olympiad/cloud-outreach/'+file+'.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText)(m,m.exports,p=>p==='./apollo-model'?load('apollo-model'):{});return m.exports;}
+const {notificationCopy}=load('notifications');
+const base={apollo_ready:20,apollo:{qualified:20,attempted:25,credits:25,uncertain:0,remaining:55,last_error:'',enabled:true}};
+test('ready alert includes cost, count, review links and hold',()=>{const x=notificationCopy({...base,kind:'research_ready'});assert.match(x.subject,/20 new drafts ready/);assert.match(x.text,/1.25/);assert.match(x.text,/All unapproved emails remain held/);assert.match(x.text,/scaldwell%40saguaros.com/);assert.ok(x.text.includes('\n'));});
+test('failure email is not a ready claim and uncertainty is not zero',()=>{const x=notificationCopy({...base,kind:'research_failure',apollo_ready:4,apollo_issue:'Lookup stalled',apollo:{...base.apollo,qualified:4,uncertain:1}});assert.match(x.subject,/needs attention/);assert.match(x.text,/Lookup stalled/);assert.match(x.text,/unavailable until reconciled/);assert.doesNotMatch(x.text,/batch is ready/)});
