@@ -39,3 +39,10 @@ test('quoted fun-day invitation does not manufacture an out-of-office reply',()=
  }
  assert.equal(m.classifyReply('','I am out of the office until Monday'),'out_of_office');
 });
+
+test('out-of-range numeric HTML entities do not throw',()=>{
+ for(const entity of ['&#99999999;','&#xFFFFFFFF;']){
+ assert.doesNotThrow(()=>m.htmlText(entity));
+ assert.equal(m.htmlText(entity),'\uFFFD');
+ }
+});
