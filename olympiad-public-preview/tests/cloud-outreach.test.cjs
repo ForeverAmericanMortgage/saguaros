@@ -9,3 +9,20 @@ test("'no thanks' replies opt out",()=>{for(const t of ['no thanks','No thanks!'
 test('cloud sender skips Arizona weekends',()=>{assert.equal(m.arizonaWeekend(new Date('2026-10-17T17:00:00Z')),true);assert.equal(m.arizonaWeekend(new Date('2026-10-18T17:00:00Z')),true);assert.equal(m.arizonaWeekend(new Date('2026-10-19T17:00:00Z')),false);assert.equal(m.arizonaWeekend(new Date('2026-10-17T05:00:00Z')),false);assert.equal(m.arizonaWeekend(new Date('2026-10-20T06:30:00Z')),false);});
 
 test('unmarked quoted opt-out footer does not override an interested reply',()=>{for(const footer of ["Reply 'no thanks' and I'll take you off my list.","REPLY 'NO THANKS' AND I'LL TAKE YOU OFF MY LIST."]){assert.equal(m.classifyReply('Re: Olympiad',`Yes, interested! Sean ... ${footer}`),'interested');assert.equal(m.classifyReply('Re: Olympiad',`No thanks! Sean ... ${footer}`),'opted_out');}});
+
+test('new and legacy unmarked signatures preserve real reply intent',()=>{
+ for(const title of ['Olympiad 2027 Chairman, The Saguaros','Olympiad Chairman | The Saguaros']){
+ const sig="Sean Caldwell\n"+title+"\n602-388-0896   www.saguaros.com\nThe Saguaros | 123 Scottsdale Road\nscottsdaleolympiad.com\n\nReply 'no thanks' and I'll take you off my list.";
+ for(const [reply,kind] of [['','reply'],['Yes, interested','interested'],['No thanks','opted_out']])assert.equal(m.classifyReply('',reply+'\n'+sig),kind);
+ }
+});
+test('curly quotes and HTML-only reply entities preserve interest',()=>{
+ assert.equal(m.classifyReply('',"send details\nReply ‘no thanks’ and I’ll take you off my list."),'interested');
+ const text=m.htmlText("<p>Yes, interested</p><p>Reply &#39;no thanks&#39; and I&#x27;ll take you off my list.</p>");
+ assert.ok(text.includes("'no thanks'"));assert.equal(m.classifyReply('',text),'interested');
+ assert.equal(m.htmlText('&nbsp;&amp;&lt;&gt;&quot;&#39;&#x27;&rsquo;&lsquo;')," &<>\"''''");
+});
+test('quoted fit sentences are ignored but genuine declines remain',()=>{
+ for(const line of ["If it's not a fit, let me know and I won't follow up.","If this isn't a fit, let me know and I won't follow up."])assert.equal(m.classifyReply('','please send an overview\n'+line),'interested');
+ assert.equal(m.classifyReply('','Not a fit this year'),'declined');
+});
