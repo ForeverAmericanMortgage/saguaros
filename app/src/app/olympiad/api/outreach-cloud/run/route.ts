@@ -8,7 +8,7 @@ import {syncGmailDrafts} from '../../../cloud-outreach/drafts';
 import {prepareInterestedReply} from '../../../cloud-outreach/interest';
 import {refreshUsage} from '../../../cloud-outreach/usage';
 import {deliverNotification} from '../../../cloud-outreach/notifications';
-import {classifyReply,gmailHex,replyText,sender} from '../../../cloud-outreach/model';
+import {htmlText,classifyReply,gmailHex,replyText,sender} from '../../../cloud-outreach/model';
 export const runtime='nodejs';export const dynamic='force-dynamic';export const maxDuration=180;
 type Prospect={id:string;company:string;email:string;thread:string|null;first_sent:string};
 const reply=(data:unknown,status=200)=>NextResponse.json(data,{status,headers:{'Cache-Control':'private, no-store'}});
@@ -42,7 +42,7 @@ export async function GET(request:Request){
      const p=prospects.find(p=>p.thread===tid)||(!outbound?prospects.find(p=>from.includes(p.email.toLowerCase())):undefined);if(!p)continue;
      const body=await client.fetchOne(m.uid,{source:{maxLength:100000}},{uid:true});if(!body||!body.source)throw Error('Unable to read a matched reply');
      const parsed=await simpleParser(body.source,{skipHtmlToText:true,skipTextToHtml:true});
-     const text=replyText(parsed.text||String(parsed.html||'').replace(/<[^>]*>/g,' '));const subject=parsed.subject||'';const auto=String(parsed.headers.get('auto-submitted')||'no')!=='no';
+     const text=replyText(parsed.text||htmlText(String(parsed.html||'')));const subject=parsed.subject||'';const auto=String(parsed.headers.get('auto-submitted')||'no')!=='no';
      const kind=classifyReply(subject,text,auto);const occurred=new Date(m.internalDate||parsed.date||Date.now()).toISOString();
      const result=await call('message',{message_id:mid,thread_id:tid,prospect_id:p.id,outbound,kind,occurred_at:occurred,subject,body:text});seen.add(mid);
      if(result.inserted)inserted++;if(result.alert)alerts.push(`${p.company}\n${text.slice(0,1000)}\nReview draft / conversation: https://mail.google.com/mail/u/?authuser=scaldwell%40saguaros.com#all/${tid}\nNext step: review the unsent response, then arrange a short call if appropriate. No call is booked.\nCompany brief and next step: https://chairman.scottsdaleolympiad.com/#prospect-tracker\nFind: ${p.company}`);

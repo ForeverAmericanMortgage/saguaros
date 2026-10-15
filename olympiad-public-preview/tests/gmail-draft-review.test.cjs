@@ -12,3 +12,11 @@ test('edited copies reject empty content, header injection, excessive length and
  for(const [s,b] of [['','Hi'],['Invite\nBcc: x@example.com','Hi'],['Invite',''],['Invite','word '.repeat(221)],['Invite','Hello — Sean']])assert.throws(()=>reviewedCopy('person@example.com',s,b));
  assert.equal(reviewedCopy('person@example.com','Invite','Hello Sean').body,'Hello Sean');
 });
+
+test('HTML rendering does not change reviewed copy or draft hash',()=>{
+ const c={exports:{}};new Function('module','exports',ts.transpileModule(fs.readFileSync('src/app/olympiad/cloud-outreach/copy.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText)(c,c.exports);
+ const address='4400 N. Scottsdale Rd., Ste 9-725, Scottsdale, AZ 85251',body='Hello Jane'+c.exports.signature(address);
+ const before=reviewedCopy('person@example.com','Invitation',body),hash=draftHash('person@example.com','Invitation',body);
+ assert.match(c.exports.htmlBody(body,address),/<img/);
+ assert.deepEqual(reviewedCopy('person@example.com','Invitation',body),before);assert.equal(draftHash('person@example.com','Invitation',body),hash);
+});
