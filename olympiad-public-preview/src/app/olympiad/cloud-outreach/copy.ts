@@ -23,7 +23,11 @@ function signatureStart(text:string,address:string){const matches=Array.from(tex
 export function withFooter(body:string,address:string){
  const fixed=body.replace(/thescasolympiad\.com/gi,'scottsdaleolympiad.com');
  const legacy=/Sean Caldwell\n(Olympiad Chairman \| The Saguaros\n)?602-388-0896(\nsaguaros\.com \| (scottsdale|thescas)olympiad\.com)?(\n+--\nReply 'no thanks' and I'll take you off my list\.\nThe Saguaros \| [^\n]+)?\s*$/;
- const match=legacy.exec(fixed);
+ // Older reviewed drafts put their soft opt-out after the legacy signature.
+ // Treat that complete trailing block as one footer, not another message body.
+ const softOptOut=/\n+If it's not a fit, (?:just )?let me know and I won't follow up\.\s*$/;
+ const withoutSoftOptOut=fixed.replace(softOptOut,'');
+ const match=legacy.exec(withoutSoftOptOut);
  if(match)return fixed.slice(0,match.index).trimEnd()+signature(address);
  if(signatureStart(fixed,address)>=0||fixed.includes(optOutLine))return fixed;
  return fixed.trimEnd()+signature(address);
