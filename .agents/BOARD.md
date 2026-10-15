@@ -95,7 +95,7 @@ Each agent updates its own task's status and appends to its log. Claude owns cre
 
 
 ## T-007 · New-company prospect outreach tracker
-- **Owner:** Codex · **Status:** review · **Branch:** `codex/olympiad-prospect-tracker`
+- **Owner:** Codex · **Status:** done (merged #12) · **Branch:** `codex/olympiad-prospect-tracker`
 - **Files:** both mirrors of `organizer/{ProspectTracker.tsx,prospect-model.ts,prospects.module.css,OrganizerDashboard.tsx,SeasonOverview.tsx}`, `api/prospects/route.ts`; both `supabase/migrations/20261013164825_organizer_prospect_tracker.sql`; `olympiad-public-preview/tests/{prospect-model.test.cjs,prospect-tracker.sql}`; `.agents/BOARD.md`.
 - **Request:** Sean directly requested the exact sent email, 25-company recipient list, better company-specific outreach, and a simple chairman prospect tracker. This is separate from the earlier captain UX approval waiver.
 - **Implementation:** Outreach workspace gains company/status/last contact/owner/next follow-up, search and due/interested filters, notes, original-email/Gmail links and source-backed draft fields. Unsaved forms survive filtering/navigation; saves use version checks. Prospects never create a registration or Mailchimp subscription. Strict existing chairman authorization, sticky opt-outs and actual registered-team linking are enforced in the database.
@@ -108,7 +108,7 @@ Each agent updates its own task's status and appends to its log. Claude owns cre
 - T-007: Sean explicitly waived Claude packaging/review hold and authorized Codex direct release on October 13 after Claude OAuth failed. Both migrations applied with targeted history entries; private import verified 50 contacted companies, 51 outbound messages and 3 response summaries. Self-CC removed. Daily outreach remains 20 new companies plus one seven-day follow-up; portal decisions reconcile into private queue. Live authenticated browser verification pending production build.
 
 ## T-008 · Cloud outreach and mailbox reply synchronization
-- Owner: Codex. Status: in progress. Branch: codex/olympiad-cloud-outreach.
+- Owner: Codex. Status: done (merged #13). Branch: codex/olympiad-cloud-outreach.
 - Request: Sean authorized cloud outreach and reply tracking while his computer is off. Clay SMTP/IMAP sender connected, warmup off, owner-only. No cloud campaign launched yet.
 - Files: both mirrors of organizer/{OutreachCloudSetup.tsx,ProspectTracker.tsx}, api/outreach-cloud/** and cloud-outreach/**; targeted cloud mailbox migration in both app trees; deployed package.json/package-lock.json; tests/cloud-outreach.test.cjs; .agents/BOARD.md.
 - Scope: Secure cloud mailbox monitor covering prior Gmail threads, strict chairman setup UI, provider history and suppression. No paid upgrades/topups, no credentials exposed, no automatic interested-reply sends. Existing daily sender remains owner until cloud cutover is verified.
@@ -118,7 +118,7 @@ Each agent updates its own task's status and appends to its log. Claude owns cre
 - T-008 verification: TypeScript/build, four cloud tests, changed-file lint and mirror checks pass. Rollback SQL verifies denied worker credentials, private secret denial, chairman-only management, reply dedup and sticky opt-outs. Applied targeted cloud migration; provisioned encrypted worker secret and a five-minute cloud cron, currently paused pending deployment. Cloud mailbox credential remains absent. Existing local sender is not disabled before verified cloud cutover.
 
 ## T-009 · Daily cloud prospect sender
-- **Owner:** Codex · **Status:** review · **Branch:** `codex/olympiad-cloud-daily`
+- **Owner:** Codex · **Status:** done (merged #14) · **Branch:** `codex/olympiad-cloud-daily`
 - **Files:** both mirrors of `cloud-outreach/copy.ts`, `api/outreach-cloud/{send,daily,intake}/route.ts`, `organizer/{DailyCloudOutreach.tsx,ProspectTracker.tsx}`, both `supabase/migrations/20261013191538_outreach_cloud_daily.sql`, focused tests, `.agents/BOARD.md`.
 - **Request:** Sean authorized finishing cloud sending after connecting the reply monitor. Existing direct-release approval continues.
 - **Log:** Monitor completed live read-only Gmail poll with no errors at 12:12 Arizona time. Local reply automation paused after verified cloud cutover. Building atomic 20-new plus 20-followup daily limits, ten-minute pacing, exact Gmail preflight, sender receipt reconciliation, private candidate intake and contacted-only tracker projection. No new prospects sent today; existing 50 excluded. Clay feed remains draft pending actual qualified input and integration verification.
@@ -126,7 +126,7 @@ Each agent updates its own task's status and appends to its log. Claude owns cre
 - T-009 validation: TypeScript/build and seven focused tests pass; new files lint clean, mirrors match. Rollback SQL checked invalid key denial, anonymous privilege denial, independent initial/followup caps, idempotent sender receipts and chairman hold suppression between reservation and sending. Production schema applied with sending disabled; 202 historical exclusions and all 50 exact Gmail/RFC sender receipts imported privately. Clay scheduled research/export remains draft and needs its scoped intake connection and real-run verification.
 
 ## T-010 · Atomic cloud research reservations
-- Owner: Codex. Status: in progress. Branch: codex/olympiad-research-reservations.
+- Owner: Codex. Status: done (merged #15). Branch: codex/olympiad-research-reservations.
 - Files: both mirrors of api/outreach-cloud/intake/route.ts and cloud-outreach/research.ts; both targeted 20261013221015 migrations; deployed tests/research-reservations.*; .agents/BOARD.md.
 - Request: Sean authorized weekday cloud outreach. Clay duplicate and 21st-company reservation tests exposed missing atomic research controls. Add scoped company/domain reservation before enrichment, persistent exclusions and 20 reservations per Arizona weekday. Existing sender and reply authorization unchanged; direct review/release waiver applies. No extra prospect sends today.
 
@@ -134,7 +134,7 @@ Each agent updates its own task's status and appends to its log. Claude owns cre
 
 
 ## T011: Cloud daily progress recap and first-batch review
-Status: verified, release pending
+Status: done (merged #16)
 Owner: Codex, Sean approved direct review/release
 Files: cloud-outreach/notifications.ts, api/outreach-cloud/run and daily routes, organizer/DailyCloudOutreach.tsx (both mirrors), migration 20261013231055, focused notification tests.
 Log: Daily self-only recap, tomorrow morning queued-copy preview, persistent notification deduplication and a chairman release gate for the first smoke batch. Existing cloud polling drives notifications while the computer is off. No prospect sends today.
@@ -143,7 +143,7 @@ T011 validation: TypeScript and production build passed; 8 focused tests passed;
 
 
 ## T012: Atomic company-refill cursor
-Status: verified, release pending
+Status: done (merged #17)
 Owner: Codex, direct release authorized by Sean
 Files: cloud-outreach/refill.ts and api/outreach-cloud/intake/route.ts in both mirrors; migration20261014040021_outreach_company_refill.sql; focused refill tests.
 Log: Put metadata-only refill claims/cursor in the existing private cloud feed. Fifty-company active buffer, below40 threshold, one weekday claim, preserve known companies and uncertain writes. No new Gmail access or prospect sends. Apollo Company Search-only key requires owner confirmation.
@@ -152,7 +152,7 @@ T012 validation: TypeScript, production build, 12 focused tests, changed-file ES
 
 
 ## T013: Personal invitation copy and daily research audit
-Owner: Codex. Status: in progress. Branch: codex/olympiad-personal-invitations.
+Owner: Codex. Status: done (merged #18). Branch: codex/olympiad-personal-invitations.
 Request: Sean authorized tighter personal outreach, reason/fit before identity, last-year $1m grants, and researching today toward20 reviewable drafts. Sending stays held. Prior direct-release waiver applies.
 Files: cloud-outreach/copy.ts in both mirrors; tests/cloud-daily.test.cjs; .agents/BOARD.md.
 Scope: improve future intake copy, update private unsent drafts separately, audit Clay supply and evidence mapping. No sent-history changes or release of review gate.
@@ -161,7 +161,7 @@ T013 validation: TypeScript, production build, focused copy/qualification tests,
 
 
 ## T014: Qualified draft target and five-minute invitation
-Owner: Codex. Status: in progress. Branch: codex/olympiad-qualified-review.
+Owner: Codex. Status: done (merged #19). Branch: codex/olympiad-qualified-review.
 Sean approved fixing the supplier before expanding to40 weekday research attempts, stop at20 qualified ready drafts, existingcredits only; all sends held for review. Prior direct release waiver persists.
 Files: both mirrors cloud-outreach/copy.ts, api/outreach-cloud/intake/route.ts; migration20261014162629; focused copy and qualified-review SQL tests; this board.
 Scope: real social proof and five-minute call CTA; authoritative40research and20ready guards, no change to20send cap or review release. Private unsent drafts updated separately.
@@ -170,14 +170,14 @@ T014 validation: build, TypeScript, copy/qualification tests, changed-file ESLin
 
 
 ## T015: Preserve sourced evidence punctuation
-Owner: Codex. Status: in progress. Branch: codex/olympiad-research-evidence.
+Owner: Codex. Status: done (merged #20). Branch: codex/olympiad-research-evidence.
 Files: bothmirrors cloud-outreach/copy.ts; tests/cloud-daily.test.cjs; thisboard.
 The live360SOC recovery proved email-style punctuation checks incorrectly rejected an emdash inside a research quote. Permit source punctuation in evidence/role fields only, retain HTML/newline bounds and all outgoingcopy checks. No send/review release. Existing directrelease waiver applies.
 
 T015 validation: actual held360SOCpayload nowpasses with sourcepunctuation preserved and outgoingcopy dash-free. Fourfocusedtests,TypeScript,build,ESLint andmirrorchecks pass. No privatepayloads committed.
 
 ## T016: Gmail drafts with explicit chairman batch approval
-Owner: Codex. Status: in progress. Branch: codex/olympiad-gmail-review.
+Owner: Codex. Status: done (merged #21). Branch: codex/olympiad-gmail-review.
 Sean requests automatic Gmail Drafts for qualified outreach, edits in Gmail, then batch approval in chairman portal before cloud sending. Existing direct release waiver applies. No new prospect sends or paid research during implementation.
 Files: both mirrors cloud-outreach/{drafts.ts,draft-model.ts}, api/outreach-cloud/{run,send,daily}/route.ts, organizer/DailyCloudOutreach.tsx; targeted gmail_draft_review migration in both trees, focused tests, this board.
 Controls: exact draft content approval, edits invalidate approval, new drafts never inherit prior batch approval, preserve suppression/receipts/caps. Private mail stays outside repo.
@@ -185,26 +185,28 @@ Controls: exact draft content approval, edits invalidate approval, new drafts ne
 T016 scope extension authorized by Sean: cloud-outreach/copy.ts and focused draft/copy tests, simplified Clay qualification, and cached-only unsent Gmail examples. No paid research today; all sending held.
 
 ## T017: Cloud draft readiness email
-Owner: Codex. Status: in progress. Branch: codex/cloud-draft-recap.
+Owner: Codex. Status: done (merged #22). Branch: codex/cloud-draft-recap.
 Sean authorizes a cloud email to his Saguaros inbox when October 15 drafts reach20 or a17:00 partial recap. Keep all exact-copy approvals held; no research/credits/prospect sends. Existing direct-release waiver applies.
 Files: both mirrors cloud-outreach/notifications.ts; targeted cloud_draft_ready_recap migration; focused notification tests; this board. Reuse existing five-minute cloud monitor and idempotent notification ledger. Actual provider charges unavailable must be labeled, never inferred from reservations.
 
 T017 validation: three notification-copy tests, no-send rollback SQL checks (timing,20target,partial cutoff,dedup,authentication,actual counts,approval preservation),TypeScript,Nextbuild,changed-fileESLint andmirrorchecks pass. No research or prospect sends. Production release pending.
 
 ## T018: Cloud confirmation for two approved sends
-Owner: Codex. Status: in progress. Branch: codex/cloud-send-confirmation.
+Owner: Codex. Status: done (merged #23). Branch: codex/cloud-send-confirmation.
 Sean authorizes one confirmation email to his Saguaros inbox after both remaining approved introductions have exact Gmail Sent and tracker receipts. Reuse cloud monitor; preserve tomorrow approval gates. Existing direct-release waiver applies.
 Files: both mirrors cloud-outreach/notifications.ts, cloud_send_confirmation migration, focused notification tests, this board. Candidate identities configured privately after deployment, never committed.
 
 T018 validation: five notification tests, rollback SQL checks for two-receipt gating/dedup/preflight retry/unchanged approvals,TypeScript,Nextbuild,ESLint andmirrorchecks passed. No paid research or prospect send triggered. Cloud activation follows production deployment.
 
 ## Cloud research usage recap (Codex, implemented; reporting credentials pending)
+- Status: done (merged #24).
 - Branch: codex/outreach-usage-recap. Sean authorized actual credit reporting; all new copy remains held. No paid research today.
 - Files: mirrored cloud-outreach/usage*.ts, notifications.ts, api/outreach-cloud/run/route.ts, api/outreach-cloud/usage/route.ts, organizer/OutreachUsageSetup.tsx, organizer/OutreachCloudSetup.tsx; mirrored outreach_provider_usage migration; usage tests.
 - Implemented in PR #24. Build, types, lint, offline ratios/provider mocks and transactional access checks pass; private production schema applied. Cloud provider verification awaits owner-entered reporting credentials. No paid research or approval changes.
 
 
 ## Reporting connection diagnostics (Codex)
+- Status: done (merged #25).
 - Branch codex/usage-connection-diagnostics. User attempted key entry but neither saved.
 - Files: mirrored cloud-outreach/usage.ts and api/outreach-cloud/usage/route.ts.
 - Return only provider, documented endpoint path and HTTP status for rejected reporting reads; never key, response body or arbitrary exception. Preserve all holds and zero paid research.
@@ -212,12 +214,21 @@ T018 validation: five notification tests, rollback SQL checks for two-receipt ga
 - Scope includes mirrored organizer/OutreachUsageSetup.tsx: retain encrypted submitted keys on reporting failure; distinguish saved from verified; independently check both providers.
 
 ## Apollo reporting cycle parser (Codex)
+- Status: done (merged #26).
 - Branch codex/apollo-reporting-cycle. Files: mirrored cloud-outreach/usage.ts and private reporting regression test.
 - Saved Apollo key returns HTTP200; actual cycle field is start_date. Match verified response and reject invalid dates. No paid research, sends, or approval changes.
 
 ## Interested reply preparation
+- Status: done (merged #27).
 - Codex, branch codex/interested-reply-drafts. Sean authorizes automatic company briefs, manual next steps and unsent personal Gmail replies; no automatic reply sending or paid research.
 - Files: mirrored cloud-outreach/interest.ts, api/outreach-cloud/run/route.ts, interested_reply_drafts migration. Preserve notes and existing draft edits, one preparation per prospect, private authenticated worker ledger.
 
 ## Interested reply review alerts
+- Status: done (merged #28).
 - Codex, codex/interest-draft-alerts. Files: mirrored api/outreach-cloud/run/route.ts. Email Sean draft/conversation link and portal next step after draft preparation. Sending approvals unchanged.
+
+
+## T019: Outreach footer, domain fix and weekend skip
+- Owner: Codex. Status: done (merged #29). Branch: codex/outreach-footer-fix.
+- Fixed thescasolympiad.com typo; opt-out line + postal address footer from OUTREACH_POSTAL_ADDRESS (intake 503 / send skip when unset); "no thanks" = opted_out; sender skips Arizona weekends. Claude reviewed twice (approved).
+- Open: Sean sets OUTREACH_POSTAL_ADDRESS in Vercel Production. Follow-up: decode HTML entities on HTML-only reply fallback; sent-mail record stores pre-footer body.
