@@ -246,3 +246,11 @@ T018 validation: five notification tests, rollback SQL checks for two-receipt ga
 - **Log:** Sean authorized direct release; no-send validation only.
 
 - T-011 validation: 21 focused tests, TypeScript, production build, changed-file lint, mirror comparison pass. Read-only live IMAP confirms exact draft body and RFC identity. Original transient failure not reproduced; no-send cloud acceptance follows release. No credits, SMTP calls, or approvals.
+
+## T-012 · Apollo-first cloud draft supply
+- **Owner:** Codex · **Status:** doing · **Branch:** `codex/apollo-cloud-drafts`
+- **Files:** mirrored `cloud-outreach/apollo*.ts`, `cloud-outreach/notifications.ts`, `api/outreach-cloud/{apollo,research}/route.ts`, `organizer/{OutreachApolloSetup,OutreachUsageSetup}.tsx`; production migration/tests; `.agents/BOARD.md`.
+- **Goal:** Weekday bounded contact-first research into held Gmail drafts with actual costs and no credit purchases.
+- **Log:** User authorized cloud setup and direct release. Persistent credential entry remains user-controlled.
+
+- T-012: 12 qualification/cost tests, TypeScript/build and hosted rollback tests pass. New rows remain unapproved; no paid calls or sends used for validation. Cloud supply waits for its dedicated scoped Apollo credential.
