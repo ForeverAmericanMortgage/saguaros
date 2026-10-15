@@ -62,3 +62,20 @@ test('multipart alternative contains exact footer text',async()=>{
  const parsed=await require('mailparser').simpleParser(built.message,{skipHtmlToText:true,skipTextToHtml:true});
  assert.equal(parsed.text.replace(/\r\n/g,'\n').trimEnd(),text);
 });
+
+// Regression: reviewed legacy signatures followed by a soft opt-out must not duplicate.
+test('legacy trailing opt-out is replaced with one canonical footer without changing the invitation',()=>{
+ const invitation=Array(170).fill('invitation').join(' ');
+ for(const ending of ["If it's not a fit, just let me know and I won't follow up.","If it's not a fit, let me know and I won't follow up."]){
+  const body=invitation+"\n\nSean Caldwell\nOlympiad Chairman | The Saguaros\n602-388-0896\nsaguaros.com | thescasolympiad.com\n\n"+ending;
+  const result=withFooter(body,ADDR);
+  assert.equal(result,invitation+moduleCopy.exports.signature(ADDR));
+  assert.equal((result.match(/Sean Caldwell/g)||[]).length,1);
+  assert.ok(result.split(/\s+/).length<=220);
+  assert.equal(withFooter(result,ADDR),result);
+ }
+});
+test('soft opt-out in a message without a recognized legacy signature is preserved',()=>{
+ const body="Hi Alex,\n\nIf it's not a fit, just let me know and I won't follow up.";
+ assert.ok(withFooter(body,ADDR).startsWith(body));
+});

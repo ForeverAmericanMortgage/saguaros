@@ -232,3 +232,9 @@ T018 validation: five notification tests, rollback SQL checks for two-receipt ga
 - Owner: Codex. Status: done (merged #29). Branch: codex/outreach-footer-fix.
 - Fixed thescasolympiad.com typo; opt-out line + postal address footer from OUTREACH_POSTAL_ADDRESS (intake 503 / send skip when unset); "no thanks" = opted_out; sender skips Arizona weekends. Claude reviewed twice (approved).
 - Open: Sean sets OUTREACH_POSTAL_ADDRESS in Vercel Production. Follow-up: decode HTML entities on HTML-only reply fallback; sent-mail record stores pre-footer body.
+
+## Outreach legacy signature normalization
+- Owner: Codex. Status: validated, preparing release. Branch: codex/outreach-footer-normalization.
+- Sean requested fixing the duplicate signature holding approved Peerlogic; no research credits or new-draft approvals.
+- Files: mirrored cloud-outreach/copy.ts; olympiad-public-preview/tests/cloud-daily.test.cjs. Recognize legacy signature with trailing soft opt-out as one footer; preserve approved invitation text.
+- Validation: 15 copy/footer tests, TypeScript, Next production build, targeted app ESLint, and mirror check pass. No research calls or new approvals.
