@@ -238,3 +238,11 @@ T018 validation: five notification tests, rollback SQL checks for two-receipt ga
 - Sean requested fixing the duplicate signature holding approved Peerlogic; no research credits or new-draft approvals.
 - Files: mirrored cloud-outreach/copy.ts; olympiad-public-preview/tests/cloud-daily.test.cjs. Recognize legacy signature with trailing soft opt-out as one footer; preserve approved invitation text.
 - Validation: 15 copy/footer tests, TypeScript, Next production build, targeted app ESLint, and mirror check pass. No research calls or new approvals.
+
+## T-011 · Cloud draft verification diagnostics
+- **Owner:** Codex · **Status:** doing · **Branch:** `codex/cloud-draft-verification`
+- **Files:** mirrored `src/app/olympiad/api/outreach-cloud/{send,verify}/route.ts`, mirrored `cloud-outreach/read-retry.ts`, `olympiad-public-preview/tests/cloud-read-retry.test.cjs`, `.agents/BOARD.md`.
+- **Goal:** Diagnose pre-send failures accurately and provide read-only cloud draft verification without paid research or approvals.
+- **Log:** Sean authorized direct release; no-send validation only.
+
+- T-011 validation: 21 focused tests, TypeScript, production build, changed-file lint, mirror comparison pass. Read-only live IMAP confirms exact draft body and RFC identity. Original transient failure not reproduced; no-send cloud acceptance follows release. No credits, SMTP calls, or approvals.
