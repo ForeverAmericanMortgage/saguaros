@@ -8,7 +8,7 @@ import {syncGmailDrafts} from '../../../cloud-outreach/drafts';
 import {prepareInterestedReply} from '../../../cloud-outreach/interest';
 import {refreshUsage} from '../../../cloud-outreach/usage';
 import {deliverNotification} from '../../../cloud-outreach/notifications';
-import {htmlText,classifyReply,gmailHex,replyText,sender} from '../../../cloud-outreach/model';
+import {htmlText,classifyReply,gmailHex,replyText,sender,recordableMail} from '../../../cloud-outreach/model';
 export const runtime='nodejs';export const dynamic='force-dynamic';export const maxDuration=180;
 type Prospect={id:string;company:string;email:string;thread:string|null;first_sent:string};
 const reply=(data:unknown,status=200)=>NextResponse.json(data,{status,headers:{'Cache-Control':'private, no-store'}});
@@ -33,12 +33,13 @@ export async function GET(request:Request){
     const found=await client.search({since,or},{uid:true});const ids=Array.isArray(found)?found:[];
     if(ids.length>200){complete=false;throw Error('Mailbox backlog needs review');}
     if(!ids.length)continue;
-    const metadata=await client.fetchAll(ids,{uid:true,envelope:true,internalDate:true,emailId:true,threadId:true},{uid:true});
+    const metadata=await client.fetchAll(ids,{uid:true,envelope:true,internalDate:true,emailId:true,threadId:true,flags:true,labels:true},{uid:true});
     for(const m of metadata){
      if(!m.emailId||!m.threadId)continue;
      const mid=gmailHex(m.emailId),tid=gmailHex(m.threadId);if(seen.has(mid))continue;
      const from=m.envelope?.from?.map(a=>a.address?.toLowerCase()).filter(Boolean)||[];
      const outbound=from.includes(sender);
+     if(!recordableMail(outbound,m.flags,m.labels))continue;
      const p=prospects.find(p=>p.thread===tid)||(!outbound?prospects.find(p=>from.includes(p.email.toLowerCase())):undefined);if(!p)continue;
      const body=await client.fetchOne(m.uid,{source:{maxLength:100000}},{uid:true});if(!body||!body.source)throw Error('Unable to read a matched reply');
      const parsed=await simpleParser(body.source,{skipHtmlToText:true,skipTextToHtml:true});
