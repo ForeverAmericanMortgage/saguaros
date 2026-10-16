@@ -46,3 +46,12 @@ test('out-of-range numeric HTML entities do not throw',()=>{
  assert.equal(m.htmlText(entity),'\uFFFD');
  }
 });
+
+test('drafts never create activity and outbound mail needs actual Sent evidence',()=>{
+ assert.equal(m.recordableMail(true,new Set(['\\Draft']),new Set(['\\Sent'])),false);
+ assert.equal(m.recordableMail(true,new Set(),new Set(['\\Draft'])),false);
+ assert.equal(m.recordableMail(true,new Set(),new Set()),false);
+ assert.equal(m.recordableMail(true,new Set(),new Set(['\\Sent'])),true);
+ assert.equal(m.recordableMail(false,new Set(),new Set()),true);
+ assert.equal(m.recordableMail(false,new Set(['\\Draft']),new Set()),false);
+});

@@ -15,3 +15,9 @@ export function classifyReply(subject:string,text:string,automatic=false){
 }
 // The cloud sender only sends Monday to Friday, Arizona time (no DST, so America/Phoenix is stable).
 export function arizonaWeekend(now=new Date()){const day=new Intl.DateTimeFormat('en-US',{timeZone:'America/Phoenix',weekday:'short'}).format(now);return day==='Sat'||day==='Sun';}
+
+// Gmail All Mail may include unsent drafts. Outbound activity needs a Sent label.
+export function recordableMail(outbound:boolean,flags?:Set<string>,labels?:Set<string>){
+ if(flags?.has('\\Draft')||labels?.has('\\Draft'))return false;
+ return !outbound||!!labels?.has('\\Sent');
+}
