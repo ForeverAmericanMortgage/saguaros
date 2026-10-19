@@ -276,3 +276,9 @@ T018 validation: five notification tests, rollback SQL checks for two-receipt ga
 - Files: mirrored pilot API, captain UI and auth callback; Microsoft route tests and setup/acceptance documentation.
 - Implemented identity-only OAuth, disabled-until-configured feature gate, provider-specific fallback and same Auth user/team routing. Six focused tests pass; no new lint issues; mirror matches.
 - Blocked on Microsoft Entra administrator Authenticator handoff. Provider is not configured and Microsoft sign-in is not live. Hosted consent and real existing-captain linking must be tested after setup.
+
+
+## Olympiad policies (Codex, Sean requested)
+- Branch: codex/olympiad-policies
+- Files: both Olympiad mirrors: privacy/page.tsx, terms/page.tsx, policy.module.css, OlympiadHub.tsx.
+- Status: implementing simple account, roster, logo and communications policies; auth unchanged.
