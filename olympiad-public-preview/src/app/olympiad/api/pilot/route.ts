@@ -43,7 +43,7 @@ export async function GET(request: Request) {
   }
   try {
     const { client, event, industries, map } = await context();
-    if (action === 'status') return reply({ enabled: config.enabled, registration_open: event.registration_open, configured: true, pilot_only: true, google_sign_in_enabled: process.env.OLYMPIAD_GOOGLE_SIGN_IN_ENABLED === 'true', fundraising_active: event.fundraising_active, industries: industries.map(i => i.name) });
+    if (action === 'status') return reply({ enabled: config.enabled, registration_open: event.registration_open, configured: true, pilot_only: false, google_sign_in_enabled: process.env.OLYMPIAD_GOOGLE_SIGN_IN_ENABLED === 'true', fundraising_active: event.fundraising_active, industries: industries.map(i => i.name) });
     if (action === 'leaderboard') {
       if (!event.fundraising_active) {
         const { data, error } = await client.from('team_directory').select(publicColumns).eq('event_id',event.id).order('team_name').limit(500);
@@ -168,7 +168,7 @@ export async function POST(request: Request) {
     }
     if (data.action === 'sign-in') {
       const address = validate.email(data.email);
-      if (!(await pilotAccessAllowed(client,address))) return reply({ error: 'Captain access is currently limited to the invited pilot. Please contact the event team.' }, 403);
+      if (!(await pilotAccessAllowed(client,address))) return reply({ error: 'Enter a valid email address to continue.' }, 403);
       // Only allowlisted inboxes reach this point. Identity setup can precede team registration.
       const { error } = await client.auth.signInWithOtp({ email: address, options: { shouldCreateUser: true, emailRedirectTo: `${SITE_URL}/olympiad/auth/callback` } });
       if (error) return reply({ error: error.status === 429 ? 'Please wait before requesting another sign-in email.' : 'Sign-in email could not be sent. Please try again later.' }, error.status === 429 ? 429 : 503);
