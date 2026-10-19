@@ -264,3 +264,9 @@ T018 validation: five notification tests, rollback SQL checks for two-receipt ga
 ## T014: Raise weekday outreach target to 25
 - Authorized by Sean. Apollo target, initial send cap, alert threshold and portal copy move to 25. Lookup cap 40, existing-credit cap 80 and exact-copy approval remain unchanged.
 - Validation: 17 tests, typecheck, build, mirrored files, transactional SQL rollback check. No paid provider calls or extra sends.
+
+## Public registration release · October 19, 2026
+- Owner: Codex, Olympiad Public Registration. Directly authorized by Sean to open production signup. Branch: codex/public-registration.
+- Scope: mirrored captain access helper, signup copy/status, confirmation error; verified-user enrollment migration and transactional regression test.
+- Database migration applied to Olympiad: all verified emails eligible, including previously blocked users. Ownership RLS, chairman authorization, approval and directory gates retained.
+- Validation: TypeScript/build pass; mirror clean; ESLint matches baseline (13 existing findings, no new findings). Hosted rollback test passes for uninvited registration, unverified exclusion, pending visibility, self-approval denial and cross-captain isolation. No test records retained or emails sent.

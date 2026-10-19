@@ -43,7 +43,7 @@ export async function POST(request: Request) {
     if(error || !data.session || !data.user?.email_confirmed_at) return fail('This sign-in link has expired or was already used. Request a new link below.',400);
     if(!data.user.email || !(await pilotAccessAllowed(client,data.user.email))) {
       await client.auth.signOut({scope:'local'});
-      return fail('Captain access is currently limited to the invited pilot.',403);
+      return fail('A verified email address is required.',403);
     }
     return NextResponse.json({ok:true,redirect:new URL('/#captain',SITE_URL).toString()},{headers:magicHeaders});
   } catch {return fail('We could not complete sign-in. Request a new link and try again.',503);}

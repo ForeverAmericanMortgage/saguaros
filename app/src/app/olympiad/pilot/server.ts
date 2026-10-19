@@ -34,27 +34,9 @@ export function allowedOrigin(request: Request) {
   return origin !== null && (origins.has(origin) || chairmanOrigin(origin, process.env.NODE_ENV !== 'production'));
 }
 
-// Server-only exact addresses; empty configuration fails closed. Keep returning
-// pilot captains here even when new registrations are closed.
-export function pilotEmailAllowed(email: string) {
-  const allowed = (process.env.OLYMPIAD_PILOT_EMAIL_ALLOWLIST || '')
-    .split(',').map(value => value.trim().toLowerCase()).filter(Boolean);
-  return allowed.includes(email.trim().toLowerCase());
-}
-
-// Chairman-issued invitations work without changing a deployment allowlist.
-// Authenticated return visits rely on the existing verified captain cohort.
-export async function pilotAccessAllowed(client: Awaited<ReturnType<typeof pilotClient>>, email: string) {
-  if (pilotEmailAllowed(email)) return true;
-  const {data:{user}}=await client.auth.getUser();
-  if(user?.email_confirmed_at&&user.email?.toLowerCase()===email.trim().toLowerCase()) {
-    const {data}=await client.from('pilot_captains').select('user_id').eq('user_id',user.id).maybeSingle();
-    if(data)return true;
-  }
-  const {data:invited}=await client.rpc('recruit_email_access_allowed',{p_email:email.trim().toLowerCase()});
-  if(invited===true)return true;
-  const token=(await cookies()).get('olympiad-recruit-invite')?.value;
-  if(!token||!/^[a-f0-9]{64}$/.test(token))return false;
-  const {data,error}=await client.rpc('recruit_invitation_details',{p_token:token});
-  return !error&&data?.email===email.trim().toLowerCase();
+// Public captain access. Identity verification remains in the auth callbacks;
+// database enrollment grants captain eligibility only, never organizer access.
+export async function pilotAccessAllowed(_client: Awaited<ReturnType<typeof pilotClient>>, email: string) {
+  void _client;
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 }
