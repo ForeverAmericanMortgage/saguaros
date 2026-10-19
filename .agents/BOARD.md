@@ -270,3 +270,9 @@ T018 validation: five notification tests, rollback SQL checks for two-receipt ga
 - Scope: mirrored captain access helper, signup copy/status, confirmation error; verified-user enrollment migration and transactional regression test.
 - Database migration applied to Olympiad: all verified emails eligible, including previously blocked users. Ownership RLS, chairman authorization, approval and directory gates retained.
 - Validation: TypeScript/build pass; mirror clean; ESLint matches baseline (13 existing findings, no new findings). Hosted rollback test passes for uninvited registration, unverified exclusion, pending visibility, self-approval denial and cross-captain isolation. No test records retained or emails sent.
+
+## Microsoft captain sign-in · October 19, 2026
+- Owner: Codex, Olympiad Public Registration. Sean authorized implementation and production launch. Branch: codex/microsoft-signin.
+- Files: mirrored pilot API, captain UI and auth callback; Microsoft route tests and setup/acceptance documentation.
+- Implemented identity-only OAuth, disabled-until-configured feature gate, provider-specific fallback and same Auth user/team routing. Six focused tests pass; no new lint issues; mirror matches.
+- Blocked on Microsoft Entra administrator Authenticator handoff. Provider is not configured and Microsoft sign-in is not live. Hosted consent and real existing-captain linking must be tested after setup.

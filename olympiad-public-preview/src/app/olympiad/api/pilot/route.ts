@@ -43,7 +43,7 @@ export async function GET(request: Request) {
   }
   try {
     const { client, event, industries, map } = await context();
-    if (action === 'status') return reply({ enabled: config.enabled, registration_open: event.registration_open, configured: true, pilot_only: false, google_sign_in_enabled: process.env.OLYMPIAD_GOOGLE_SIGN_IN_ENABLED === 'true', fundraising_active: event.fundraising_active, industries: industries.map(i => i.name) });
+    if (action === 'status') return reply({ enabled: config.enabled, registration_open: event.registration_open, configured: true, pilot_only: false, google_sign_in_enabled: process.env.OLYMPIAD_GOOGLE_SIGN_IN_ENABLED === 'true', microsoft_sign_in_enabled: process.env.OLYMPIAD_MICROSOFT_SIGN_IN_ENABLED === 'true', fundraising_active: event.fundraising_active, industries: industries.map(i => i.name) });
     if (action === 'leaderboard') {
       if (!event.fundraising_active) {
         const { data, error } = await client.from('team_directory').select(publicColumns).eq('event_id',event.id).order('team_name').limit(500);
@@ -160,16 +160,27 @@ export async function POST(request: Request) {
     if (!data || typeof data !== 'object' || Array.isArray(data)) return reply({ error: 'Invalid request.' }, 400);
     const { client, event, industries } = await context();
     if (data.action === 'sign-out') { (await cookies()).delete(PROOF_COOKIE); const { error } = await client.auth.signOut({scope:'local'}); if (error) throw error; return reply({ ok: true }); }
-    if (data.action === 'google-sign-in') {
-      if (process.env.OLYMPIAD_GOOGLE_SIGN_IN_ENABLED !== 'true') return reply({ error: 'Google sign-in is not available yet. Please use an email link.' }, 503);
-      const { data: oauth, error } = await client.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${SITE_URL}/olympiad/auth/callback`, skipBrowserRedirect: true, queryParams: { prompt: 'select_account' } } });
-      if (error || !oauth.url) return reply({ error: 'Google sign-in could not start. Please try again or use an email link.' }, 503);
+    if (data.action === 'google-sign-in' || data.action === 'microsoft-sign-in') {
+      const microsoft = data.action === 'microsoft-sign-in';
+      const label = microsoft ? 'Microsoft' : 'Google';
+      const enabled = microsoft ? process.env.OLYMPIAD_MICROSOFT_SIGN_IN_ENABLED : process.env.OLYMPIAD_GOOGLE_SIGN_IN_ENABLED;
+      if (enabled !== 'true') return reply({ error: `${label} sign-in is not available yet. Please use another sign-in option.` }, 503);
+      const { data: oauth, error } = await client.auth.signInWithOAuth({
+        provider: microsoft ? 'azure' : 'google',
+        options: { redirectTo: `${SITE_URL}/olympiad/auth/callback`, skipBrowserRedirect: true,
+          ...(microsoft ? { scopes: 'openid email profile' } : {}),
+          queryParams: { prompt: 'select_account' } },
+      });
+      if (error || !oauth.url) return reply({ error: `${label} sign-in could not start. Please try again or use an email link.` }, 503);
+      (await cookies()).set('olympiad-sign-in-provider', microsoft ? 'microsoft' : 'google', {
+        httpOnly: true, sameSite: 'lax', secure: process.env.NODE_ENV === 'production', path: '/', maxAge: 600,
+      });
       return reply({ url: oauth.url });
     }
     if (data.action === 'sign-in') {
       const address = validate.email(data.email);
       if (!(await pilotAccessAllowed(client,address))) return reply({ error: 'Enter a valid email address to continue.' }, 403);
-      // Only allowlisted inboxes reach this point. Identity setup can precede team registration.
+      // Verified identity setup precedes team registration.
       const { error } = await client.auth.signInWithOtp({ email: address, options: { shouldCreateUser: true, emailRedirectTo: `${SITE_URL}/olympiad/auth/callback` } });
       if (error) return reply({ error: error.status === 429 ? 'Please wait before requesting another sign-in email.' : 'Sign-in email could not be sent. Please try again later.' }, error.status === 429 ? 429 : 503);
       return reply({ ok: true, message: 'Check your email for your secure team-hub link. Open it and select Continue to team hub.' });
