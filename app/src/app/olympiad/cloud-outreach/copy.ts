@@ -48,7 +48,7 @@ export function htmlBody(text:string,address:string){
  const content=start>=0?paragraphs(text.slice(0,start).trimEnd().replace(/\r\n/g,'\n'))+signatureHtml(address):paragraphs(text.replace(/\r\n/g,'\n'));
  return `<!doctype html><html><body><div style="font-family:Arial,sans-serif;font-size:14px">${content}</div></body></html>`;
 }
-export function followupCopy(first:string,address:string){return `Hey ${first},\n\nJust wanted to bump this thread back up. As a business owner, I know how easily things get lost in the sauce. Even though Olympiad isn't until next year, we like to get a head start introducing it and seeing if it might be a good fit.\n\nWould you have five minutes for a quick call? I'd love to share how we help children in our community and why your team might enjoy being part of it. The event is our way of saying thank you for helping support kids who need it.`+signature(address);}
+export function followupCopy(first:string,address:string){return `Hey ${first},\n\nJust wanted to bump this thread back up to the top. As a business owner, I know a lot of this stuff can get lost in the sauce. Even though the event isn’t until next year, we always try to get a head start by introducing what it is and seeing if it might be a good fit.\n\nWould love to steal five minutes of your time, share a little about what we do in the community, and explain why you guys might enjoy joining us. Ultimately, the event itself is a thank-you for helping support kids less fortunate than us right here in our community.\n\nWould you have a few minutes to connect?`+signature(address);}
 export function personalCopy(lead:QualifiedLead,address:string){
  const foot=signature(address);
  const first=lead.name.split(/\s+/)[0];
