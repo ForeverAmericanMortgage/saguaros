@@ -1,5 +1,6 @@
 import 'server-only';
 import nodemailer from 'nodemailer';
+import {htmlBody,postalAddress} from './copy';
 import {simpleParser} from 'mailparser';
 import type {SupabaseClient} from '@supabase/supabase-js';
 import {mailbox} from './mailbox';
@@ -26,7 +27,7 @@ export async function readGmailDraft(client:Mailbox,draft:ReviewDraft){
 export async function appendGmailDraft(client:Mailbox,draft:ReviewDraft){
  const folders=await client.list(),folder=folders.find(f=>f.specialUse==='\\Drafts');if(!folder)throw Error('Gmail Drafts folder unavailable.');
  // Build MIME locally. A stream transport never connects to SMTP or sends mail.
- const built=await nodemailer.createTransport({streamTransport:true,buffer:true}).sendMail({from:`Sean Caldwell <${sender}>`,to:draft.email,subject:draft.subject,text:draft.body,messageId:draft.rfc_message_id,headers:{'X-Olympiad-Review-Id':draft.id},disableFileAccess:true,disableUrlAccess:true});
+ const built=await nodemailer.createTransport({streamTransport:true,buffer:true}).sendMail({from:`Sean Caldwell <${sender}>`,to:draft.email,subject:draft.subject,text:draft.body,html:htmlBody(draft.body,postalAddress(process.env.OUTREACH_POSTAL_ADDRESS)),messageId:draft.rfc_message_id,headers:{'X-Olympiad-Review-Id':draft.id},disableFileAccess:true,disableUrlAccess:true});
  const result=await client.append(folder.path,built.message as Buffer,['\\Draft']);if(!result)throw Error('Draft creation outcome needs review.');
  return readGmailDraft(client,draft);
 }

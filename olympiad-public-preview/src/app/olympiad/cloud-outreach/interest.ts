@@ -1,5 +1,6 @@
 import 'server-only';
 import nodemailer from 'nodemailer';
+import {htmlBody,postalAddress,withFooter} from './copy';
 import {simpleParser} from 'mailparser';
 import type {SupabaseClient} from '@supabase/supabase-js';
 import {mailbox} from './mailbox';
@@ -31,7 +32,7 @@ export async function prepareInterestedReply(db:SupabaseClient){
    parent=(await simpleParser(raw.source)).messageId;if(!parent||/[\r\n]/.test(parent))throw Error('Reply headers unavailable');
   }finally{lock.release();}
   const messageId=`<olympiad-interest-${p.id}@saguaros.com>`;
-  const built=await nodemailer.createTransport({streamTransport:true,buffer:true}).sendMail({from:`Sean Caldwell <${sender}>`,to:p.contact_email,subject:/^re:/i.test(x.subject)?x.subject:`Re: ${x.subject}`,text:interestCopy(p.contact_name,p.company_name,x.body),messageId,inReplyTo:parent,references:[parent],disableFileAccess:true,disableUrlAccess:true});
+  const built=await nodemailer.createTransport({streamTransport:true,buffer:true}).sendMail({from:`Sean Caldwell <${sender}>`,to:p.contact_email,subject:/^re:/i.test(x.subject)?x.subject:`Re: ${x.subject}`,text:withFooter(interestCopy(p.contact_name,p.company_name,x.body),postalAddress(process.env.OUTREACH_POSTAL_ADDRESS)),html:htmlBody(interestCopy(p.contact_name,p.company_name,x.body),postalAddress(process.env.OUTREACH_POSTAL_ADDRESS)),messageId,inReplyTo:parent,references:[parent],disableFileAccess:true,disableUrlAccess:true});
   // Draft-folder append only. This module has no SMTP transport or send-queue entry.
   if(!await client.append(drafts.path,built.message as Buffer,['\\Draft']))throw Error('Draft outcome uncertain');
   lock=await client.getMailboxLock(drafts.path,{readOnly:true});try{const found=await client.search({header:{'message-id':messageId}},{uid:true});if(!Array.isArray(found)||found.length!==1)throw Error('Draft verification uncertain');drafted=true;}finally{lock.release();}
