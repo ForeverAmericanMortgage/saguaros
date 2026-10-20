@@ -48,12 +48,13 @@ export function htmlBody(text:string,address:string){
  const content=start>=0?paragraphs(text.slice(0,start).trimEnd().replace(/\r\n/g,'\n'))+signatureHtml(address):paragraphs(text.replace(/\r\n/g,'\n'));
  return `<!doctype html><html><body><div style="font-family:Arial,sans-serif;font-size:14px">${content}</div></body></html>`;
 }
+export function followupCopy(first:string,address:string){return `Hey ${first},\n\nJust wanted to bump this thread back up. As a business owner, I know how easily things get lost in the sauce. Even though Olympiad isn't until next year, we like to get a head start introducing it and seeing if it might be a good fit.\n\nWould you have five minutes for a quick call? I'd love to share how we help children in our community and why your team might enjoy being part of it. The event is our way of saying thank you for helping support kids who need it.`+signature(address);}
 export function personalCopy(lead:QualifiedLead,address:string){
  const foot=signature(address);
  const first=lead.name.split(/\s+/)[0];
  const subject=`A spring team day for ${lead.company.length>70?'your team':lead.company}?`;
  const body=`Hi ${first},\n\n${lead.opener}\n\nI'd love to introduce you to Scottsdale Olympiad, a spring field day bringing Valley businesses together for local children's charities.\n\nI grew up here, own a business here, and this year I'm chairing the event. The Saguaros have been putting it on for over 30 years. Last year, we granted over $1 million to local children's charities, with Olympiad helping fund a large portion.\n\nOver 100 Valley businesses participated last year, and many come back every year. It's a fun day out of the office for a great cause.\n\nWould you have five minutes for a phone call or Google Meet? I'd love to hear about your team and share how it works.\n\nIf it's not a fit, let me know and I won't follow up.${foot}`;
- const followup=`Hi ${first},\n\nJust wanted to follow up on the spring Olympiad. ${lead.company} could bring a team together for a fun day outside work while supporting local children's charities.\n\nIf an overview would help, I'm happy to send it over. If this isn't a fit, let me know and I won't follow up.${foot}`;
+ const followup=followupCopy(first,address);
  if(body.split(/\s+/).length>220||/[\u2013\u2014]/.test(subject+body+followup))throw Error('Copy needs review');
  return {subject,body,followup_subject:`Re: ${subject}`,followup_body:followup};
 }
