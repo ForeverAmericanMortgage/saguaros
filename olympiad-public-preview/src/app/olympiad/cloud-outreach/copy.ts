@@ -13,32 +13,37 @@ export function qualifiedLead(value:unknown,now=new Date()):QualifiedLead{
 export const optOutLine="Reply 'no thanks' and I'll take you off my list.";
 // CAN-SPAM needs a valid physical postal address in commercial email. Never hardcode or guess it.
 export function postalAddress(value:unknown){if(typeof value!=='string')throw Error('OUTREACH_POSTAL_ADDRESS is not set');const v=value.trim().replace(/\s*\r?\n\s*/g,', ');if(v.length<10||v.length>200||/[<>\u2013\u2014]/.test(v))throw Error('OUTREACH_POSTAL_ADDRESS is invalid');return v;}
-export const signatureTitle='Olympiad 2027 Chairman, The Saguaros';
+export const signatureTitle='Active Member, The Saguaros';
 export const LOGO_URL='https://scottsdaleolympiad.com/email/saguaros-logo.png';
 export const SAGUAROS_URL='http://saguaros.com/';
 export function signature(address:string){return `\n\nSean Caldwell\n${signatureTitle}\n602-388-0896   www.saguaros.com\n${postalAddress(address)}\nscottsdaleolympiad.com\n\n${optOutLine}`;}
 function normalizeTail(text:string){return text.replace(/\r\n/g,'\n').replace(/\u00a0/g,' ').split('\n').map(line=>line.replace(/ +$/,'').replace(/ +/g,' ')).join('\n').trimEnd();}
 // Locate the original tail so normalization never alters the approved message above it.
-function signatureStart(text:string,address:string){const matches=Array.from(text.matchAll(/Sean[ \u00a0]+Caldwell/g));const start=matches.length?matches[matches.length-1].index!:-1;return start>=0&&normalizeTail(text.slice(start))===normalizeTail(signature(address).trimStart())?start:-1;}
+function signatureStart(text:string,_address:string){
+ const matches=Array.from(text.matchAll(/(?:^|\n)Sean[ \u00a0]+Caldwell\n/g));
+ const last=matches.at(-1);if(!last)return -1;
+ const start=last.index!+(last[0].startsWith('\n')?1:0),tail=text.slice(start);
+ // Only replace the known trailing sender block; never remove message prose.
+ const lines=normalizeTail(tail).split('\n').filter(Boolean);
+ const allowed=/^(Sean Caldwell|Active Member, The Saguaros|Olympiad(?: 2027)? Chairman(?: \||,) The Saguaros|602-388-0896.*|(?:www\.)?saguaros\.com.*|(?:scottsdale|thescas)olympiad\.com|4400 N\. Scottsdale.*|If it's not a fit, (?:just )?let me know and I won't follow up\.|Reply 'no thanks' and I'll take you off my list\.|--|The Saguaros \| .*)$/;
+ return lines.every(line=>allowed.test(line))&&tail.includes('602-388-0896')?start:-1;
+}
 export function withFooter(body:string,address:string){
- const fixed=body.replace(/thescasolympiad\.com/gi,'scottsdaleolympiad.com');
- const legacy=/Sean Caldwell\n(Olympiad Chairman \| The Saguaros\n)?602-388-0896(\nsaguaros\.com \| (scottsdale|thescas)olympiad\.com)?(\n+--\nReply 'no thanks' and I'll take you off my list\.\nThe Saguaros \| [^\n]+)?\s*$/;
- // Older reviewed drafts put their soft opt-out after the legacy signature.
- // Treat that complete trailing block as one footer, not another message body.
- const softOptOut=/\n+If it's not a fit, (?:just )?let me know and I won't follow up\.\s*$/;
- const withoutSoftOptOut=fixed.replace(softOptOut,'');
- const match=legacy.exec(withoutSoftOptOut);
- if(match)return fixed.slice(0,match.index).trimEnd()+signature(address);
- if(signatureStart(fixed,address)>=0||fixed.includes(optOutLine))return fixed;
+ const fixed=body.replace(/\r\n/g,'\n').replace(/thescasolympiad\.com/gi,'scottsdaleolympiad.com');
+ const start=signatureStart(fixed,address);
+ if(start>=0)return fixed.slice(0,start).trimEnd()+signature(address);
  return fixed.trimEnd()+signature(address);
 }
 function escapeHtml(text:string){return text.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]!));}
 function paragraphs(text:string){return text.split(/\n{2,}/).filter(Boolean).map(p=>`<p style="margin:0 0 16px">${escapeHtml(p).replace(/\n/g,'<br>')}</p>`).join('');}
+// Captured from scaldwell@saguaros.com Gmail settings on 2026-10-20.
+const nativeSignature="<table cellpadding=\"0\" cellspacing=\"0\" style=\"color:rgb(0,0,0);font-size:12px;border-collapse:collapse;font-family:Verdana;line-height:1.15\"><tr><td style=\"vertical-align:top;padding:0.01px 14px 0.01px 0.01px;width:145px;text-align:center\"><a href=\"http://saguaros.com/\" style=\"display:block\"><img src=\"https://d36urhup7zbd7q.cloudfront.net/u/wDjjwvKn9vn/1657154119212.png\" height=\"112\" width=\"145\" style=\"width:145px;vertical-align:middle;border-radius:0px;height:112px\"></a></td><td style=\"padding:0.01px 0.01px 0.01px 14px;vertical-align:top;border-left:2px solid rgb(57,161,91)\"><br><table cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:collapse\"><tr><td style=\"line-height:1.2;padding:0.01px\"><br><span style=\"font-weight:bold;line-height:1.2;font-size:14px;color:rgb(100,100,100)\">Sean Caldwell<br>Active Member, The Saguaros&nbsp;</span></td></tr><tr><td nowrap style=\"padding-top:14px\"><div style=\"margin:0.1px;line-height:1\"><span style=\"color:rgb(97,97,97)\"><a href=\"tel:6023880896\" style=\"color:rgb(97,97,97);text-decoration:none\">602-388-0896&nbsp;</a>&nbsp;\u25cf&nbsp;&nbsp;<a href=\"http://www.saguaros.com/\" style=\"color:rgb(97,97,97);text-decoration:none\">www.saguaros.com&nbsp;</a></span></div></td></tr><tr><td nowrap style=\"padding-top:8px\"><div style=\"margin:0.1px;line-height:1\"><a href=\"https://maps.google.com/?q=4400%20N.%20Scottsdale%20rd.%20STE%209-725%20Scottsdale,%20AZ%2085251\" style=\"color:rgb(97,97,97);text-decoration:none\">4400 N. Scottsdale rd. STE 9-725 Scottsdale, AZ 85251&nbsp;</a></div></td></tr><tr><td style=\"padding:14px 0.01px 0.01px\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr><td align=\"left\" style=\"padding-right:14px;text-align:center;padding-top:0px\"><a href=\"http://facebook.com/thesaguaros\"><img width=\"31\" height=\"31\" src=\"https://cdn.gifo.wisestamp.com/s/fb/3b5998/62/0/transparent.png\" border=\"0\" style=\"float:left;border:none\"></a></td><td align=\"left\" style=\"padding-right:14px;text-align:center;padding-top:0px\"><a href=\"http://instagram.com/thesaguaros\"><img width=\"31\" height=\"31\" src=\"https://cdn.gifo.wisestamp.com/s/inst/E4405F/62/0/transparent.png\" border=\"0\" style=\"float:left;border:none\"></a></td><td align=\"left\" style=\"padding-right:14px;text-align:center;padding-top:0px\"><a href=\"http://us.linkedin.com/in/thesaguaros\"><img width=\"31\" height=\"31\" src=\"https://cdn.gifo.wisestamp.com/s/ld/0077b5/62/0/transparent.png\" border=\"0\" style=\"float:left;border:none\"></a></td><td align=\"left\" style=\"padding-right:14px;text-align:center;padding-top:0px\"><a href=\"http://twitter.com/thesaguaros\"><img width=\"31\" height=\"31\" src=\"https://cdn.gifo.wisestamp.com/s/tw/55acee/62/0/transparent.png\" border=\"0\" style=\"float:left;border:none\"></a></td><td align=\"left\" style=\"padding-right:14px;text-align:center;padding-top:0px\"><a href=\"http://youtube.com/thesaguaros\"><img width=\"31\" height=\"31\" src=\"https://cdn.gifo.wisestamp.com/s/yt/cd201f/62/0/transparent.png\" border=\"0\" style=\"float:left;border:none\"></a></td><td align=\"left\" style=\"padding-right:14px;text-align:center;padding-top:0px\"><a href=\"http://tiktok.com/@saguaros%5C.com/\"><img width=\"31\" height=\"31\" src=\"https://cdn.gifo.wisestamp.com/s/tt/000000/62/0/transparent.png\" border=\"0\" style=\"float:left;border:none\"></a></td></tr></table></td></tr></table></td></tr></table>";
 function signatureHtml(address:string){
- const addr=postalAddress(address);
- return `<p style="margin:0 0 16px"><a href="${SAGUAROS_URL}"><img src="${LOGO_URL}" width="144" height="111" alt="The Saguaros" style="display:block;border:0"></a></p><p style="margin:0 0 16px"><span style="color:#666;font-weight:bold">Sean Caldwell<br>${signatureTitle}</span><br>602-388-0896&nbsp;&nbsp;&nbsp;<a href="http://www.saguaros.com">www.saguaros.com</a><br><a href="${escapeHtml('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(addr))}">${escapeHtml(addr)}</a><br><a href="https://scottsdaleolympiad.com">scottsdaleolympiad.com</a></p><p style="margin:0;font-size:12px;color:#666">${escapeHtml(optOutLine)}</p>`;
+ postalAddress(address);
+ return nativeSignature+`<p style="margin-top:16px;font-size:12px;color:#666">${escapeHtml(optOutLine)}</p>`;
 }
 export function htmlBody(text:string,address:string){
+ text=withFooter(text,address);
  const start=signatureStart(text,address);
  const content=start>=0?paragraphs(text.slice(0,start).trimEnd().replace(/\r\n/g,'\n'))+signatureHtml(address):paragraphs(text.replace(/\r\n/g,'\n'));
  return `<!doctype html><html><body><div style="font-family:Arial,sans-serif;font-size:14px">${content}</div></body></html>`;
