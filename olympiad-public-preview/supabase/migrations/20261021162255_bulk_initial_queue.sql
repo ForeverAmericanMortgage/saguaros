@@ -1,3 +1,5 @@
+alter table olympiad_private.outreach_apollo_batches drop constraint outreach_apollo_batches_reserved_credits_check;
+alter table olympiad_private.outreach_apollo_batches add constraint outreach_apollo_batches_reserved_credits_check check(reserved_credits between 1 and 10);
 CREATE OR REPLACE FUNCTION olympiad_outreach_worker.apollo(p_key text, p_action text, p_data jsonb DEFAULT '{}'::jsonb)
  RETURNS jsonb
  LANGUAGE plpgsql
