@@ -26,6 +26,6 @@ test('native signature replaces historical footers once and keeps approved prose
  const address='4400 N. Scottsdale Rd., Ste 9-725, Scottsdale, AZ 85251';
  for(const footer of ['Sean Caldwell\nOlympiad Chairman | The Saguaros\n602-388-0896\nsaguaros.com | scottsdaleolympiad.com\n\n'+address+"\nIf it's not a fit, just let me know and I won't follow up.",'Sean Caldwell\nOlympiad 2027 Chairman, The Saguaros\n602-388-0896',c.exports.signature(address).trim()]){
  const body='Hi Jane,\n\nWould you like to learn more?\n\n'+footer,hash=draftHash('j@example.com','Hi',body),html=c.exports.htmlBody(body,address);
- assert.equal((html.match(/Sean Caldwell/g)||[]).length,1);assert.match(html,/Active Member, The Saguaros/);assert.match(html,/tel:6023880896/);assert.match(html,/1657154119212.png/);assert.match(html,/facebook.com\/thesaguaros/);assert.match(html,/Would you like to learn more/);assert.equal(draftHash('j@example.com','Hi',body),hash);
+ assert.equal((html.match(/Sean Caldwell/g)||[]).length,1);assert.match(html,/Olympiad Chairman, The Saguaros/);assert.match(html,/tel:6023880896/);assert.match(html,/1657154119212.png/);assert.match(html,/facebook.com\/thesaguaros/);assert.match(html,/Would you like to learn more/);assert.equal(draftHash('j@example.com','Hi',body),hash);
  }
 });
