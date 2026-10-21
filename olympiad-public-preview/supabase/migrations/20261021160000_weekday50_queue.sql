@@ -111,7 +111,7 @@ begin
   if exists(select 1 from olympiad_private.outreach_send_attempts where state in ('reserved','sending','ambiguous')) then return jsonb_build_object('skip',true,'reason','Uncertain sender receipt needs review');end if;
   select count(*) into n from olympiad_private.outreach_send_attempts where local_day=d and step='initial' and state<>'cancelled';
   if n<50 then
-   select * into r from olympiad_private.outreach_candidates q where state='ready' and q.copy_reviewed and exists(select 1 from olympiad_private.outreach_gmail_drafts z where z.candidate_id=q.id and z.export_state='ready' and z.approved_hash=z.content_hash and z.approved_hash is not null) and (research->>'checked_at')::timestamptz>=now()-interval '30 days' and not olympiad_private.outreach_excluded(q.company,q.domain,q.email) order by created_at,id limit 1 for update skip locked;
+   select * into r from olympiad_private.outreach_candidates q where state='ready' and q.research->>'send_policy'='weekday50-2026-10-21' and q.copy_reviewed and exists(select 1 from olympiad_private.outreach_gmail_drafts z where z.candidate_id=q.id and z.export_state='ready' and z.approved_hash=z.content_hash and z.approved_hash is not null) and (research->>'checked_at')::timestamptz>=now()-interval '30 days' and not olympiad_private.outreach_excluded(q.company,q.domain,q.email) order by created_at,id limit 1 for update skip locked;
   end if;
   if r.id is not null then
    select * into g from olympiad_private.outreach_gmail_drafts where candidate_id=r.id;
@@ -194,10 +194,10 @@ begin
    select id,'followup',company_name,contact_email,case when left(draft_subject,3)='Re:' then draft_subject else 'Re: '||draft_subject end,draft_body from public.organizer_prospects p
    where event_year=2027 and status='sent' and not opted_out and last_reply_at is null and olympiad_private.followup_contact_ready(p.id) and draft_body<>''
    and not exists(select 1 from public.organizer_prospect_messages x where x.prospect_id=p.id and x.step='followup') on conflict do nothing;
-  return jsonb_build_object('credential',m.credential,'drafts',(select coalesce(jsonb_agg(to_jsonb(x)),'[]'::jsonb) from (select * from olympiad_private.outreach_gmail_drafts where export_state<>'sent' and (lease_until is null or lease_until<now()) order by synced_at nulls first,created_at limit 200)x));
+  return jsonb_build_object('credential',m.credential,'drafts',(select coalesce(jsonb_agg(to_jsonb(x)),'[]'::jsonb) from (select * from olympiad_private.outreach_gmail_drafts where step='initial' and export_state<>'sent' and (lease_until is null or lease_until<now()) order by synced_at nulls first,created_at limit 20)x));
  elsif p_action='claim' then
   if m.paused or m.credential is null then return jsonb_build_object('skip',true);end if;
-  select * into r from olympiad_private.outreach_gmail_drafts where export_state='pending' and export_attempts=0 order by created_at,id limit 1 for update skip locked;
+  select * into r from olympiad_private.outreach_gmail_drafts where step='initial' and export_state='pending' and export_attempts=0 order by created_at,id limit 1 for update skip locked;
   if r.id is null then return jsonb_build_object('skip',true);end if;
   update olympiad_private.outreach_gmail_drafts set export_state='exporting',export_attempts=1,lease_until=now()+interval '5 minutes' where id=r.id returning * into r;
   return jsonb_build_object('draft',to_jsonb(r));
@@ -227,4 +227,6 @@ begin
  return jsonb_build_object('recorded',true);
 end $function$
 ;
+alter table olympiad_private.outreach_apollo_config drop constraint outreach_apollo_config_credit_budget_check;
+alter table olympiad_private.outreach_apollo_config add constraint outreach_apollo_config_credit_budget_check check(credit_budget between 0 and 2564);
 commit;
