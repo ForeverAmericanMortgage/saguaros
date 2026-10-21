@@ -55,3 +55,5 @@ test('drafts never create activity and outbound mail needs actual Sent evidence'
  assert.equal(m.recordableMail(false,new Set(),new Set()),true);
  assert.equal(m.recordableMail(false,new Set(['\\Draft']),new Set()),false);
 });
+
+test('Gmail All Mail drafts use labels even when flags are empty',()=>{assert.equal(m.isMailboxDraft({flags:new Set(),labels:new Set(['\\Draft'])}),true);assert.equal(m.isMailboxDraft({flags:new Set(['\\Draft'])}),true);assert.equal(m.isMailboxDraft({flags:new Set(),labels:new Set(['\\Sent'])}),false);});

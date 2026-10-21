@@ -5,7 +5,7 @@ import {workerAuthorized,workerKey,unseal} from '../../../cloud-outreach/secret'
 import {mailbox,transport} from '../../../cloud-outreach/mailbox';
 import {readGmailDraft,retireGmailDraft,draftCall} from '../../../cloud-outreach/drafts';
 import {retryMailboxRead} from '../../../cloud-outreach/read-retry';
-import {arizonaWeekend,gmailHex,sender} from '../../../cloud-outreach/model';
+import {arizonaWeekend,gmailHex,sender,isMailboxDraft} from '../../../cloud-outreach/model';
 import {htmlBody,postalAddress,withFooter} from '../../../cloud-outreach/copy';
 export const runtime='nodejs';export const dynamic='force-dynamic';export const maxDuration=180;
 const reply=(data:unknown,status=200)=>NextResponse.json(data,{status,headers:{'Cache-Control':'private, no-store'}});
@@ -34,12 +34,12 @@ export async function GET(request:Request){
    // Read the actual conversation immediately before each send, not just a cached status.
    const found=await client.search({or:[{from:a.email},...(!state.thread?[{to:a.email},{body:a.email}]:[]),...(state.thread?[{threadId:BigInt('0x'+state.thread).toString()}]:[])]},{uid:true});
    if(Array.isArray(found)&&found.length){
-    const meta=await client.fetchAll(found,{envelope:true,emailId:true,threadId:true,internalDate:true,flags:true},{uid:true});
-    const relevant=meta.filter(m=>!m.flags?.has('\\Draft'));
+    const meta=await client.fetchAll(found,{envelope:true,emailId:true,threadId:true,internalDate:true,flags:true,labels:true},{uid:true});
+    const relevant=meta.filter(m=>!isMailboxDraft(m));
     if(a.step==='initial'&&relevant.length){await call('stop',{id:aid,detail:'Existing correspondence or bounce requires review'});return reply({held:true,reason:'Existing correspondence detected'});}
-    const incoming=meta.find(m=>!(m.envelope?.from||[]).some(x=>x.address?.toLowerCase()===sender));
+    const incoming=relevant.find(m=>!(m.envelope?.from||[]).some(x=>x.address?.toLowerCase()===sender));
     if(incoming){await call('stop',{id:aid,detail:'Incoming mailbox response pauses follow-up'});return reply({held:true,reason:'Incoming response detected'});}
-    reference=meta.sort((x,y)=>+new Date(y.internalDate||0)-+new Date(x.internalDate||0))[0]?.envelope?.messageId;
+    reference=relevant.sort((x,y)=>+new Date(y.internalDate||0)-+new Date(x.internalDate||0))[0]?.envelope?.messageId;
    }
   }finally{lock.release();}
   }
