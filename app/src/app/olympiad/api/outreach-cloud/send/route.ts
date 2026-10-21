@@ -32,13 +32,14 @@ export async function GET(request:Request){
   for(const checkPath of [...new Set([all.path,...folders.filter(f=>f.specialUse==='\\Junk').map(f=>f.path)])]){
   const lock=await client.getMailboxLock(checkPath,{readOnly:true});try{
    // Read the actual conversation immediately before each send, not just a cached status.
-   const found=await client.search({or:[{from:a.email},...(!state.thread?[{to:a.email},{body:a.email}]:[]),...(state.thread?[{threadId:BigInt('0x'+state.thread).toString()}]:[])]},{uid:true});
+   const found=await client.search({or:[{from:a.email},{to:a.email},{body:a.email},...(state.thread?[{threadId:BigInt('0x'+state.thread).toString()}]:[])]},{uid:true});
    if(Array.isArray(found)&&found.length){
     const meta=await client.fetchAll(found,{envelope:true,emailId:true,threadId:true,internalDate:true,flags:true,labels:true},{uid:true});
     const relevant=meta.filter(m=>!isMailboxDraft(m));
     if(a.step==='initial'&&relevant.length){await call('stop',{id:aid,detail:'Existing correspondence or bounce requires review'});return reply({held:true,reason:'Existing correspondence detected'});}
     const incoming=relevant.find(m=>!(m.envelope?.from||[]).some(x=>x.address?.toLowerCase()===sender));
     if(incoming){await call('stop',{id:aid,detail:'Incoming mailbox response pauses follow-up'});return reply({held:true,reason:'Incoming response detected'});}
+    if(a.step==='followup'&&relevant.filter(m=>(m.envelope?.from||[]).some(x=>x.address?.toLowerCase()===sender)).length>1){await call('stop',{id:aid,detail:'Manual correspondence detected; automation stopped'});return reply({held:true,reason:'Manual conversation detected'});}
     reference=relevant.sort((x,y)=>+new Date(y.internalDate||0)-+new Date(x.internalDate||0))[0]?.envelope?.messageId;
    }
   }finally{lock.release();}
