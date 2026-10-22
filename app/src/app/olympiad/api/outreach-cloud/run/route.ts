@@ -28,7 +28,7 @@ export async function GET(request:Request){
   const alerts:string[]=[];let inserted=0;let complete=true;
   for(const path of paths){const lock=await client.getMailboxLock(path,{readOnly:true});try{
    for(let i=0;i<prospects.length;i+=20){
-    const group=prospects.slice(i,i+20);const or=group.flatMap(p=>[{from:p.email},...(p.thread&&/^[a-f0-9]+$/.test(p.thread)?[{threadId:BigInt('0x'+p.thread).toString()}]:[])]);
+    const group=prospects.slice(i,i+20);const or=group.flatMap(p=>[{from:p.email},{to:p.email},...(p.thread&&/^[a-f0-9]+$/.test(p.thread)?[{threadId:BigInt('0x'+p.thread).toString()}]:[])]);
     if(!or.length)continue;
     const found=await client.search({since,or},{uid:true});const ids=Array.isArray(found)?found:[];
     if(ids.length>200){complete=false;throw Error('Mailbox backlog needs review');}
@@ -40,7 +40,8 @@ export async function GET(request:Request){
      const from=m.envelope?.from?.map(a=>a.address?.toLowerCase()).filter(Boolean)||[];
      const outbound=from.includes(sender);
      if(!recordableMail(outbound,m.flags,m.labels))continue;
-     const p=prospects.find(p=>p.thread===tid)||(!outbound?prospects.find(p=>from.includes(p.email.toLowerCase())):undefined);if(!p)continue;
+     const to=m.envelope?.to?.map(a=>a.address?.toLowerCase()).filter(Boolean)||[];
+     const p=prospects.find(p=>p.thread===tid)||prospects.find(p=>(outbound?to:from).includes(p.email.toLowerCase()));if(!p)continue;
      const body=await client.fetchOne(m.uid,{source:{maxLength:100000}},{uid:true});if(!body||!body.source)throw Error('Unable to read a matched reply');
      const parsed=await simpleParser(body.source,{skipHtmlToText:true,skipTextToHtml:true});
      const text=replyText(parsed.text||htmlText(String(parsed.html||'')));const subject=parsed.subject||'';const auto=String(parsed.headers.get('auto-submitted')||'no')!=='no';
