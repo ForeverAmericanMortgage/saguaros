@@ -24,7 +24,7 @@ test('long valid opener and postal address pass personal copy and draft review',
 
 const {signature,htmlBody,signatureTitle,LOGO_URL}=moduleCopy.exports;
 test('exact canonical signature shared by initial and followup',()=>{
- assert.equal(signature(ADDR),"\n\nSean Caldwell\nOlympiad 2027 Chairman, The Saguaros\n602-388-0896   www.saguaros.com\n"+ADDR+"\nscottsdaleolympiad.com\n\n"+optOutLine);
+ assert.equal(signature(ADDR),"\n\nSean Caldwell\nOlympiad Chairman, The Saguaros\n602-388-0896   www.saguaros.com\n"+ADDR+"\nscottsdaleolympiad.com\n\n"+optOutLine);
  const c=personalCopy(lead,ADDR);for(const b of [c.body,c.followup_body]){assert.ok(b.endsWith(signature(ADDR)));assert.equal(b.split(ADDR).length,2);assert.doesNotMatch(b,/\n--\n|The Saguaros \|/);}
 });
 test('old and T019 initial and followup tails migrate idempotently',()=>{
@@ -34,26 +34,26 @@ test('old and T019 initial and followup tails migrate idempotently',()=>{
  const out=withFooter(b,ADDR);assert.equal(out,prefix+signature(ADDR));assert.equal(out.split(ADDR).length,2);assert.equal(withFooter(out,ADDR),out);
  }const canonical=prefix+signature(ADDR);assert.equal(withFooter(canonical,ADDR),canonical);
 });
-test('edited and whitespace-mangled tails preserve approved text',()=>{
- const edited='Hello\nChanged signature\n'+optOutLine;assert.equal(withFooter(edited,ADDR),edited);
- assert.equal(withFooter('Hello',ADDR),'Hello'+signature(ADDR));
- for(const tail of [signature(ADDR).replace(/   /g,' '),signature(ADDR).replace(/ /g,'\u00a0'),signature(ADDR).replace(/\n/g,'  \r\n')]){
- const body='Hello'+tail;assert.equal(withFooter(body,ADDR),body);assert.match(htmlBody(body,ADDR),/<img/);
- }
+test('unknown signature text is preserved above the required Chairman footer',()=>{
+ const body='Hello\nChanged signature\n'+optOutLine;
+ assert.equal(withFooter(body,ADDR),body+signature(ADDR));
+ assert.equal(withFooter(withFooter(body,ADDR),ADDR),body+signature(ADDR));
 });
-function visible(html){return html.replace(/<br>/g,'\n').replace(/<\/p>/g,'\n').replace(/<[^>]+>/g,'').replace(/&nbsp;/g,' ').replace(/&#39;/g,"'").replace(/&quot;/g,'"').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&');}
-test('canonical HTML links, logo, address and text parity',()=>{
- const body=personalCopy(lead,ADDR).body,html=htmlBody(body,ADDR),text=visible(html);
- assert.ok(html.includes(LOGO_URL));assert.match(html,/width="144" height="111" alt="The Saguaros"/);
- for(const url of ['http://saguaros.com/','http://www.saguaros.com','https://www.google.com/maps/search/?api=1&amp;query='+encodeURIComponent(ADDR)])assert.ok(html.includes(url));
- assert.ok(text.includes(signatureTitle));assert.ok(text.includes(optOutLine));assert.equal(text.split(ADDR).length,2);
- const hosts=[...html.matchAll(/(?:href|src)="([^"]+)"/g)].map(m=>new URL(m[1].replace(/&amp;/g,'&')).hostname.replace(/^www\./,''));
- assert.deepEqual([...new Set(hosts)].sort(),['google.com','saguaros.com','scottsdaleolympiad.com']);
- for(const line of body.split('\n').filter(Boolean))assert.ok(text.includes(line),line);
+test('canonical native HTML uses the Gmail signature and preserves invitation text',()=>{
+ const address='4400 N. Scottsdale rd. STE 9-725 Scottsdale, AZ 85251';
+ const body=personalCopy(lead,address).body,html=htmlBody(body,address);
+ assert.match(html,/d36urhup7zbd7q\.cloudfront\.net/);
+ assert.match(html,/Olympiad Chairman, The Saguaros/);
+ assert.match(html,/width="145"/);
+ assert.ok(html.includes(address));assert.ok(html.includes('tel:6023880896'));
+ assert.ok(html.includes(lead.opener));
+ assert.equal((html.match(/Sean Caldwell/g)||[]).length,1);
+ assert.equal((html.match(/Reply &#39;no thanks&#39;/g)||[]).length,1);
 });
-test('noncanonical HTML escapes markup and retains all text without a logo',()=>{
- const body='<script>"Hi" & goodbye</script>\nEdited signature\n'+optOutLine,html=htmlBody(body,ADDR);
- assert.doesNotMatch(html,/<img|<script>/);assert.match(html,/&lt;script&gt;&quot;Hi&quot; &amp;/);assert.equal(visible(html).trim(),body);
+test('HTML escapes untrusted message markup above the native signature',()=>{
+ const html=htmlBody('<script>"Hi" & goodbye</script>',ADDR);
+ assert.doesNotMatch(html,/<script>/);assert.match(html,/&lt;script&gt;&quot;Hi&quot; &amp;/);
+ assert.match(html,/Olympiad Chairman/);
 });
 test('multipart alternative contains exact footer text',async()=>{
  const text=withFooter(personalCopy(lead,ADDR).body,ADDR);

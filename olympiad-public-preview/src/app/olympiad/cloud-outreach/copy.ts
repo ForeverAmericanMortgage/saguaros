@@ -19,14 +19,14 @@ export const SAGUAROS_URL='http://saguaros.com/';
 export function signature(address:string){return `\n\nSean Caldwell\n${signatureTitle}\n602-388-0896   www.saguaros.com\n${postalAddress(address)}\nscottsdaleolympiad.com\n\n${optOutLine}`;}
 function normalizeTail(text:string){return text.replace(/\r\n/g,'\n').replace(/\u00a0/g,' ').split('\n').map(line=>line.replace(/ +$/,'').replace(/ +/g,' ')).join('\n').trimEnd();}
 // Locate the original tail so normalization never alters the approved message above it.
-function signatureStart(text:string,_address:string){
+function signatureStart(text:string,address:string){
  const matches=Array.from(text.matchAll(/(?:^|\n)Sean[ \u00a0]+Caldwell\n/g));
  const last=matches.at(-1);if(!last)return -1;
  const start=last.index!+(last[0].startsWith('\n')?1:0),tail=text.slice(start);
  // Only replace the known trailing sender block; never remove message prose.
  const lines=normalizeTail(tail).split('\n').filter(Boolean);
  const allowed=/^(Sean Caldwell|Active Member, The Saguaros|Olympiad(?: 2027)? Chairman(?: \||,) The Saguaros|602-388-0896.*|(?:www\.)?saguaros\.com.*|(?:scottsdale|thescas)olympiad\.com|4400 N\. Scottsdale.*|If it's not a fit, (?:just )?let me know and I won't follow up\.|Reply 'no thanks' and I'll take you off my list\.|--|The Saguaros \| .*)$/;
- return lines.every(line=>allowed.test(line))&&tail.includes('602-388-0896')?start:-1;
+ return lines.every(line=>allowed.test(line)||line===normalizeTail(postalAddress(address)))&&tail.includes('602-388-0896')?start:-1;
 }
 export function withFooter(body:string,address:string){
  const fixed=body.replace(/\r\n/g,'\n').replace(/thescasolympiad\.com/gi,'scottsdaleolympiad.com');

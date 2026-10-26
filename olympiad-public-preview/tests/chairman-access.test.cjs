@@ -58,10 +58,10 @@ function harness(options = {}) {
         const React = require('react');
         return { ...React, useState: initial => {
           const index = stateIndex++;
-          return React.useState(index === 0 ? [{ ...team, name: team.team_name, company: team.company_name,
+          return React.useState(index === 1 ? [{ ...team, name: team.team_name, company: team.company_name,
             industry: 'Technology', roster: [], listed: 0, complete: 0, needs_follow_up: true,
             approval_status: 'pending', participation_history: 'new', captain_name: 'Synthetic Captain' }]
-            : index === 5 ? false : index === 6 ? 'Offline fixture' : initial);
+            : index === 6 ? false : index === 7 ? 'Offline fixture' : initial);
         } };
       }
       if (name === 'server-only') return {};
@@ -207,7 +207,7 @@ test('old organizer page redirects to the chairman home; chairman page gates bef
 test('existing organizer views render with synthetic data and no effects or sends', () => {
   const h = harness({ ui: true }); const React = require('react');
   const html = require('react-dom/server').renderToStaticMarkup(React.createElement(h.load('organizer/OrganizerDashboard.tsx').default));
-  for (const text of ['Chairman dashboard','Businesses &amp; teams','Captains &amp; participants','Season plan','Early-access invitations','Synthetic Team','Sign out']) assert.ok(html.includes(text), text);
+  for (const text of ['Chairman dashboard','Businesses &amp; teams','Captains &amp; participants','Season &amp; communications plan','Early-access invitations','Synthetic Team','Sign out']) assert.ok(html.includes(text), text);
   assert.equal(h.network.length, 0); assert.equal(h.writes.length, 0);
 });
 
