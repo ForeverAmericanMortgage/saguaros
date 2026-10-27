@@ -282,3 +282,12 @@ T018 validation: five notification tests, rollback SQL checks for two-receipt ga
 - Branch: codex/olympiad-policies
 - Files: both Olympiad mirrors: privacy/page.tsx, terms/page.tsx, policy.module.css, OlympiadHub.tsx.
 - Status: implementing simple account, roster, logo and communications policies; auth unchanged.
+
+## T-014 · Link preview card for the public site
+- **Owner:** Claude · **Status:** review · **Branch:** `claude/link-preview`
+- **Goal:** Shared links to scottsdaleolympiad.com show a branded preview card (title, blurb, 2026 team photo) in email, texts and LinkedIn.
+- **Files:** `olympiad-public-preview/src/app/olympiad/page.tsx`, `olympiad-public-preview/public/olympiad/og-olympiad-2027.jpg`, their `app/` mirrors, `.agents/BOARD.md`.
+- **Do:** Open Graph and Twitter card metadata plus a 1200x630 share image. Keep noindex until Sean launches 2027. Announce no 2027 changes.
+- **Done when:** tsc and next build pass, mirror in sync, built home page HTML carries the og: and twitter: tags.
+- **Log:**
+  - Claude: Sean approved the share image and the update (2026-10-27). tsc and build pass; mirror in sync; og:image resolves to https://scottsdaleolympiad.com/olympiad/og-olympiad-2027.jpg in the built HTML. Robots still noindex, nofollow.
