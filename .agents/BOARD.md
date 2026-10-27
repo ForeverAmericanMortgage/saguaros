@@ -283,11 +283,20 @@ T018 validation: five notification tests, rollback SQL checks for two-receipt ga
 - Files: both Olympiad mirrors: privacy/page.tsx, terms/page.tsx, policy.module.css, OlympiadHub.tsx.
 - Status: implementing simple account, roster, logo and communications policies; auth unchanged.
 
+## T-014 · Link preview card for the public site
+- **Owner:** Claude · **Status:** done · **Branch:** `claude/link-preview`
+- **Goal:** Shared links to scottsdaleolympiad.com show a branded preview card (title, blurb, 2026 team photo) in email, texts and LinkedIn.
+- **Files:** `olympiad-public-preview/src/app/olympiad/page.tsx`, `olympiad-public-preview/public/olympiad/og-olympiad-2027.jpg`, their `app/` mirrors, `.agents/BOARD.md`.
+- **Do:** Open Graph and Twitter card metadata plus a 1200x630 share image. Keep noindex until Sean launches 2027. Announce no 2027 changes.
+- **Done when:** tsc and next build pass, mirror in sync, built home page HTML carries the og: and twitter: tags.
+- **Log:**
+  - Claude: Sean approved the share image and the update (2026-10-27). tsc and build pass; mirror in sync; og:image resolves to https://scottsdaleolympiad.com/olympiad/og-olympiad-2027.jpg in the built HTML. Robots still noindex, nofollow. Merged 2026-10-27.
+
 ## T-015 · Event photo carousel on the home page
-- **Owner:** Claude · **Status:** review · **Branch:** `claude/home-photo-gallery`
+- **Owner:** Claude · **Status:** done · **Branch:** `claude/home-photo-gallery`
 - **Goal:** Show past event photos on the home page, not only under Fundraising, so new visitors see the day.
 - **Files:** `olympiad-public-preview/src/app/olympiad/{OlympiadHub.tsx,olympiad.module.css}`, their `app/` mirrors, `.agents/BOARD.md`.
 - **Do:** Reuse `EventGallery` in a two column section between "How it works" and "Who will you compete with?". No new photos, no 2027 announcements.
 - **Done when:** tsc and next build pass, mirror in sync, desktop and mobile checked on the preview deploy.
 - **Log:**
-  - Claude: Sean asked about a carousel (2026-10-27). tsc and build pass; mirror in sync. Visual check on the preview deploy pending.
+  - Claude: Sean asked about a carousel (2026-10-27). tsc and build pass; mirror in sync. Sean approved the merge (2026-10-27).
