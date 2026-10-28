@@ -283,10 +283,38 @@ T018 validation: five notification tests, rollback SQL checks for two-receipt ga
 - Files: both Olympiad mirrors: privacy/page.tsx, terms/page.tsx, policy.module.css, OlympiadHub.tsx.
 - Status: implementing simple account, roster, logo and communications policies; auth unchanged.
 
+## T-014 · Link preview card for the public site
+- **Owner:** Claude · **Status:** done · **Branch:** `claude/link-preview`
+- **Goal:** Shared links to scottsdaleolympiad.com show a branded preview card (title, blurb, 2026 team photo) in email, texts and LinkedIn.
+- **Files:** `olympiad-public-preview/src/app/olympiad/page.tsx`, `olympiad-public-preview/public/olympiad/og-olympiad-2027.jpg`, their `app/` mirrors, `.agents/BOARD.md`.
+- **Do:** Open Graph and Twitter card metadata plus a 1200x630 share image. Keep noindex until Sean launches 2027. Announce no 2027 changes.
+- **Done when:** tsc and next build pass, mirror in sync, built home page HTML carries the og: and twitter: tags.
+- **Log:**
+  - Claude: Sean approved the share image and the update (2026-10-27). tsc and build pass; mirror in sync; og:image resolves to https://scottsdaleolympiad.com/olympiad/og-olympiad-2027.jpg in the built HTML. Robots still noindex, nofollow. Merged 2026-10-27.
+
+## T-015 · Event photo carousel on the home page
+- **Owner:** Claude · **Status:** done · **Branch:** `claude/home-photo-gallery`
+- **Goal:** Show past event photos on the home page, not only under Fundraising, so new visitors see the day.
+- **Files:** `olympiad-public-preview/src/app/olympiad/{OlympiadHub.tsx,olympiad.module.css}`, their `app/` mirrors, `.agents/BOARD.md`.
+- **Do:** Reuse `EventGallery` in a two column section between "How it works" and "Who will you compete with?". No new photos, no 2027 announcements.
+- **Done when:** tsc and next build pass, mirror in sync, desktop and mobile checked on the preview deploy.
+- **Log:**
+  - Claude: Sean asked about a carousel (2026-10-27). tsc and build pass; mirror in sync. Sean approved the merge (2026-10-27).
+
+## T-016 · Sender stalls after a refused Gmail login
+- **Owner:** Claude · **Status:** review · **Branch:** `claude/sender-login-before-send`
+- **Goal:** A refused Gmail send login should never stall the queue. On Oct 28 at 9:56 AM AZ, Gmail refused the SMTP login (EAUTH) after the IMAP login worked, and the attempt was recorded as an uncertain send, which blocked all sending.
+- **Files:** `olympiad-public-preview/src/app/olympiad/api/outreach-cloud/send/route.ts`, its `app/` mirror, `.agents/BOARD.md`.
+- **Do:** Log in to SMTP before `before_send` marks the attempt as sending. A refused login now cancels the reserved attempt with nothing sent and skips the draft error, so the same approved draft retries next run.
+- **Done when:** tsc and next build pass, mirror in sync. Today's stuck attempt is released separately in the database (Sean's call).
+- **Log:**
+  - Claude: Sean asked for a fix (2026-10-28). tsc and build pass; mirror in sync. Overlaps PR #45 and #46 in the same file.
+
 ## T-020 · Outreach sender safeguards
-- **Owner:** Claude · **Status:** review · **Branch:** `claude/outreach-sender-safeguards-qtx39h` (stacked on PR #45, `codex/outreach-50-weekday`)
+- **Owner:** Claude · **Status:** review · **Branch:** `claude/outreach-sender-safeguards-qtx39h` (PR #46, now based on `main`)
 - **Request:** Sean, 2026-10-27: review PR #45, then (1) automatic safety pause on 24h bounce rate above 3% with at least 20 sends or any spam complaint/abuse notice, manual resume only; (2) hourly "Olympiad sender stopped: <reason>" alert 08:00 to 18:30 Arizona when polling is over 10 minutes stale or last_error is set; (3) List-Unsubscribe, wider opt-out phrases, one-page runbook. No cap, hours or sequence changes; no secrets; no sends.
 - **Files:** mirrored `cloud-outreach/{model,safety,safety-model}.ts`, `api/outreach-cloud/{run,send,safety}/route.ts`, `organizer/{SenderSafety,ProspectTracker}.tsx`; `20261027200000_outreach_sender_safeguards.sql` in both trees; `olympiad-public-preview/tests/sender-safety.{test.cjs,sql}`; `olympiad-public-preview/docs/outreach-sender-runbook.md`; this board.
 - **Log:**
-  - Claude: PR #45 verified at b27b92c (100 tests, outreach lint, tsc, build, mirror). Recommended approval; merge/tag wait on Sean.
+  - Claude: PR #45 verified at b27b92c (100 tests, outreach lint, tsc, build, mirror). Recommended approval. Sean approved the merge 2026-10-28; squash merged as c7db79e and auto-deployed to production. Tag `outreach-live-2026-10-22` created locally on c7db79e but the session could not push tags.
   - Claude: Safeguards built additively (new columns, tables, triggers and worker functions; no existing function replaced). 108 tests, tsc, changed-file lint, build and mirror pass. `tests/sender-safety.sql` passes on a local Postgres 16 stub of the outreach tables; not yet run on the hosted database. Migration not applied; nothing deployed or sent.
+  - Claude: Merged main (PR #45 squash, #47 to #49) into the safeguards branch; kept #49's SMTP login before send and added the List-Unsubscribe header to it.
