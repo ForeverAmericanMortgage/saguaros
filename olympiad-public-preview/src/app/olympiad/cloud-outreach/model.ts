@@ -21,3 +21,5 @@ export function recordableMail(outbound:boolean,flags?:Set<string>,labels?:Set<s
  if(flags?.has('\\Draft')||labels?.has('\\Draft'))return false;
  return !outbound||!!labels?.has('\\Sent');
 }
+
+export function isMailboxDraft(m:{flags?:Set<string>;labels?:Set<string>}){return !!(m.flags?.has('\\Draft')||m.labels?.has('\\Draft'));}
