@@ -300,3 +300,12 @@ T018 validation: five notification tests, rollback SQL checks for two-receipt ga
 - **Done when:** tsc and next build pass, mirror in sync, desktop and mobile checked on the preview deploy.
 - **Log:**
   - Claude: Sean asked about a carousel (2026-10-27). tsc and build pass; mirror in sync. Sean approved the merge (2026-10-27).
+
+## T-016 · Sender stalls after a refused Gmail login
+- **Owner:** Claude · **Status:** review · **Branch:** `claude/sender-login-before-send`
+- **Goal:** A refused Gmail send login should never stall the queue. On Oct 28 at 9:56 AM AZ, Gmail refused the SMTP login (EAUTH) after the IMAP login worked, and the attempt was recorded as an uncertain send, which blocked all sending.
+- **Files:** `olympiad-public-preview/src/app/olympiad/api/outreach-cloud/send/route.ts`, its `app/` mirror, `.agents/BOARD.md`.
+- **Do:** Log in to SMTP before `before_send` marks the attempt as sending. A refused login now cancels the reserved attempt with nothing sent and skips the draft error, so the same approved draft retries next run.
+- **Done when:** tsc and next build pass, mirror in sync. Today's stuck attempt is released separately in the database (Sean's call).
+- **Log:**
+  - Claude: Sean asked for a fix (2026-10-28). tsc and build pass; mirror in sync. Overlaps PR #45 and #46 in the same file.

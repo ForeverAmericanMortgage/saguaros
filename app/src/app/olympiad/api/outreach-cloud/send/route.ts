@@ -42,10 +42,13 @@ export async function GET(request:Request){
   if(a.step==='followup'&&!reference){await call('stop',{id:aid,detail:'Original Gmail conversation could not be verified'});return reply({held:true});}
   stage='draft_read';const copy=await retryMailboxRead(()=>readGmailDraft(client!,state.review),async()=>{client?.close();client=mailbox(pass);await client.connect();});
   stage='draft_sync';await draftCall(db,'sync',{id:state.review.id,...copy});
+  // Log in to Gmail SMTP before the attempt is marked as sending. A refused login here means nothing
+  // was sent, so the attempt is released and the same approved draft retries on the next run.
+  stage='smtp_login';const smtp=transport(pass);await smtp.verify();
   stage='approval_check';const permitted=await call('before_send',{id:aid,content_hash:copy.content_hash});
   if(!permitted.allowed){await call('cancel_review',{id:aid});return reply({held:true,reason:'Draft changed or chairman hold. Review again.'});}
   stage='smtp';sending=true;
-  const sent=await transport(pass).sendMail({from:`Sean Caldwell <${sender}>`,to:a.email,subject:a.subject,text,html:htmlBody(text,address),messageId:a.rfc_message_id,...(a.step==='followup'&&reference?{inReplyTo:reference,references:reference}:{})});
+  const sent=await smtp.sendMail({from:`Sean Caldwell <${sender}>`,to:a.email,subject:a.subject,text,html:htmlBody(text,address),messageId:a.rfc_message_id,...(a.step==='followup'&&reference?{inReplyTo:reference,references:reference}:{})});
   if(!sent.accepted?.some((v:unknown)=>String(v).toLowerCase()===a.email.toLowerCase()))throw Error('Sender receipt unavailable');
   // SMTP acceptance alone is not the tracker receipt. Resolve the exact generated Message-ID in Gmail.
   stage='sent_receipt';const sentFolder=folders.find(f=>f.specialUse==='\\Sent');if(!sentFolder)throw Error('Sent folder unavailable');
@@ -63,7 +66,7 @@ export async function GET(request:Request){
   const code=e&&typeof e==='object'&&'code' in e?String(e.code).replace(/[^A-Za-z0-9_-]/g,'').slice(0,50):'UNKNOWN';
   console.error('OUTREACH_SEND_HELD',JSON.stringify({stage,code,attempt_id:aid||null,smtp_started:sending}));
   if(aid)await call(sending?'uncertain':'cancel_review',{id:aid,detail:`Cloud check failed at ${stage}. No automatic retry.`}).catch(()=>{});
-  if(reviewId&&!sending)await draftCall(db,'error',{id:reviewId,error:`Cloud check failed at ${stage}. Nothing sent. Refresh and review again.`}).catch(()=>{});
+  if(reviewId&&!sending&&stage!=='smtp_login')await draftCall(db,'error',{id:reviewId,error:`Cloud check failed at ${stage}. Nothing sent. Refresh and review again.`}).catch(()=>{});
   return reply({error:sending?'Sender receipt needs review. Do not resend.':'Cloud check failed. Nothing sent.',stage},503);
  }finally{client?.close();}
 }
