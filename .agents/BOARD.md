@@ -309,3 +309,12 @@ T018 validation: five notification tests, rollback SQL checks for two-receipt ga
 - **Done when:** tsc and next build pass, mirror in sync. Today's stuck attempt is released separately in the database (Sean's call).
 - **Log:**
   - Claude: Sean asked for a fix (2026-10-28). tsc and build pass; mirror in sync. Overlaps PR #45 and #46 in the same file.
+
+## T-020 · Outreach sender safeguards
+- **Owner:** Claude · **Status:** review · **Branch:** `claude/outreach-sender-safeguards-qtx39h` (PR #46, now based on `main`)
+- **Request:** Sean, 2026-10-27: review PR #45, then (1) automatic safety pause on 24h bounce rate above 3% with at least 20 sends or any spam complaint/abuse notice, manual resume only; (2) hourly "Olympiad sender stopped: <reason>" alert 08:00 to 18:30 Arizona when polling is over 10 minutes stale or last_error is set; (3) List-Unsubscribe, wider opt-out phrases, one-page runbook. No cap, hours or sequence changes; no secrets; no sends.
+- **Files:** mirrored `cloud-outreach/{model,safety,safety-model}.ts`, `api/outreach-cloud/{run,send,safety}/route.ts`, `organizer/{SenderSafety,ProspectTracker}.tsx`; `20261027200000_outreach_sender_safeguards.sql` in both trees; `olympiad-public-preview/tests/sender-safety.{test.cjs,sql}`; `olympiad-public-preview/docs/outreach-sender-runbook.md`; this board.
+- **Log:**
+  - Claude: PR #45 verified at b27b92c (100 tests, outreach lint, tsc, build, mirror). Recommended approval. Sean approved the merge 2026-10-28; squash merged as c7db79e and auto-deployed to production. Tag `outreach-live-2026-10-22` created locally on c7db79e but the session could not push tags.
+  - Claude: Safeguards built additively (new columns, tables, triggers and worker functions; no existing function replaced). 108 tests, tsc, changed-file lint, build and mirror pass. `tests/sender-safety.sql` passes on a local Postgres 16 stub of the outreach tables; not yet run on the hosted database. Migration not applied; nothing deployed or sent.
+  - Claude: Merged main (PR #45 squash, #47 to #49) into the safeguards branch; kept #49's SMTP login before send and added the List-Unsubscribe header to it.

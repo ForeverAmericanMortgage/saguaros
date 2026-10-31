@@ -8,7 +8,9 @@ import {syncGmailDrafts} from '../../../cloud-outreach/drafts';
 import {prepareInterestedReply} from '../../../cloud-outreach/interest';
 import {refreshUsage} from '../../../cloud-outreach/usage';
 import {deliverNotification} from '../../../cloud-outreach/notifications';
-import {htmlText,classifyReply,gmailHex,replyText,sender,recordableMail} from '../../../cloud-outreach/model';
+import {htmlText,classifyReply,complaintReply,gmailHex,replyText,sender,recordableMail,isMailboxDraft} from '../../../cloud-outreach/model';
+import {deliverSenderAlert,safetyCall} from '../../../cloud-outreach/safety';
+import {abuseNoticeQuery} from '../../../cloud-outreach/safety-model';
 export const runtime='nodejs';export const dynamic='force-dynamic';export const maxDuration=180;
 type Prospect={id:string;company:string;email:string;thread:string|null;first_sent:string};
 const reply=(data:unknown,status=200)=>NextResponse.json(data,{status,headers:{'Cache-Control':'private, no-store'}});
@@ -19,6 +21,8 @@ export async function GET(request:Request){
  const call=async(action:string,data:Record<string,unknown>={})=>{const r=await db.rpc('organizer_cloud_worker',{p_key:workerKey(),p_action:action,p_data:data});if(r.error)throw Error('Cloud ledger operation failed');return r.data;};
  await refreshUsage(db).catch(()=>{});
  await deliverNotification(db).catch(()=>{});
+ await deliverSenderAlert(db).catch(()=>{});
+ const safety=safetyCall(db);
  let claimed=false,notificationStarted=false,client:ReturnType<typeof mailbox>|undefined;
  try{
   const state=await call('claim');if(state.skip)return reply({skipped:true});claimed=true;
@@ -45,9 +49,20 @@ export async function GET(request:Request){
      const body=await client.fetchOne(m.uid,{source:{maxLength:100000}},{uid:true});if(!body||!body.source)throw Error('Unable to read a matched reply');
      const parsed=await simpleParser(body.source,{skipHtmlToText:true,skipTextToHtml:true});
      const text=replyText(parsed.text||htmlText(String(parsed.html||'')));const subject=parsed.subject||'';const auto=String(parsed.headers.get('auto-submitted')||'no')!=='no';
-     const kind=classifyReply(subject,text,auto);const occurred=new Date(m.internalDate||parsed.date||Date.now()).toISOString();
+     const complaint=!outbound&&complaintReply(subject,text);
+     // A spam complaint is a sticky opt-out and pauses all sending. Record the pause first so it is never lost.
+     if(complaint)await safety('notice',{kind:'complaint',message_id:mid,detail:`${p.company}: ${subject}`.slice(0,300)});
+     const kind=complaint?'opted_out':classifyReply(subject,text,auto);const occurred=new Date(m.internalDate||parsed.date||Date.now()).toISOString();
      const result=await call('message',{message_id:mid,thread_id:tid,prospect_id:p.id,outbound,kind,occurred_at:occurred,subject,body:text});seen.add(mid);
      if(result.inserted)inserted++;if(result.alert)alerts.push(`${p.company}\n${text.slice(0,1000)}\nReview draft / conversation: https://mail.google.com/mail/u/?authuser=scaldwell%40saguaros.com#all/${tid}\nNext step: review the unsent response, then arrange a short call if appropriate. No call is booked.\nCompany brief and next step: https://chairman.scottsdaleolympiad.com/#prospect-tracker\nFind: ${p.company}`);
+    }
+   }
+   // Provider abuse reports and spam complaints may not come from a tracked address.
+   const notices=await client.search({since,gmraw:abuseNoticeQuery},{uid:true});
+   if(Array.isArray(notices)&&notices.length){
+    for(const n of await client.fetchAll(notices.slice(-20),{uid:true,envelope:true,emailId:true,flags:true,labels:true},{uid:true})){
+     if(!n.emailId||isMailboxDraft(n)||(n.envelope?.from||[]).some(a=>a.address?.toLowerCase()===sender))continue;
+     await safety('notice',{kind:'abuse_notice',message_id:gmailHex(n.emailId),detail:String(n.envelope?.subject||'Abuse notice').slice(0,300)});
     }
    }
   }finally{lock.release();}}
