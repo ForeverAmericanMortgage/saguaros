@@ -18,7 +18,9 @@ export function classifyReply(subject:string,text:string,automatic=false){
  // Quoted invitations may retain the footer even without email quote markers.
  const reply=text.replace(/[‘’]/g,"'").replace(/It's a fun day out of the office for a great cause\./gi,'').replace(/If it's not a fit, let me know and I won't follow up\./gi,'').replace(/If this isn't a fit, let me know and I won't follow up\./gi,'').replace(/^(?:Olympiad Chairman \| The Saguaros|Olympiad 2027 Chairman, The Saguaros|602-388-0896[^\n]*|The Saguaros \| [^\n]*)\s*$/gmi,'').replace(/Reply 'no thanks' and I'll take you off my list\./gi,'');
  const s=(subject+' '+reply).toLowerCase();
- if(optOutPattern.test(s))return 'opted_out';
+ // A reply whose first line is just "Stop" is an opt-out too.
+ const first=reply.split('\n').map(l=>l.trim()).find(Boolean)||'';
+ if(optOutPattern.test(s)||/^stop[.!]*$/i.test(first))return 'opted_out';
  if(/undeliverable|delivery (?:status|failure)|recipient (?:not found|unknown)|couldn.t be delivered|address not found/.test(s))return 'bounced';
  if(automatic||/out of (?:the )?office|automatic reply|on vacation/.test(s))return 'out_of_office';
  if(/not interested|not a fit|decline|not participating/.test(s))return 'declined';
